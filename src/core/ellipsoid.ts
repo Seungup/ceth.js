@@ -1,0 +1,29 @@
+import { Vector3 } from 'three';
+import { Cartesian3 } from './math/cartesian3';
+
+export class Ellipsoid extends Vector3 {
+	private _oneOverRadiiSquared: Cartesian3;
+
+	constructor(x: number, y: number, z: number) {
+		super(x, y, z);
+		this._oneOverRadiiSquared = new Cartesian3(
+			this.x == 0.0 ? 0.0 : 1.0 / (this.x * this.x),
+			this.y == 0.0 ? 0.0 : 1.0 / (this.y * this.y),
+			this.z == 0.0 ? 0.0 : 1.0 / (this.z * this.z)
+		);
+	}
+
+	static get WGS84() {
+		return new Ellipsoid(6378137.0, 6378137.0, 6356752.3142451793);
+	}
+
+	geodeticSurfaceNormal(
+		cartesian: Cartesian3,
+		result: Cartesian3 = new Cartesian3()
+	) {
+		if (cartesian.isZero()) return;
+		result.copy(cartesian);
+		result.multiply(this._oneOverRadiiSquared);
+		return result.normalizeByMagnitude();
+	}
+}

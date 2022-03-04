@@ -1,0 +1,14 @@
+{
+  "exclude": [
+    "cesium-project"
+  ],
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "jsxImportSource": "preact",
+    "module": "ESNext",
+    "target": "ES2021",
+    "strict": true,
+    "isolatedModules": false,
+    "moduleResolution": "Node"
+  }
+}
