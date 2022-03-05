@@ -2,7 +2,11 @@ import { Matrix4, Vector3 } from "three";
 import { CT_Cartesian3, CT_Transforms } from ".";
 import { CT_Matrix4 } from "./matrix4";
 
-export interface IWGS84 { latitude: number, longitude: number, height: number }
+export interface IWGS84 {
+  latitude: number;
+  longitude: number;
+  height: number;
+}
 
 export class CT_WGS84 extends Vector3 {
   constructor(
@@ -61,12 +65,12 @@ export class CT_WGS84 extends Vector3 {
   }
 
   static fromCesiumWGS84(
-    latitude: number,
+    wgs84: number,
     longitude: number,
     height: number,
     result: CT_WGS84 = new CT_WGS84()
   ) {
-    return result.set(latitude, longitude, height);
+    return result.set(wgs84, longitude, height);
   }
 
   static fromThreeWGS84(

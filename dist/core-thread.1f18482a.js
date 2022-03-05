@@ -504,8 +504,8 @@ class $9cc46a5bb5d8ad43$export$2779d2581814b131 extends $d9Ejt$Vector3 {
             height: this.height
         };
     }
-    static fromCesiumWGS84(latitude, longitude, height, result = new $9cc46a5bb5d8ad43$export$2779d2581814b131()) {
-        return result.set(latitude, longitude, height);
+    static fromCesiumWGS84(wgs84, longitude, height, result = new $9cc46a5bb5d8ad43$export$2779d2581814b131()) {
+        return result.set(wgs84, longitude, height);
     }
     static fromThreeWGS84(latitude, longitude, height, result = new $9cc46a5bb5d8ad43$export$2779d2581814b131()) {
         return result.set(latitude, longitude, height);

@@ -141,7 +141,7 @@ export class CT_WGS84 extends Vector3 {
     set height(value: number);
     getMatrix4(result?: CT_Matrix4): Matrix4;
     toJSON(): IWGS84;
-    static fromCesiumWGS84(latitude: number, longitude: number, height: number, result?: CT_WGS84): CT_WGS84;
+    static fromCesiumWGS84(wgs84: number, longitude: number, height: number, result?: CT_WGS84): CT_WGS84;
     static fromThreeWGS84(latitude: number, longitude: number, height: number, result?: CT_WGS84): CT_WGS84;
 }
 declare class ObjectRenderer {
