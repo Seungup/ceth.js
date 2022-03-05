@@ -1,5 +1,5 @@
 import { Viewer } from 'cesium';
-import { RenderParam } from '../core/graphic/graphic.component';
+import { RenderParam } from '../core/graphic';
 import { SingletonWorkerFactory } from '../core/worker-factory';
 import { Math as CesiumMath, PerspectiveFrustum } from 'cesium';
 import { RequestType } from '../core/core-thread';
@@ -37,8 +37,6 @@ export class ObjectRenderer {
 				param: {
 					cvm: cvm,
 					civm: civm,
-					height: this.viewer.container.clientHeight,
-					width: this.viewer.container.clientWidth
 				} as RenderParam,
 			},
 			[cvm.buffer, civm.buffer]

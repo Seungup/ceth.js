@@ -1,12 +1,12 @@
 import { Subject } from 'rxjs';
-import { GraphicComponent, RenderParam } from './graphic/graphic.component';
+import { Graphic, RenderParam } from './graphic';
 
 /**
  * Cesium 과 three.js 의 스레드 간 렌더 비동기 이슈를 해결합니다.
  */
 export class RenderQueue {
 	private readonly _queue: RenderParam[] = [];
-	private readonly graphic = GraphicComponent.getInstance();
+	private readonly graphic = Graphic.getInstance();
 	private param: RenderParam | undefined;
 	private _handle: number | undefined;
 	private readonly _bindRenderNextAnimationFrame =

@@ -1,39 +1,47 @@
-import { Box3, Object3D } from 'three';
-import { CesiumWGS84 } from '..';
-import { SingletonWorkerFactory } from '../core/worker-factory';
-import { Utils } from '../utils';
-import { ObjectAPI } from './object.api';
+import { Box3, Object3D } from "three";
+import { CT_WGS84, IWGS84 } from "../core";
+import { SingletonWorkerFactory } from "../core/worker-factory";
+import { ObjectAPI } from "./object.api";
 
 export interface RequestResult {
-	objectId: number;
-	result: boolean;
+  objectId: number;
+  result: boolean;
 }
 
 export class ObjectManager {
-	private readonly coreWrapper =
-		SingletonWorkerFactory.getWrapper('CoreThread');
+  private readonly coreWrapper =
+    SingletonWorkerFactory.getWrapper("CoreThread");
 
-	private _calcBox3(object: Object3D) {
-		return new Box3().setFromObject(object).max;
-	}
+  async add(object: Object3D, position?: IWGS84): Promise<ObjectAPI> {
+    
+	const wgs84 = position
+      ? CT_WGS84.fromCesiumWGS84(
+          position.latitude,
+          position.longitude,
+          position.height
+        )
+      : undefined;
 
-	async add(object: Object3D, position?: CesiumWGS84): Promise<ObjectAPI> {
-		position = position ? Utils.CesiumWGS84ToThreeWGS84(position) : position
-		const id = await this.coreWrapper.add(object.toJSON(), position);
-		return new ObjectAPI(id);
-	}
+	if (wgs84 && wgs84.height === 0) {
+		wgs84.height = new Box3().setFromObject(object).max.y;
+	}	
 
-	async get(id: number) {
-		if (await this.coreWrapper.isExist(id)) {
-			return new ObjectAPI(id);
-		}
-	}
+    const id = await this.coreWrapper.add(
+      object.toJSON(),
+      wgs84?.toJSON(),
+    );
+    return new ObjectAPI(id);
+  }
 
-	async updateObject(id: number, object: Object3D): Promise<RequestResult> {
-		this._calcBox3(object);
-		return {
-			objectId: id,
-			result: await this.coreWrapper.update(id, object.toJSON()),
-		};
-	}
+  async get(id: number) {
+    const isExist = await this.coreWrapper.isExist(id);
+    if (isExist) return new ObjectAPI(id);
+  }
+
+  async updateObject(id: number, object: Object3D): Promise<RequestResult> {
+    return {
+      objectId: id,
+      result: await this.coreWrapper.update(id, object.toJSON()),
+    };
+  }
 }

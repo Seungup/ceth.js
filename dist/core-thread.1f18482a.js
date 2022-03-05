@@ -1,31 +1,33 @@
 import {expose as $d9Ejt$expose} from "comlink";
-import {ObjectLoader as $d9Ejt$ObjectLoader, BoxHelper as $d9Ejt$BoxHelper, Box3 as $d9Ejt$Box3, Scene as $d9Ejt$Scene, WebGLRenderer as $d9Ejt$WebGLRenderer, PerspectiveCamera as $d9Ejt$PerspectiveCamera, Matrix4 as $d9Ejt$Matrix4, Vector3 as $d9Ejt$Vector3, Vector4 as $d9Ejt$Vector4} from "three";
+import {ObjectLoader as $d9Ejt$ObjectLoader, BoxHelper as $d9Ejt$BoxHelper, Box3 as $d9Ejt$Box3, Scene as $d9Ejt$Scene, PerspectiveCamera as $d9Ejt$PerspectiveCamera, WebGLRenderer as $d9Ejt$WebGLRenderer, Vector3 as $d9Ejt$Vector3, Matrix4 as $d9Ejt$Matrix4, Vector4 as $d9Ejt$Vector4} from "three";
 import {Subject as $d9Ejt$Subject} from "rxjs";
 
+function $parcel$exportWildcard(dest, source) {
+  Object.keys(source).forEach(function(key) {
+    if (key === 'default' || key === '__esModule' || dest.hasOwnProperty(key)) {
+      return;
+    }
+
+    Object.defineProperty(dest, key, {
+      enumerable: true,
+      get: function get() {
+        return source[key];
+      }
+    });
+  });
+
+  return dest;
+}
 function $parcel$export(e, n, v, s) {
   Object.defineProperty(e, n, {get: v, set: s, enumerable: true, configurable: true});
 }
 
 
 
-class $66eb4ee2a70bb3b6$export$2e2bcd8739ae039 {
-    constructor(){
-        this.perspectiveCamera = new $d9Ejt$PerspectiveCamera();
-    }
-    getCamera() {
-        return this.perspectiveCamera;
-    }
-    static getInstance() {
-        return this.instance || (this.instance = new this());
-    }
-}
-
-
-class $07bc5a8b8ee70be8$export$68b8bcd517bf7533 {
-    constructor(scene = new $d9Ejt$Scene(), cameraComponent = $66eb4ee2a70bb3b6$export$2e2bcd8739ae039.getInstance()){
+class $d1b8e958636edac6$export$adfa9d260876eca5 {
+    constructor(scene = new $d9Ejt$Scene()){
         this.scene = scene;
-        this.cameraComponent = cameraComponent;
-        this.camera = this.cameraComponent.getCamera();
+        this.camera = new $d9Ejt$PerspectiveCamera();
     }
     static getInstance() {
         return this.instance || (this.instance = new this());
@@ -53,9 +55,8 @@ class $07bc5a8b8ee70be8$export$68b8bcd517bf7533 {
         console.log(`[Graphic] isWebGL2Enabled : ${this.renderer.capabilities.isWebGL2}`);
     }
     setSize(width, height) {
-        const camera = this.cameraComponent.getCamera();
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
         this.renderer?.setSize(width, height, false);
     }
     /**
@@ -68,10 +69,7 @@ class $07bc5a8b8ee70be8$export$68b8bcd517bf7533 {
             this.camera.matrixWorld.set(param.civm[0], param.civm[4], param.civm[8], param.civm[12], param.civm[1], param.civm[5], param.civm[9], param.civm[13], param.civm[2], param.civm[6], param.civm[10], param.civm[14], param.civm[3], param.civm[7], param.civm[11], param.civm[15]);
             // prettier-ignore
             this.camera.matrixWorldInverse.set(param.cvm[0], param.cvm[4], param.cvm[8], param.cvm[12], param.cvm[1], param.cvm[5], param.cvm[9], param.cvm[13], param.cvm[2], param.cvm[6], param.cvm[10], param.cvm[14], param.cvm[3], param.cvm[7], param.cvm[11], param.cvm[15]);
-            this.camera.aspect = param.width / param.height;
             this.camera.updateProjectionMatrix();
-            this.renderer.setSize(param.width, param.height, false);
-            this.renderer.clear();
             this.renderer.render(this.scene, this.camera);
         }
     }
@@ -81,8 +79,7 @@ class $07bc5a8b8ee70be8$export$68b8bcd517bf7533 {
 
 
 
-
-class $995821fa3a7efcc2$export$8890c8adaae71a72 {
+class $f20f17e129275ffd$export$8890c8adaae71a72 {
     /**
 	 * 다음 장면을 그립니다.
 	 */ _renderNextAnimationFrame() {
@@ -101,7 +98,7 @@ class $995821fa3a7efcc2$export$8890c8adaae71a72 {
     }
     constructor(){
         this._queue = [];
-        this.graphic = $07bc5a8b8ee70be8$export$68b8bcd517bf7533.getInstance();
+        this.graphic = $d1b8e958636edac6$export$adfa9d260876eca5.getInstance();
         this._bindRenderNextAnimationFrame = this._renderNextAnimationFrame.bind(this);
         this._renderSubject = new $d9Ejt$Subject();
         this.renderNextFrame$ = this._renderSubject.pipe();
@@ -109,122 +106,227 @@ class $995821fa3a7efcc2$export$8890c8adaae71a72 {
 }
 
 
+var $041dfd65fc078bd9$exports = {};
+var $54db50d775dc5ee6$exports = {};
 
-var $764ac7478921f02a$exports = {};
+$parcel$export($54db50d775dc5ee6$exports, "CT_Cartesian3", () => $54db50d775dc5ee6$export$aca70b982fa554b6);
 
-$parcel$export($764ac7478921f02a$exports, "Transforms", () => $764ac7478921f02a$export$2e7e2a6179fcdd5c);
+const $234747a9630b4642$export$3545e07a80636437 = '0dev';
+const $234747a9630b4642$export$d055d6f746a0dadb = 6378137;
+const $234747a9630b4642$export$e586789a40edc0eb = 6378137;
+const $234747a9630b4642$export$9d8be9f67f903df8 = 6356752.314245179;
+const $234747a9630b4642$export$e7c2ef8be8b001f4 = 40680631590769;
+const $234747a9630b4642$export$c9841caf9817ab44 = 40680631590769;
+const $234747a9630b4642$export$1845088a49f45c1b = 40408299984661.445;
+
+
+var $0df7ca19a0800c87$exports = {};
+
+$parcel$export($0df7ca19a0800c87$exports, "MathUtils", () => $a37d01845c731898$export$6a7ef315a0d1ef07);
+class $a37d01845c731898$export$6a7ef315a0d1ef07 {
+    static toRadians(degrees) {
+        return degrees * this.RADIANS_PER_DEGREE;
+    }
+    static randomOffset() {
+        return Math.floor(Math.random() * 10000) * 0.000001;
+    }
+    /**
+   * 절대 공차 검정 또는 상대 공차 검정을 사용하여 두 값이 같은지 여부를 확인합니다.
+   *
+   * @example
+   * MathUtils.equalsEpsilon(0.1, 0.01, MathUtils.EPSILON_01) // true
+   * MathUtils.equalsEpsilon(0.1, 0.01, MathUtils.EPSILON_02) // false
+   *
+   * @param left - The first value to compare.
+   * @param right - The other value to compare.
+   * @param relativeEpsilon
+   * @param absoluteEpsilon
+   * @returns
+   */ static equalsEpsilon(left, right, relativeEpsilon = this.EPSILON_14, absoluteEpsilon = this.EPSILON_14) {
+        const absDiff = Math.abs(left - right);
+        if (absDiff <= absoluteEpsilon) return true;
+        return absDiff <= relativeEpsilon * Math.max(Math.abs(left), Math.abs(right));
+    }
+    static magnitude(vec) {
+        return Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+    }
+}
+$a37d01845c731898$export$6a7ef315a0d1ef07.RADIANS_PER_DEGREE = Math.PI / 180;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_01 = 0.1;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_02 = 0.01;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_03 = 0.001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_04 = 0.0001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_05 = 0.00001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_06 = 0.000001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_07 = 0.0000001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_08 = 0.00000001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_09 = 0.000000001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_10 = 0.0000000001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_11 = 0.00000000001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_12 = 0.000000000001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_13 = 0.0000000000001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_14 = 0.00000000000001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_15 = 0.000000000000001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_16 = 0.0000000000000001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_17 = 0.00000000000000001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_18 = 0.000000000000000001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_19 = 0.0000000000000000001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_20 = 0.00000000000000000001;
+$a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_21 = 0.000000000000000000001;
 
 
 
 
-class $54db50d775dc5ee6$export$a930246057f569fe extends $d9Ejt$Vector3 {
+class $54db50d775dc5ee6$export$aca70b982fa554b6 extends $d9Ejt$Vector3 {
     static get WGS84_RADII_SQUARED() {
-        return new $54db50d775dc5ee6$export$a930246057f569fe(40680631590769, 40680631590769, 40408299984661.445 // 6356752.3142451793^2
-        );
+        return new $54db50d775dc5ee6$export$aca70b982fa554b6($234747a9630b4642$export$e7c2ef8be8b001f4, $234747a9630b4642$export$c9841caf9817ab44, $234747a9630b4642$export$1845088a49f45c1b);
     }
     static get UINT_X() {
-        return new $54db50d775dc5ee6$export$a930246057f569fe(1, 0, 0);
+        return new $54db50d775dc5ee6$export$aca70b982fa554b6(1, 0, 0);
     }
     static get UINT_Y() {
-        return new $54db50d775dc5ee6$export$a930246057f569fe(0, 1, 0);
+        return new $54db50d775dc5ee6$export$aca70b982fa554b6(0, 1, 0);
     }
     static get UINT_Z() {
-        return new $54db50d775dc5ee6$export$a930246057f569fe(0, 0, 1);
+        return new $54db50d775dc5ee6$export$aca70b982fa554b6(0, 0, 1);
     }
     static get ZERO() {
-        return new $54db50d775dc5ee6$export$a930246057f569fe(0, 0, 0);
-    }
-    normalizeByMagnitude() {
-        return this.divideScalar($27c67f197043802e$export$6a7ef315a0d1ef07.magnitude(this));
-    }
-    static fromDegree(longitude, latitude, height) {
-        return this.fromRadians($27c67f197043802e$export$6a7ef315a0d1ef07.toRadians(longitude), $27c67f197043802e$export$6a7ef315a0d1ef07.toRadians(latitude), height);
+        return new $54db50d775dc5ee6$export$aca70b982fa554b6(0, 0, 0);
     }
     static fromRadians(longitude, latitude, height) {
         const cosLatitude = Math.cos(latitude);
-        const cartesian = new $54db50d775dc5ee6$export$a930246057f569fe(cosLatitude * Math.cos(longitude), cosLatitude * Math.sin(longitude), Math.sin(latitude)).normalizeByMagnitude();
-        const WGS84_RADII_SQUARED = $54db50d775dc5ee6$export$a930246057f569fe.WGS84_RADII_SQUARED.multiply(cartesian);
+        const cartesian = new $54db50d775dc5ee6$export$aca70b982fa554b6(cosLatitude * Math.cos(longitude), cosLatitude * Math.sin(longitude), Math.sin(latitude)).normalizeByMagnitude();
+        const WGS84_RADII_SQUARED = $54db50d775dc5ee6$export$aca70b982fa554b6.WGS84_RADII_SQUARED.multiply(cartesian);
         const gamma = Math.sqrt(WGS84_RADII_SQUARED.dot(cartesian));
         WGS84_RADII_SQUARED.divideScalar(gamma);
         return cartesian.multiplyScalar(height).add(WGS84_RADII_SQUARED);
     }
-    isZero() {
-        return $54db50d775dc5ee6$export$a930246057f569fe.equalsEpsilon(this, $54db50d775dc5ee6$export$a930246057f569fe.ZERO);
+    static fromDegree(longitude, latitude, height) {
+        return this.fromRadians($a37d01845c731898$export$6a7ef315a0d1ef07.toRadians(longitude), $a37d01845c731898$export$6a7ef315a0d1ef07.toRadians(latitude), height);
     }
-    static unpack(array, startIndex = 0, result = new $54db50d775dc5ee6$export$a930246057f569fe()) {
-        return result.set(array[startIndex++], array[startIndex++], array[startIndex]);
-    }
-    static equalsEpsilon(left, right, relativeEpsilon = $27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_14, absoluteEpsilon = $27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_14) {
+    static equalsEpsilon(left, right, relativeEpsilon = $a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_14, absoluteEpsilon = $a37d01845c731898$export$6a7ef315a0d1ef07.EPSILON_14) {
         if (left.equals(right)) return true;
-        return $27c67f197043802e$export$6a7ef315a0d1ef07.equalsEpsilon(left.x, right.x, relativeEpsilon, absoluteEpsilon) && $27c67f197043802e$export$6a7ef315a0d1ef07.equalsEpsilon(left.y, right.y, relativeEpsilon, absoluteEpsilon) && $27c67f197043802e$export$6a7ef315a0d1ef07.equalsEpsilon(left.z, right.z, relativeEpsilon, absoluteEpsilon);
+        return $a37d01845c731898$export$6a7ef315a0d1ef07.equalsEpsilon(left.x, right.x, relativeEpsilon, absoluteEpsilon) && $a37d01845c731898$export$6a7ef315a0d1ef07.equalsEpsilon(left.y, right.y, relativeEpsilon, absoluteEpsilon) && $a37d01845c731898$export$6a7ef315a0d1ef07.equalsEpsilon(left.z, right.z, relativeEpsilon, absoluteEpsilon);
+    }
+    normalizeByMagnitude() {
+        return this.divideScalar($a37d01845c731898$export$6a7ef315a0d1ef07.magnitude(this));
+    }
+    isZero() {
+        return $54db50d775dc5ee6$export$aca70b982fa554b6.equalsEpsilon(this, $54db50d775dc5ee6$export$aca70b982fa554b6.ZERO);
+    }
+    static unpack(array, startIndex = 0, result = new $54db50d775dc5ee6$export$aca70b982fa554b6()) {
+        return result.set(array[startIndex++], array[startIndex++], array[startIndex]);
     }
 }
 
 
-class $1a1da69edc3c7876$export$edfc7dc0e9336c5b extends $d9Ejt$Vector3 {
+var $19176608e346944f$exports = {};
+
+$parcel$export($19176608e346944f$exports, "CT_Ellipsoid", () => $19176608e346944f$export$5851ecdbb051d869);
+
+
+
+class $19176608e346944f$export$5851ecdbb051d869 extends $d9Ejt$Vector3 {
     constructor(x, y, z){
         super(x, y, z);
-        this._oneOverRadiiSquared = new $54db50d775dc5ee6$export$a930246057f569fe(this.x == 0 ? 0 : 1 / (this.x * this.x), this.y == 0 ? 0 : 1 / (this.y * this.y), this.z == 0 ? 0 : 1 / (this.z * this.z));
+        this._oneOverRadiiSquared = new $54db50d775dc5ee6$export$aca70b982fa554b6(this.x == 0 ? 0 : 1 / (this.x * this.x), this.y == 0 ? 0 : 1 / (this.y * this.y), this.z == 0 ? 0 : 1 / (this.z * this.z));
     }
     static get WGS84() {
-        return new $1a1da69edc3c7876$export$edfc7dc0e9336c5b(6378137, 6378137, 6356752.314245179);
+        return new $19176608e346944f$export$5851ecdbb051d869($234747a9630b4642$export$d055d6f746a0dadb, $234747a9630b4642$export$e586789a40edc0eb, $234747a9630b4642$export$9d8be9f67f903df8);
     }
-    static getDefaultWGS84RadiiSquaredGeodticSurfaceNormal(cartesian, result = new $54db50d775dc5ee6$export$a930246057f569fe()) {
+    static getDefaultWGS84RadiiSquaredGeodticSurfaceNormal(cartesian, result = new $54db50d775dc5ee6$export$aca70b982fa554b6()) {
         if (cartesian.isZero()) return;
         return result.copy(cartesian).multiply(this.DEFAULT_WGS84_RADII_SQUARED).normalizeByMagnitude();
     }
-    geodeticSurfaceNormal(cartesian, result = new $54db50d775dc5ee6$export$a930246057f569fe()) {
+    geodeticSurfaceNormal(cartesian, result = new $54db50d775dc5ee6$export$aca70b982fa554b6()) {
         if (cartesian.isZero()) return;
         return result.copy(cartesian).multiply(this._oneOverRadiiSquared).normalizeByMagnitude();
     }
 }
-$1a1da69edc3c7876$export$edfc7dc0e9336c5b.DEFAULT_WGS84_RADII_SQUARED = Object.freeze($1a1da69edc3c7876$export$edfc7dc0e9336c5b.WGS84._oneOverRadiiSquared);
+$19176608e346944f$export$5851ecdbb051d869.DEFAULT_WGS84_RADII_SQUARED = Object.freeze($19176608e346944f$export$5851ecdbb051d869.WGS84._oneOverRadiiSquared);
+
+
+var $b5a7119ef71cd3f1$exports = {};
+
+$parcel$export($b5a7119ef71cd3f1$exports, "CT_Matrix4", () => $b5a7119ef71cd3f1$export$e6eceaa934a6d3e5);
 
 
 
-class $91bc6249ba4a0756$export$129f66e263976997 extends $d9Ejt$Vector3 {
-    constructor(heading = 0, pitch = 0, roll = 0){
-        super(heading, pitch, roll);
+class $b5a7119ef71cd3f1$export$e6eceaa934a6d3e5 extends $d9Ejt$Matrix4 {
+    static fromRotationX(degrees, result = new $d9Ejt$Matrix4()) {
+        return result.makeRotationX($a37d01845c731898$export$6a7ef315a0d1ef07.toRadians(degrees));
     }
-    get heading() {
-        return this.x;
+    static fromWGS84(longitude, latitude, height, result = new $d9Ejt$Matrix4()) {
+        const matrix = $23952d628235a608$export$4fd467e6c04a27e1.matrix4ToFixedFrame($54db50d775dc5ee6$export$aca70b982fa554b6.fromDegree(longitude, latitude, height), new $d9Ejt$Matrix4()).elements;
+        // prettier-ignore
+        return result.set(matrix[0], matrix[4], matrix[8], matrix[12], matrix[1], matrix[5], matrix[9], matrix[13], matrix[2], matrix[6], matrix[10], matrix[14], matrix[3], matrix[7], matrix[11], matrix[15]);
     }
-    get pitch() {
-        return this.y;
-    }
-    get roll() {
-        return this.z;
+    static fromTranslationQuaternionRotationScale(translation, rotation, scale, result = new $b5a7119ef71cd3f1$export$e6eceaa934a6d3e5()) {
+        const scaleX = scale.x;
+        const scaleY = scale.y;
+        const scaleZ = scale.z;
+        const x2 = rotation.x * rotation.x;
+        const xy = rotation.x * rotation.y;
+        const xz = rotation.x * rotation.z;
+        const xw = rotation.x * rotation.w;
+        const y2 = rotation.y * rotation.y;
+        const yz = rotation.y * rotation.z;
+        const yw = rotation.y * rotation.w;
+        const z2 = rotation.z * rotation.z;
+        const zw = rotation.z * rotation.w;
+        const w2 = rotation.w * rotation.w;
+        const m00 = x2 - y2 - z2 + w2;
+        const m01 = 2 * (xy - zw);
+        const m02 = 2 * (xz + yw);
+        const m10 = 2 * (xy + zw);
+        const m11 = -x2 + y2 - z2 + w2;
+        const m12 = 2 * (yz - xw);
+        const m20 = 2 * (xz - yw);
+        const m21 = 2 * (yz + xw);
+        const m22 = -x2 - y2 + z2 + w2;
+        // prettier-ignore
+        return result.set(m00 * scaleX, m10 * scaleX, m20 * scaleX, 0, m01 * scaleY, m11 * scaleY, m21 * scaleY, 0, m02 * scaleZ, m12 * scaleZ, m22 * scaleZ, 0, translation.x, translation.y, translation.z, 1);
     }
 }
 
 
+var $809c87f5dbed8e16$exports = {};
+
+$parcel$export($809c87f5dbed8e16$exports, "CT_Quaternion", () => $809c87f5dbed8e16$export$487e31a511bfcc15);
 
 
-
-
-class $ec71d95b9270bbe0$export$23d6a54f0bbc85a3 extends $d9Ejt$Vector4 {
-    static fromAxisAngle(aixs, angle, result = new $ec71d95b9270bbe0$export$23d6a54f0bbc85a3()) {
+class $809c87f5dbed8e16$export$487e31a511bfcc15 extends $d9Ejt$Vector4 {
+    static fromAxisAngle(aixs, angle, result = new $809c87f5dbed8e16$export$487e31a511bfcc15()) {
         const halfAngle = angle / 2;
         const halfAnlgOfSin = Math.sin(halfAngle);
         this._fromAxisAngleScratch.copy(aixs).normalizeByMagnitude();
         return result.set(this._fromAxisAngleScratch.x * halfAnlgOfSin, this._fromAxisAngleScratch.y * halfAnlgOfSin, this._fromAxisAngleScratch.z * halfAnlgOfSin, Math.cos(halfAngle));
     }
-    static fromHeadingPitchRoll(headingPitchRoll, result = new $ec71d95b9270bbe0$export$23d6a54f0bbc85a3()) {
-        this._scratchRollQuaternion = $ec71d95b9270bbe0$export$23d6a54f0bbc85a3.fromAxisAngle($54db50d775dc5ee6$export$a930246057f569fe.UINT_X, headingPitchRoll.roll, this._scratchHPRQuaternion);
-        result = $ec71d95b9270bbe0$export$23d6a54f0bbc85a3.fromAxisAngle($54db50d775dc5ee6$export$a930246057f569fe.UINT_Y, headingPitchRoll.pitch, this._scratchPitchQuaternion);
+    static fromHeadingPitchRoll(heading, pitch, roll, result = new $809c87f5dbed8e16$export$487e31a511bfcc15()) {
+        this._scratchRollQuaternion = this.fromAxisAngle($54db50d775dc5ee6$export$aca70b982fa554b6.UINT_X, roll, this._scratchHPRQuaternion);
+        result = this.fromAxisAngle($54db50d775dc5ee6$export$aca70b982fa554b6.UINT_Y, pitch, this._scratchPitchQuaternion);
         this._scratchPitchQuaternion.multiply(this._scratchRollQuaternion);
-        this._scratchHeadingQuaternion = $ec71d95b9270bbe0$export$23d6a54f0bbc85a3.fromAxisAngle($54db50d775dc5ee6$export$a930246057f569fe.UINT_Z, -headingPitchRoll.heading, this._scratchHPRQuaternion);
-        return result.copy(new $ec71d95b9270bbe0$export$23d6a54f0bbc85a3().copy(this._scratchHeadingQuaternion).multiply(result));
+        this._scratchHeadingQuaternion = this.fromAxisAngle($54db50d775dc5ee6$export$aca70b982fa554b6.UINT_Z, -heading, this._scratchHPRQuaternion);
+        return result.copy(new $809c87f5dbed8e16$export$487e31a511bfcc15().copy(this._scratchHeadingQuaternion).multiply(result));
     }
 }
-$ec71d95b9270bbe0$export$23d6a54f0bbc85a3._fromAxisAngleScratch = new $54db50d775dc5ee6$export$a930246057f569fe();
-$ec71d95b9270bbe0$export$23d6a54f0bbc85a3._scratchHPRQuaternion = new $ec71d95b9270bbe0$export$23d6a54f0bbc85a3();
-$ec71d95b9270bbe0$export$23d6a54f0bbc85a3._scratchHeadingQuaternion = new $ec71d95b9270bbe0$export$23d6a54f0bbc85a3();
-$ec71d95b9270bbe0$export$23d6a54f0bbc85a3._scratchPitchQuaternion = new $ec71d95b9270bbe0$export$23d6a54f0bbc85a3();
-$ec71d95b9270bbe0$export$23d6a54f0bbc85a3._scratchRollQuaternion = new $ec71d95b9270bbe0$export$23d6a54f0bbc85a3();
+$809c87f5dbed8e16$export$487e31a511bfcc15._fromAxisAngleScratch = new $54db50d775dc5ee6$export$aca70b982fa554b6();
+$809c87f5dbed8e16$export$487e31a511bfcc15._scratchHPRQuaternion = new $809c87f5dbed8e16$export$487e31a511bfcc15();
+$809c87f5dbed8e16$export$487e31a511bfcc15._scratchHeadingQuaternion = new $809c87f5dbed8e16$export$487e31a511bfcc15();
+$809c87f5dbed8e16$export$487e31a511bfcc15._scratchPitchQuaternion = new $809c87f5dbed8e16$export$487e31a511bfcc15();
+$809c87f5dbed8e16$export$487e31a511bfcc15._scratchRollQuaternion = new $809c87f5dbed8e16$export$487e31a511bfcc15();
 
 
-const $764ac7478921f02a$var$vectorProductLocalFrame = {
+var $23952d628235a608$exports = {};
+
+$parcel$export($23952d628235a608$exports, "CT_Transforms", () => $23952d628235a608$export$4fd467e6c04a27e1);
+
+
+
+
+
+
+const $23952d628235a608$var$vectorProductLocalFrame = {
     up: {
         south: 'east',
         north: 'west',
@@ -263,7 +365,7 @@ const $764ac7478921f02a$var$vectorProductLocalFrame = {
     }
 };
 // prettier-ignore
-const $764ac7478921f02a$var$degeneratePositionLocalFrame = {
+const $23952d628235a608$var$degeneratePositionLocalFrame = {
     north: [
         -1,
         0,
@@ -295,54 +397,53 @@ const $764ac7478921f02a$var$degeneratePositionLocalFrame = {
         -1
     ]
 };
-const $764ac7478921f02a$var$scratchCalculateCartesian = {
-    east: new $54db50d775dc5ee6$export$a930246057f569fe(),
-    north: new $54db50d775dc5ee6$export$a930246057f569fe(),
-    up: new $54db50d775dc5ee6$export$a930246057f569fe(),
-    west: new $54db50d775dc5ee6$export$a930246057f569fe(),
-    south: new $54db50d775dc5ee6$export$a930246057f569fe(),
-    down: new $54db50d775dc5ee6$export$a930246057f569fe()
+const $23952d628235a608$var$scratchCalculateCartesian = {
+    east: new $54db50d775dc5ee6$export$aca70b982fa554b6(),
+    north: new $54db50d775dc5ee6$export$aca70b982fa554b6(),
+    up: new $54db50d775dc5ee6$export$aca70b982fa554b6(),
+    west: new $54db50d775dc5ee6$export$aca70b982fa554b6(),
+    south: new $54db50d775dc5ee6$export$aca70b982fa554b6(),
+    down: new $54db50d775dc5ee6$export$aca70b982fa554b6()
 };
-class $764ac7478921f02a$export$2e7e2a6179fcdd5c {
+class $23952d628235a608$export$4fd467e6c04a27e1 {
     static localFrameToFixedFrameGenerator(firstAixs, secondAxis) {
         const axisHash = firstAixs + secondAxis;
-        let f = $764ac7478921f02a$export$2e7e2a6179fcdd5c.localFrameToFixedFrameCache.get(axisHash);
+        let f = $23952d628235a608$export$4fd467e6c04a27e1.localFrameToFixedFrameCache.get(axisHash);
         if (f) return f;
-        const thirdAxis = $764ac7478921f02a$var$vectorProductLocalFrame[firstAixs][secondAxis];
+        const thirdAxis = $23952d628235a608$var$vectorProductLocalFrame[firstAixs][secondAxis];
         f = (origin, result = new $d9Ejt$Matrix4())=>{
             let scratchFirstCartesian;
             let scratchSecondCartesian;
             let scratchThirdCartesian;
             if (origin.isZero()) {
-                scratchFirstCartesian = $54db50d775dc5ee6$export$a930246057f569fe.unpack($764ac7478921f02a$var$degeneratePositionLocalFrame[firstAixs]);
-                scratchSecondCartesian = $54db50d775dc5ee6$export$a930246057f569fe.unpack(// @ts-ignore
-                $764ac7478921f02a$var$degeneratePositionLocalFrame[secondAxis]);
-                scratchThirdCartesian = $54db50d775dc5ee6$export$a930246057f569fe.unpack(// @ts-ignore
-                $764ac7478921f02a$var$degeneratePositionLocalFrame[thirdAxis]);
-            } else if ($27c67f197043802e$export$6a7ef315a0d1ef07.equalsEpsilon(origin.x, 0) && $27c67f197043802e$export$6a7ef315a0d1ef07.equalsEpsilon(origin.y, 0)) {
+                scratchFirstCartesian = $54db50d775dc5ee6$export$aca70b982fa554b6.unpack($23952d628235a608$var$degeneratePositionLocalFrame[firstAixs]);
+                scratchSecondCartesian = $54db50d775dc5ee6$export$aca70b982fa554b6.unpack(// @ts-ignore
+                $23952d628235a608$var$degeneratePositionLocalFrame[secondAxis]);
+                scratchThirdCartesian = $54db50d775dc5ee6$export$aca70b982fa554b6.unpack(// @ts-ignore
+                $23952d628235a608$var$degeneratePositionLocalFrame[thirdAxis]);
+            } else if ($a37d01845c731898$export$6a7ef315a0d1ef07.equalsEpsilon(origin.x, 0) && $a37d01845c731898$export$6a7ef315a0d1ef07.equalsEpsilon(origin.y, 0)) {
                 const sign = Math.sign(origin.z);
-                scratchFirstCartesian = $54db50d775dc5ee6$export$a930246057f569fe.unpack($764ac7478921f02a$var$degeneratePositionLocalFrame[firstAixs]);
+                scratchFirstCartesian = $54db50d775dc5ee6$export$aca70b982fa554b6.unpack($23952d628235a608$var$degeneratePositionLocalFrame[firstAixs]);
                 if (firstAixs !== 'east' && firstAixs !== 'west') scratchFirstCartesian.multiplyScalar(sign);
-                scratchSecondCartesian = $54db50d775dc5ee6$export$a930246057f569fe.unpack(// @ts-ignore
-                $764ac7478921f02a$var$degeneratePositionLocalFrame[secondAxis]);
+                scratchSecondCartesian = $54db50d775dc5ee6$export$aca70b982fa554b6.unpack(// @ts-ignore
+                $23952d628235a608$var$degeneratePositionLocalFrame[secondAxis]);
                 if (secondAxis !== 'east' && secondAxis !== 'west') scratchSecondCartesian.multiplyScalar(sign);
-                scratchThirdCartesian = $54db50d775dc5ee6$export$a930246057f569fe.unpack(// @ts-ignore
-                $764ac7478921f02a$var$degeneratePositionLocalFrame[thirdAxis]);
+                scratchThirdCartesian = $54db50d775dc5ee6$export$aca70b982fa554b6.unpack(// @ts-ignore
+                $23952d628235a608$var$degeneratePositionLocalFrame[thirdAxis]);
                 // @ts-ignore
                 if (thirdAxis !== 'east' && thirdAxis !== 'west') scratchThirdCartesian.multiplyScalar(sign);
             } else {
-                $1a1da69edc3c7876$export$edfc7dc0e9336c5b.getDefaultWGS84RadiiSquaredGeodticSurfaceNormal(origin, $764ac7478921f02a$var$scratchCalculateCartesian.up);
-                $764ac7478921f02a$var$scratchCalculateCartesian.east.set(-origin.y, origin.x, 0);
-                $764ac7478921f02a$var$scratchCalculateCartesian.east.normalizeByMagnitude();
-                $764ac7478921f02a$var$scratchCalculateCartesian.north.copy($764ac7478921f02a$var$scratchCalculateCartesian.up).cross($764ac7478921f02a$var$scratchCalculateCartesian.east);
-                $764ac7478921f02a$var$scratchCalculateCartesian.down.copy($764ac7478921f02a$var$scratchCalculateCartesian.up).multiplyScalar(-1);
-                $764ac7478921f02a$var$scratchCalculateCartesian.west.copy($764ac7478921f02a$var$scratchCalculateCartesian.east).multiplyScalar(-1);
-                $764ac7478921f02a$var$scratchCalculateCartesian.south.copy($764ac7478921f02a$var$scratchCalculateCartesian.north).multiplyScalar(-1);
-                scratchFirstCartesian = $764ac7478921f02a$var$scratchCalculateCartesian[firstAixs];
+                $19176608e346944f$export$5851ecdbb051d869.getDefaultWGS84RadiiSquaredGeodticSurfaceNormal(origin, $23952d628235a608$var$scratchCalculateCartesian.up);
+                $23952d628235a608$var$scratchCalculateCartesian.east.set(-origin.y, origin.x, 0).normalizeByMagnitude();
+                $23952d628235a608$var$scratchCalculateCartesian.north.copy($23952d628235a608$var$scratchCalculateCartesian.up).cross($23952d628235a608$var$scratchCalculateCartesian.east);
+                $23952d628235a608$var$scratchCalculateCartesian.down.copy($23952d628235a608$var$scratchCalculateCartesian.up).multiplyScalar(-1);
+                $23952d628235a608$var$scratchCalculateCartesian.west.copy($23952d628235a608$var$scratchCalculateCartesian.east).multiplyScalar(-1);
+                $23952d628235a608$var$scratchCalculateCartesian.south.copy($23952d628235a608$var$scratchCalculateCartesian.north).multiplyScalar(-1);
+                scratchFirstCartesian = $23952d628235a608$var$scratchCalculateCartesian[firstAixs];
                 // @ts-ignore
-                scratchSecondCartesian = $764ac7478921f02a$var$scratchCalculateCartesian[secondAxis];
+                scratchSecondCartesian = $23952d628235a608$var$scratchCalculateCartesian[secondAxis];
                 // @ts-ignore
-                scratchThirdCartesian = $764ac7478921f02a$var$scratchCalculateCartesian[thirdAxis];
+                scratchThirdCartesian = $23952d628235a608$var$scratchCalculateCartesian[thirdAxis];
             }
             // prettier-ignore
             result.set(scratchFirstCartesian.x, scratchSecondCartesian.x, scratchThirdCartesian.x, origin.x, scratchFirstCartesian.y, scratchSecondCartesian.y, scratchThirdCartesian.y, origin.y, scratchFirstCartesian.z, scratchSecondCartesian.z, scratchThirdCartesian.z, origin.z, 0, 0, 0, 0);
@@ -352,113 +453,84 @@ class $764ac7478921f02a$export$2e7e2a6179fcdd5c {
         return f;
     }
     static matrix4ToFixedFrame(origin, matrix, result = new $d9Ejt$Matrix4()) {
-        const eastNorthUpToFixedFrame = $764ac7478921f02a$export$2e7e2a6179fcdd5c.localFrameToFixedFrameGenerator('east', 'north');
-        return result.copy(eastNorthUpToFixedFrame(origin)).multiply(matrix);
+        return result.copy($23952d628235a608$export$4fd467e6c04a27e1.eastNorthUpToFixedFrame(origin)).multiply(matrix);
     }
-    static headingPitchRollToFixedFrame(origin, headingPitchRoll = new $91bc6249ba4a0756$export$129f66e263976997(), result = new $d9Ejt$Matrix4()) {
-        const hprQuration = $ec71d95b9270bbe0$export$23d6a54f0bbc85a3.fromHeadingPitchRoll(headingPitchRoll);
-        const hprMatrix = $27c67f197043802e$export$6a7ef315a0d1ef07.Matrix4.fromTranslationQuaternionRotationScale($54db50d775dc5ee6$export$a930246057f569fe.ZERO, hprQuration, new $54db50d775dc5ee6$export$a930246057f569fe(1, 1, 1));
+    static headingPitchRollToFixedFrame(origin, heading, pitch, roll, result = new $d9Ejt$Matrix4()) {
+        const hprQuration = $809c87f5dbed8e16$export$487e31a511bfcc15.fromHeadingPitchRoll(heading, pitch, roll);
+        const hprMatrix = $b5a7119ef71cd3f1$export$e6eceaa934a6d3e5.fromTranslationQuaternionRotationScale($54db50d775dc5ee6$export$aca70b982fa554b6.ZERO, hprQuration, new $54db50d775dc5ee6$export$aca70b982fa554b6(1, 1, 1));
         return this.matrix4ToFixedFrame(origin, hprMatrix, result);
     }
 }
-$764ac7478921f02a$export$2e7e2a6179fcdd5c.localFrameToFixedFrameCache = new Map();
+$23952d628235a608$export$4fd467e6c04a27e1.localFrameToFixedFrameCache = new Map();
+$23952d628235a608$export$4fd467e6c04a27e1.eastNorthUpToFixedFrame = $23952d628235a608$export$4fd467e6c04a27e1.localFrameToFixedFrameGenerator('east', 'north');
+
+
+var $9cc46a5bb5d8ad43$exports = {};
+
+$parcel$export($9cc46a5bb5d8ad43$exports, "CT_WGS84", () => $9cc46a5bb5d8ad43$export$2779d2581814b131);
 
 
 
-class $27c67f197043802e$export$6a7ef315a0d1ef07 {
-    static toRadians(degrees) {
-        return degrees * this.RADIANS_PER_DEGREE;
+class $9cc46a5bb5d8ad43$export$2779d2581814b131 extends $d9Ejt$Vector3 {
+    constructor(latitude, longitude, height){
+        super(latitude, longitude, height);
     }
-    static magnitudeSquared(vec) {
-        return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
+    get latitude() {
+        return this.x;
     }
-    static magnitude(vec) {
-        return Math.sqrt(this.magnitudeSquared(vec));
+    set latitude(value) {
+        this.setX(value);
     }
-    /**
-   * 절대 공차 검정 또는 상대 공차 검정을 사용하여 두 값이 같은지 여부를 확인합니다.
-   *
-   * @example
-   * MathUtils.equalsEpsilon(0.1, 0.01, MathUtils.EPSILON_01) // true
-   * MathUtils.equalsEpsilon(0.1, 0.01, MathUtils.EPSILON_02) // false
-   *
-   * @param left - The first value to compare.
-   * @param right - The other value to compare.
-   * @param relativeEpsilon
-   * @param absoluteEpsilon
-   * @returns
-   */ static equalsEpsilon(left, right, relativeEpsilon = $27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_14, absoluteEpsilon = $27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_14) {
-        const absDiff = Math.abs(left - right);
-        if (absDiff <= absoluteEpsilon) return true;
-        return absDiff <= relativeEpsilon * Math.max(Math.abs(left), Math.abs(right));
+    get longitude() {
+        return this.y;
     }
-}
-$27c67f197043802e$export$6a7ef315a0d1ef07.RADIANS_PER_DEGREE = Math.PI / 180;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_01 = 0.1;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_02 = 0.01;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_03 = 0.001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_04 = 0.0001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_05 = 0.00001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_06 = 0.000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_07 = 0.0000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_08 = 0.00000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_09 = 0.000000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_10 = 0.0000000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_11 = 0.00000000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_12 = 0.000000000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_13 = 0.0000000000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_14 = 0.00000000000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_15 = 0.000000000000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_16 = 0.0000000000000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_17 = 0.00000000000000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_18 = 0.000000000000000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_19 = 0.0000000000000000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_20 = 0.00000000000000000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.EPSILON_21 = 0.000000000000000000001;
-$27c67f197043802e$export$6a7ef315a0d1ef07.Matrix4 = class {
-    static localWGS84ToMattrix4(position, height, result = new $d9Ejt$Matrix4()) {
-        const matrix = $764ac7478921f02a$export$2e7e2a6179fcdd5c.matrix4ToFixedFrame($54db50d775dc5ee6$export$a930246057f569fe.fromDegree(position.longitude, position.latitude, height), new $d9Ejt$Matrix4()).elements;
+    set longitude(value) {
+        this.setY(value);
+    }
+    get height() {
+        return this.z;
+    }
+    set height(value) {
+        this.setZ(value);
+    }
+    getMatrix4(result = new $b5a7119ef71cd3f1$export$e6eceaa934a6d3e5()) {
+        const matrix = $23952d628235a608$export$4fd467e6c04a27e1.matrix4ToFixedFrame($54db50d775dc5ee6$export$aca70b982fa554b6.fromDegree(this.longitude, this.latitude, this.height), new $d9Ejt$Matrix4()).elements;
         // prettier-ignore
         return result.set(matrix[0], matrix[4], matrix[8], matrix[12], matrix[1], matrix[5], matrix[9], matrix[13], matrix[2], matrix[6], matrix[10], matrix[14], matrix[3], matrix[7], matrix[11], matrix[15]);
     }
-    static fromTranslationQuaternionRotationScale(translation, rotation, scale, result = new $d9Ejt$Matrix4()) {
-        const scaleX = scale.x;
-        const scaleY = scale.y;
-        const scaleZ = scale.z;
-        const x2 = rotation.x * rotation.x;
-        const xy = rotation.x * rotation.y;
-        const xz = rotation.x * rotation.z;
-        const xw = rotation.x * rotation.w;
-        const y2 = rotation.y * rotation.y;
-        const yz = rotation.y * rotation.z;
-        const yw = rotation.y * rotation.w;
-        const z2 = rotation.z * rotation.z;
-        const zw = rotation.z * rotation.w;
-        const w2 = rotation.w * rotation.w;
-        const m00 = x2 - y2 - z2 + w2;
-        const m01 = 2 * (xy - zw);
-        const m02 = 2 * (xz + yw);
-        const m10 = 2 * (xy + zw);
-        const m11 = -x2 + y2 - z2 + w2;
-        const m12 = 2 * (yz - xw);
-        const m20 = 2 * (xz - yw);
-        const m21 = 2 * (yz + xw);
-        const m22 = -x2 - y2 + z2 + w2;
-        // prettier-ignore
-        return result.set(m00 * scaleX, m10 * scaleX, m20 * scaleX, 0, m01 * scaleY, m11 * scaleY, m21 * scaleY, 0, m02 * scaleZ, m12 * scaleZ, m22 * scaleZ, 0, translation.x, translation.y, translation.z, 1);
+    toJSON() {
+        return {
+            latitude: this.latitude,
+            longitude: this.longitude,
+            height: this.height
+        };
     }
-};
+    static fromCesiumWGS84(latitude, longitude, height, result = new $9cc46a5bb5d8ad43$export$2779d2581814b131()) {
+        return result.set(latitude, longitude, height);
+    }
+    static fromThreeWGS84(latitude, longitude, height, result = new $9cc46a5bb5d8ad43$export$2779d2581814b131()) {
+        return result.set(latitude, longitude, height);
+    }
+}
+
+
+$parcel$exportWildcard($041dfd65fc078bd9$exports, $54db50d775dc5ee6$exports);
+$parcel$exportWildcard($041dfd65fc078bd9$exports, $19176608e346944f$exports);
+$parcel$exportWildcard($041dfd65fc078bd9$exports, $b5a7119ef71cd3f1$exports);
+$parcel$exportWildcard($041dfd65fc078bd9$exports, $809c87f5dbed8e16$exports);
+$parcel$exportWildcard($041dfd65fc078bd9$exports, $23952d628235a608$exports);
+$parcel$exportWildcard($041dfd65fc078bd9$exports, $9cc46a5bb5d8ad43$exports);
 
 
 class $c895e49b264c1790$export$2e2bcd8739ae039 {
     constructor(){
         this.helpers = new Map();
-        this.graphicComponent = $07bc5a8b8ee70be8$export$68b8bcd517bf7533.getInstance();
+        this.graphic = $d1b8e958636edac6$export$adfa9d260876eca5.getInstance();
         this.objectLoader = new $d9Ejt$ObjectLoader();
-        this._renderQueue = new $995821fa3a7efcc2$export$8890c8adaae71a72();
+        this._renderQueue = new $f20f17e129275ffd$export$8890c8adaae71a72();
         this._renderQueue.renderNextFrame$.subscribe(()=>{
             self.postMessage({
-                type: 'onRender'
+                type: "onRender"
             });
         });
         self.onmessage = (e)=>{
@@ -475,10 +547,10 @@ class $c895e49b264c1790$export$2e2bcd8739ae039 {
         };
     }
     init(canvas) {
-        this.graphicComponent.init(canvas);
+        this.graphic.init(canvas);
     }
     setPixelRatio(value) {
-        this.graphicComponent.setPixelRatio(value);
+        this.graphic.setPixelRatio(value);
     }
     getBox3(id) {
         const object = this.getObject(id);
@@ -493,7 +565,7 @@ class $c895e49b264c1790$export$2e2bcd8739ae039 {
         if (object) object.userData[key] = data;
     }
     getObject(value) {
-        return this.graphicComponent.scene.getObjectById(value);
+        return this.graphic.scene.getObjectById(value);
     }
     isExist(id) {
         return !!this.getObject(id);
@@ -501,13 +573,13 @@ class $c895e49b264c1790$export$2e2bcd8739ae039 {
     setBoxHelperTo(id) {
         const object = this.getObject(id);
         if (object) {
-            if (this.helpers.has('BoxHelper')) {
-                const helper = this.helpers.get('BoxHelper');
+            if (this.helpers.has("BoxHelper")) {
+                const helper = this.helpers.get("BoxHelper");
                 helper.update(object);
             } else {
                 const helper = new $d9Ejt$BoxHelper(object);
-                this.helpers.set('BoxHelper', helper);
-                this.graphicComponent.scene.add(helper);
+                this.helpers.set("BoxHelper", helper);
+                this.graphic.scene.add(helper);
             }
         }
     }
@@ -521,13 +593,14 @@ class $c895e49b264c1790$export$2e2bcd8739ae039 {
         if (object) object.visible = true;
         return !!object;
     }
-    add(json, position) {
+    add(json, wgs84) {
         const object = this.objectLoader.parse(json);
-        if (position) {
-            object.userData.wgs84 = position;
-            object.applyMatrix4($27c67f197043802e$export$6a7ef315a0d1ef07.Matrix4.localWGS84ToMattrix4(position, new $d9Ejt$Box3().setFromObject(object).max.y));
+        if (wgs84) {
+            console.log(wgs84);
+            object.applyMatrix4($9cc46a5bb5d8ad43$export$2779d2581814b131.fromThreeWGS84(wgs84.latitude, wgs84.longitude, wgs84.height).getMatrix4());
+            object.userData.wgs84 = wgs84;
         }
-        this.graphicComponent.scene.add(object);
+        this.graphic.scene.add(object);
         return object.id;
     }
     update(id, json) {
@@ -539,14 +612,19 @@ class $c895e49b264c1790$export$2e2bcd8739ae039 {
         return !!object;
     }
     getWGS84(id) {
-        const object = this.getObject(id);
-        if (object) return object.userData.wgs84;
+        debugger;
+        const wgs84 = this.getObject(id)?.userData.wgs84;
+        if (wgs84 && wgs84.latitude !== undefined && wgs84.longitude !== undefined && wgs84.height !== undefined) return {
+            latitude: wgs84.longitude,
+            longitude: wgs84.latitude,
+            height: wgs84.height
+        };
     }
     setSize(width, height) {
-        $07bc5a8b8ee70be8$export$68b8bcd517bf7533.getInstance().setSize(width, height);
+        this.graphic.setSize(width, height);
     }
     initCamera(param) {
-        const camera = $66eb4ee2a70bb3b6$export$2e2bcd8739ae039.getInstance().getCamera();
+        const camera = this.graphic.camera;
         camera.aspect = param.aspect;
         camera.far = param.far;
         camera.near = param.near;
@@ -554,18 +632,19 @@ class $c895e49b264c1790$export$2e2bcd8739ae039 {
         console.table(param);
         camera.updateProjectionMatrix();
     }
-    updatePosition(id, position, height) {
+    updatePosition(id, position) {
         const object = this.getObject(id);
         if (object) {
-            height = height ? new $d9Ejt$Box3().setFromObject(object).max.y : 0;
-            object.applyMatrix4($27c67f197043802e$export$6a7ef315a0d1ef07.Matrix4.localWGS84ToMattrix4(position, height));
-            object.userData.wgs84 = position;
+            position.height = position.height ? new $d9Ejt$Box3().setFromObject(object).max.y : 0;
+            const wgs84 = $9cc46a5bb5d8ad43$export$2779d2581814b131.fromCesiumWGS84(position.latitude, position.longitude, position.height);
+            object.applyMatrix4(wgs84.getMatrix4());
+            object.userData.wgs84 = wgs84;
         }
         return !!object;
     }
     delete(id) {
         const object = this.getObject(id);
-        if (object) this.graphicComponent.scene.remove(object);
+        if (object) this.graphic.scene.remove(object);
         return !!object;
     }
 }

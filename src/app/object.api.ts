@@ -1,5 +1,4 @@
-import { CesiumWGS84, Utils } from '..';
-import { Cartesian3 } from '../core/math/cartesian3';
+import { CT_WGS84, IWGS84 } from '../core';
 import { SingletonWorkerFactory } from '../core/worker-factory';
 
 export class ObjectAPI {
@@ -27,15 +26,15 @@ export class ObjectAPI {
 		return this._coreThread.show(this.id);
 	}
 
-	setPosition(position: CesiumWGS84): Promise<boolean> {
-		const threeWGS84 = Utils.CesiumWGS84ToThreeWGS84(position);
-		return this._coreThread.updatePosition(this.id, threeWGS84);
+	setPosition(position: IWGS84): Promise<boolean> {
+		const wgs84 = CT_WGS84.fromCesiumWGS84(position.latitude, position.longitude, position.height)
+		return this._coreThread.updatePosition(this.id, wgs84);
 	}
 
-	async getPosition(): Promise<CesiumWGS84 | undefined> {
+	async getPosition(): Promise<IWGS84 | undefined> {
 		const position = await this._coreThread.getWGS84(this.id);
 		if (position) {
-			return Utils.ThreeWGS84ToCesiumWGS84(position!);
+			return { latitude: position.longitude, longitude: position.latitude, height: position.height }
 		}
 	}
 

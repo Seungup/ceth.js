@@ -1,8 +1,5 @@
 import * as THREE from 'three';
-import CameraComponent from '../camera/camera.component';
-import { Box3, WebGLRendererParameters } from 'three';
-import { ThreeWGS84 } from '../../interface';
-import { MathUtils } from '../math/math.utils';
+import { PerspectiveCamera, WebGLRendererParameters } from 'three';
 
 export interface CurrentExtent {
 	xmin: number;
@@ -15,18 +12,15 @@ export interface CurrentExtent {
 export interface RenderParam {
 	cvm: Float32Array;
 	civm: Float32Array;
-	width: number,
-	height: number,
 }
 
-export class GraphicComponent {
-	private static instance: GraphicComponent;
-	private readonly camera: THREE.PerspectiveCamera;
+export class Graphic {
+	private static instance: Graphic;
+	readonly camera: THREE.PerspectiveCamera;
 	private constructor(
 		readonly scene = new THREE.Scene(),
-		private readonly cameraComponent = CameraComponent.getInstance()
 	) {
-		this.camera = this.cameraComponent.getCamera();
+		this.camera = new PerspectiveCamera();
 	}
 
 	static getInstance() {
@@ -65,9 +59,8 @@ export class GraphicComponent {
 	}
 
 	setSize(width: number, height: number) {
-		const camera = this.cameraComponent.getCamera();
-		camera.aspect = width / height;
-		camera.updateProjectionMatrix();
+		this.camera.aspect = width / height;
+		this.camera.updateProjectionMatrix();
 		this.renderer?.setSize(width, height, false);
 	}
 
@@ -94,12 +87,7 @@ export class GraphicComponent {
 				param.cvm[ 2], param.cvm[ 6], param.cvm[10], param.cvm[14],
 				param.cvm[ 3], param.cvm[ 7], param.cvm[11], param.cvm[15]
 			);
-			
-			this.camera.aspect = param.width / param.height
 			this.camera.updateProjectionMatrix();
-
-			this.renderer.setSize(param.width, param.height, false);
-			this.renderer.clear();
 			this.renderer.render(this.scene, this.camera);
 		}
 	}
