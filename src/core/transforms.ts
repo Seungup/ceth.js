@@ -51,10 +51,6 @@ type FixedFrameTransformFunction = {
 	(origin: Cartesian3): Matrix4;
 };
 
-const first: AxisFirst = 'down';
-const second: AxisSecond<'down'> = 'east';
-const third = vectorProductLocalFrame[first][second];
-
 // prettier-ignore
 const degeneratePositionLocalFrame = {
 	north: [-1,  0,  0],
@@ -73,10 +69,6 @@ const scratchCalculateCartesian = {
 	down: new Cartesian3(),
 };
 
-degeneratePositionLocalFrame[first];
-degeneratePositionLocalFrame[second];
-degeneratePositionLocalFrame[third];
-
 export class Transforms {
 	static localFrameToFixedFrameCache = new Map<
 		string,
@@ -88,11 +80,7 @@ export class Transforms {
 		secondAxis: AxisSecond<K>
 	) {
 		const axisHash = firstAixs + secondAxis;
-		// if (!this.localFrameToFixedFrameCache)
-		// 	this.localFrameToFixedFrameCache = new Map<
-		// 		string,
-		// 		FixedFrameTransformFunction
-		// 	>();
+
 		let f = Transforms.localFrameToFixedFrameCache.get(axisHash);
 
 		if (f) return f;
@@ -147,10 +135,10 @@ export class Transforms {
 					scratchThirdCartesian.multiplyScalar(sign);
 				}
 			} else {
-				Ellipsoid.WGS84.geodeticSurfaceNormal(
+				Ellipsoid.getDefaultWGS84RadiiSquaredGeodticSurfaceNormal(
 					origin,
 					scratchCalculateCartesian.up
-				);
+				)
 
 				scratchCalculateCartesian.east.set(-origin.y, origin.x, 0.0);
 				scratchCalculateCartesian.east.normalizeByMagnitude();
@@ -177,13 +165,7 @@ export class Transforms {
 				// @ts-ignore
 				scratchThirdCartesian = scratchCalculateCartesian[thirdAxis];
 			}
-			// prettier-ignore
-			// result.set(
-			// 	scratchFirstCartesian.x,    scratchFirstCartesian.y,    scratchFirstCartesian.z,    0.0,
-			// 	scratchSecondCartesian.x,   scratchSecondCartesian.y,   scratchSecondCartesian.z,   0.0,
-			//     scratchThirdCartesian.x,    scratchThirdCartesian.y,    scratchThirdCartesian.z,    0.0,
-			//     origin.x,                   origin.y,                   origin.z,                   0.0,
-			// );
+
 			// prettier-ignore
 			result.set(
 				scratchFirstCartesian.x,    scratchSecondCartesian.x,   scratchThirdCartesian.x,    origin.x,
@@ -199,14 +181,22 @@ export class Transforms {
 		return f;
 	}
 
-	static headingPitchRollToFixedFrame(
-		origin: Cartesian3,
-		headingPitchRoll: HeadingPitchRoll = new HeadingPitchRoll(0, 0, 0),
+	static matrix4ToFixedFrame(
+		origin: Cartesian3, 
+		matrix: Matrix4, 
 		result: Matrix4 = new Matrix4()
 	) {
 		const eastNorthUpToFixedFrame =
 			Transforms.localFrameToFixedFrameGenerator('east', 'north');
 
+		return result.copy(eastNorthUpToFixedFrame(origin)).multiply(matrix);
+	}
+
+	static headingPitchRollToFixedFrame(
+		origin: Cartesian3,
+		headingPitchRoll: HeadingPitchRoll = new HeadingPitchRoll(),
+		result: Matrix4 = new Matrix4()
+	) {
 		const hprQuration = Quaternion.fromHeadingPitchRoll(headingPitchRoll);
 		
 		const hprMatrix =
@@ -215,7 +205,7 @@ export class Transforms {
 				hprQuration,
 				new Cartesian3(1.0, 1.0, 1.0)
 			);
-
-		return result.copy(eastNorthUpToFixedFrame(origin)).multiply(hprMatrix);
+		
+		return this.matrix4ToFixedFrame(origin, hprMatrix, result);
 	}
 }
