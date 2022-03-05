@@ -106,8 +106,13 @@ export default class CoreThread {
   add(json: any, wgs84: IWGS84 | undefined) {
     const object = this.objectLoader.parse(json);
 
+    const box3 = new Box3().setFromObject(object).max;
+    object.userData.box3 = box3;
+
     if (wgs84) {
-      console.log(wgs84);
+      if (wgs84.height === 0) {
+        wgs84.height = box3.y;
+      }
       object.applyMatrix4(
         CT_WGS84.fromThreeWGS84(
           wgs84.latitude,

@@ -65,12 +65,12 @@ export class CT_WGS84 extends Vector3 {
   }
 
   static fromCesiumWGS84(
-    wgs84: number,
+    latitude: number,
     longitude: number,
     height: number,
     result: CT_WGS84 = new CT_WGS84()
   ) {
-    return result.set(wgs84, longitude, height);
+    return result.set(latitude, longitude, height);
   }
 
   static fromThreeWGS84(
