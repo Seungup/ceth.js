@@ -201,15 +201,14 @@ export class Transforms {
 
 	static headingPitchRollToFixedFrame(
 		origin: Cartesian3,
+		headingPitchRoll: HeadingPitchRoll = new HeadingPitchRoll(0, 0, 0),
 		result: Matrix4 = new Matrix4()
 	) {
 		const eastNorthUpToFixedFrame =
 			Transforms.localFrameToFixedFrameGenerator('east', 'north');
 
-		const hprQuration = Quaternion.fromHeadingPitchRoll(
-			new HeadingPitchRoll(0, 0, 0)
-		);
-
+		const hprQuration = Quaternion.fromHeadingPitchRoll(headingPitchRoll);
+		
 		const hprMatrix =
 			MathUtils.Matrix4.fromTranslationQuaternionRotationScale(
 				Cartesian3.ZERO,

@@ -101,14 +101,12 @@ export class MathUtils {
 			const m22 = -x2 - y2 + z2 + w2;
 
 			// prettier-ignore
-			result.set(
+			return result.set(
 				m00 * scaleX, 	m10 * scaleX, 	m20 * scaleX, 	0.0,
 				m01 * scaleY, 	m11 * scaleY, 	m21 * scaleY, 	0.0,
 				m02 * scaleZ, 	m12 * scaleZ, 	m22 * scaleZ, 	0.0,
 				translation.x, 	translation.y, 	translation.z,	1.0,
-			)
-
-			return result;
+			);
 		}
 	};
 }

@@ -67,10 +67,7 @@ export class Cartesian3 extends Vector3 {
 		startIndex: number = 0,
 		result: Cartesian3 = new Cartesian3()
 	) {
-		result.x = array[startIndex++];
-		result.y = array[startIndex++];
-		result.z = array[startIndex];
-		return result;
+		return result.set(array[startIndex++], array[startIndex++], array[startIndex]);
 	}
 
 	static equalsEpsilon(

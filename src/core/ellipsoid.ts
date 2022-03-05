@@ -22,8 +22,6 @@ export class Ellipsoid extends Vector3 {
 		result: Cartesian3 = new Cartesian3()
 	) {
 		if (cartesian.isZero()) return;
-		result.copy(cartesian);
-		result.multiply(this._oneOverRadiiSquared);
-		return result.normalizeByMagnitude();
+		return result.copy(cartesian).multiply(this._oneOverRadiiSquared).normalizeByMagnitude();
 	}
 }
