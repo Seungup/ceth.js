@@ -504,8 +504,8 @@ class $9cc46a5bb5d8ad43$export$2779d2581814b131 extends $d9Ejt$Vector3 {
             height: this.height
         };
     }
-    static fromCesiumWGS84(wgs84, longitude, height, result = new $9cc46a5bb5d8ad43$export$2779d2581814b131()) {
-        return result.set(wgs84, longitude, height);
+    static fromCesiumWGS84(latitude, longitude, height, result = new $9cc46a5bb5d8ad43$export$2779d2581814b131()) {
+        return result.set(latitude, longitude, height);
     }
     static fromThreeWGS84(latitude, longitude, height, result = new $9cc46a5bb5d8ad43$export$2779d2581814b131()) {
         return result.set(latitude, longitude, height);
@@ -594,8 +594,10 @@ class $c895e49b264c1790$export$2e2bcd8739ae039 {
     }
     add(json, wgs84) {
         const object = this.objectLoader.parse(json);
+        const box3 = new $d9Ejt$Box3().setFromObject(object).max;
+        object.userData.box3 = box3;
         if (wgs84) {
-            console.log(wgs84);
+            if (wgs84.height === 0) wgs84.height = box3.y;
             object.applyMatrix4($9cc46a5bb5d8ad43$export$2779d2581814b131.fromThreeWGS84(wgs84.latitude, wgs84.longitude, wgs84.height).getMatrix4());
             object.userData.wgs84 = wgs84;
         }
