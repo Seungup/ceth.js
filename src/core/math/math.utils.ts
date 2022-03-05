@@ -1,5 +1,7 @@
 import { Matrix4, Vector3 } from 'three';
+import { ThreeWGS84 } from '../../interface';
 import { Quaternion } from '../quration';
+import { Transforms } from '../transforms';
 import { Cartesian3 } from './cartesian3';
 
 export class MathUtils {
@@ -67,6 +69,20 @@ export class MathUtils {
 	}
 
 	static Matrix4 = class {
+		static localWGS84ToMattrix4(position: ThreeWGS84, height: number, result: Matrix4 = new Matrix4()) {
+			const matrix = Transforms.headingPitchRollToFixedFrame(
+				Cartesian3.fromDegree(position.longitude, position.latitude, height)
+			);
+	
+			// prettier-ignore
+			return result.set(
+				matrix.elements[0], matrix.elements[4], matrix.elements[ 8], matrix.elements[12],
+				matrix.elements[1], matrix.elements[5], matrix.elements[ 9], matrix.elements[13],
+				matrix.elements[2], matrix.elements[6], matrix.elements[10], matrix.elements[14],
+				matrix.elements[3], matrix.elements[7], matrix.elements[11], matrix.elements[15]
+			);
+		}
+
 		static fromTranslationQuaternionRotationScale(
 			translation: Cartesian3,
 			rotation: Quaternion,

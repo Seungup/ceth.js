@@ -50,7 +50,7 @@ export class InterfcaeFactory {
 		this.coreWrapper.init(transfer(offscreen, [offscreen])).then(() => {
 			this.coreWrapper.setPixelRatio(window.devicePixelRatio);
 		});
-
+	
 		this.onWindowResize();
 		window.addEventListener('resize', this.onWindowResize.bind(this));
 	}

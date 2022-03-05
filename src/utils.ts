@@ -1,7 +1,5 @@
 import * as Cesium from 'cesium';
 import * as THREE from 'three';
-import { Transforms } from '.';
-import { Cartesian3 } from './core/math/cartesian3';
 import { CesiumWGS84, ThreeWGS84 } from './interface';
 
 export class Utils {
@@ -62,40 +60,5 @@ export class Utils {
 
 	static applayRotation(object: THREE.BufferGeometry, degrees: number) {
 		object.applyMatrix4(this.rotationX(degrees));
-	}
-
-	static localWGS84ToMattrix4(
-		position: ThreeWGS84,
-		height: number = 0
-	): THREE.Matrix4 {
-		const matrix = Transforms.headingPitchRollToFixedFrame(
-			Cartesian3.fromDegree(position.longitude, position.latitude, height)
-		);
-
-		const localToWgs84Mattrix = new THREE.Matrix4();
-		// prettier-ignore
-		localToWgs84Mattrix.set(
-			matrix.elements[0], matrix.elements[4], matrix.elements[ 8], matrix.elements[12],
-			matrix.elements[1], matrix.elements[5], matrix.elements[ 9], matrix.elements[13],
-			matrix.elements[2], matrix.elements[6], matrix.elements[10], matrix.elements[14],
-			matrix.elements[3], matrix.elements[7], matrix.elements[11], matrix.elements[15]
-		);
-
-		return localToWgs84Mattrix;
-	}
-
-	static applyObjectWGS84Postion(
-		geometry: THREE.BufferGeometry,
-		position: CesiumWGS84 | ThreeWGS84
-	) {
-		let pos: ThreeWGS84;
-		if (position instanceof CesiumWGS84) {
-			pos = this.CesiumWGS84ToThreeWGS84(position);
-		} else {
-			pos = position;
-		}
-		const matrix = this.localWGS84ToMattrix4(pos);
-		geometry.applyMatrix4(matrix);
-		geometry.userData.wgs84 = pos;
 	}
 }

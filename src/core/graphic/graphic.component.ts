@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import CameraComponent from '../camera/camera.component';
-import { Matrix4, Vector3, WebGLRendererParameters } from 'three';
+import { Box3, WebGLRendererParameters } from 'three';
+import { ThreeWGS84 } from '../../interface';
+import { MathUtils } from '../math/math.utils';
 
 export interface CurrentExtent {
 	xmin: number;
@@ -13,6 +15,8 @@ export interface CurrentExtent {
 export interface RenderParam {
 	cvm: Float32Array;
 	civm: Float32Array;
+	width: number,
+	height: number,
 }
 
 export class GraphicComponent {
@@ -73,6 +77,7 @@ export class GraphicComponent {
 	 */
 	render(param: RenderParam) {
 		if (this.renderer) {
+
 			this.camera.matrixAutoUpdate = false;
 
 			// prettier-ignore
@@ -89,9 +94,12 @@ export class GraphicComponent {
 				param.cvm[ 2], param.cvm[ 6], param.cvm[10], param.cvm[14],
 				param.cvm[ 3], param.cvm[ 7], param.cvm[11], param.cvm[15]
 			);
-
+			
+			this.camera.aspect = param.width / param.height
 			this.camera.updateProjectionMatrix();
 
+			this.renderer.setSize(param.width, param.height, false);
+			this.renderer.clear();
 			this.renderer.render(this.scene, this.camera);
 		}
 	}

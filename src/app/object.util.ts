@@ -18,7 +18,7 @@ export class ObjectUtil {
 				0
 			);
 			const result = await this.coreWrapper.getBox3(id);
-			let radius = result ? result.z * 2 : undefined;
+			const radius = result ? result.z * 2 : undefined;
 			this.viewer.camera.flyToBoundingSphere(
 				new Cesium.BoundingSphere(wgs84Position, radius)
 			);

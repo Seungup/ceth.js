@@ -1,9 +1,10 @@
 import { expose } from 'comlink';
 import { GraphicComponent } from './graphic/graphic.component';
-import { BoxHelper, Matrix4, Object3D, ObjectLoader, Vector3 } from 'three';
+import { Box3, BoxHelper, Matrix4, Object3D, ObjectLoader, Vector3 } from 'three';
 import { ThreeWGS84 } from '..';
 import CameraComponent from './camera/camera.component';
 import { RenderQueue } from './render.queue';
+import { MathUtils } from './math/math.utils';
 
 export interface CameraInitParam {
 	aspect: number;
@@ -104,9 +105,18 @@ export default class CoreThread {
 		return !!object;
 	}
 
-	add(json: any) {
+	add(json: any, position?: ThreeWGS84) {
 		const object = this.objectLoader.parse(json);
+		
+		if(position) {
+			object.userData.wgs84 = position;
+			object.applyMatrix4(
+				MathUtils.Matrix4.localWGS84ToMattrix4(position, new Box3().setFromObject(object).max.y)
+			);
+		}
+
 		this.graphicComponent.scene.add(object);
+		
 		return object.id;
 	}
 
@@ -142,15 +152,14 @@ export default class CoreThread {
 
 	updatePosition(
 		id: number,
-		param: {
-			matrix: Matrix4;
-			position: ThreeWGS84;
-		}
+		position: ThreeWGS84,
+		height?: number
 	) {
-		let object = this.getObject(id);
+		const object = this.getObject(id);
 		if (object) {
-			object.applyMatrix4(param.matrix);
-			object.userData.wgs84 = param.position;
+			height = height ? new Box3().setFromObject(object).max.y : 0;
+			object.applyMatrix4(MathUtils.Matrix4.localWGS84ToMattrix4(position, height));
+			object.userData.wgs84 = position;
 		}
 		return !!object;
 	}

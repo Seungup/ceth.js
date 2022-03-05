@@ -1,6 +1,7 @@
 import { Box3, Object3D } from 'three';
 import { CesiumWGS84 } from '..';
 import { SingletonWorkerFactory } from '../core/worker-factory';
+import { Utils } from '../utils';
 import { ObjectAPI } from './object.api';
 
 export interface RequestResult {
@@ -17,14 +18,9 @@ export class ObjectManager {
 	}
 
 	async add(object: Object3D, position?: CesiumWGS84): Promise<ObjectAPI> {
-		const id = await this.coreWrapper.add(object.toJSON());
-		const obj = new ObjectAPI(id);
-		const box = this._calcBox3(object);
-		object.userData.box3 = box;
-		if (position) {
-			await obj.setPosition(position, box.y);
-		}
-		return obj;
+		position = position ? Utils.CesiumWGS84ToThreeWGS84(position) : position
+		const id = await this.coreWrapper.add(object.toJSON(), position);
+		return new ObjectAPI(id);
 	}
 
 	async get(id: number) {

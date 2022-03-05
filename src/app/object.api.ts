@@ -1,4 +1,5 @@
 import { CesiumWGS84, Utils } from '..';
+import { Cartesian3 } from '../core/math/cartesian3';
 import { SingletonWorkerFactory } from '../core/worker-factory';
 
 export class ObjectAPI {
@@ -26,18 +27,16 @@ export class ObjectAPI {
 		return this._coreThread.show(this.id);
 	}
 
-	setPosition(position: CesiumWGS84, height: number = 0): Promise<boolean> {
-		height += Utils.randomOffset();
+	setPosition(position: CesiumWGS84): Promise<boolean> {
 		const threeWGS84 = Utils.CesiumWGS84ToThreeWGS84(position);
-		return this._coreThread.updatePosition(this.id, {
-			matrix: Utils.localWGS84ToMattrix4(threeWGS84, height),
-			position: threeWGS84,
-		});
+		return this._coreThread.updatePosition(this.id, threeWGS84);
 	}
 
-	async getPosition(): Promise<CesiumWGS84> {
+	async getPosition(): Promise<CesiumWGS84 | undefined> {
 		const position = await this._coreThread.getWGS84(this.id);
-		return Utils.ThreeWGS84ToCesiumWGS84(position!);
+		if (position) {
+			return Utils.ThreeWGS84ToCesiumWGS84(position!);
+		}
 	}
 
 	dispose(): Promise<boolean> {

@@ -37,6 +37,8 @@ export class ObjectRenderer {
 				param: {
 					cvm: cvm,
 					civm: civm,
+					height: this.viewer.container.clientHeight,
+					width: this.viewer.container.clientWidth
 				} as RenderParam,
 			},
 			[cvm.buffer, civm.buffer]
