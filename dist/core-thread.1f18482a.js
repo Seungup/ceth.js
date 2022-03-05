@@ -23,7 +23,6 @@ function $parcel$export(e, n, v, s) {
 }
 
 
-
 class $d1b8e958636edac6$export$adfa9d260876eca5 {
     constructor(scene = new $d9Ejt$Scene()){
         this.scene = scene;

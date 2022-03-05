@@ -38,7 +38,6 @@ $parcel$export($1b983a38f3bf9a9b$exports, "InterfcaeFactory", () => $1b983a38f3b
 
 
 
-
 class $d1b8e958636edac6$export$adfa9d260876eca5 {
     constructor(scene = new $hgUW1$Scene()){
         this.scene = scene;

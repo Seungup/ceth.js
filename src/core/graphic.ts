@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { PerspectiveCamera, WebGLRendererParameters } from 'three';
 
 export interface CurrentExtent {
 	xmin: number;
@@ -20,7 +19,7 @@ export class Graphic {
 	private constructor(
 		readonly scene = new THREE.Scene(),
 	) {
-		this.camera = new PerspectiveCamera();
+		this.camera = new THREE.PerspectiveCamera();
 	}
 
 	static getInstance() {
@@ -38,7 +37,7 @@ export class Graphic {
 
 	renderer?: THREE.WebGLRenderer;
 	init(canvas: HTMLCanvasElement) {
-		const params: WebGLRendererParameters = {
+		const params: THREE.WebGLRendererParameters = {
 			canvas: canvas,
 			powerPreference: 'high-performance',
 			alpha: true,
