@@ -13,8 +13,7 @@ export class ObjectManager {
     SingletonWorkerFactory.getWrapper("CoreThread");
 
   async add(object: Object3D, position?: IWGS84): Promise<ObjectAPI> {
-    
-	const wgs84 = position
+    const wgs84 = position
       ? CT_WGS84.fromCesiumWGS84(
           position.latitude,
           position.longitude,
@@ -22,14 +21,11 @@ export class ObjectManager {
         )
       : undefined;
 
-	if (wgs84 && wgs84.height === 0) {
-		wgs84.height = new Box3().setFromObject(object).max.y;
-	}	
+    if (wgs84 && wgs84.height === 0) {
+      wgs84.height = new Box3().setFromObject(object).max.y;
+    }
 
-    const id = await this.coreWrapper.add(
-      object.toJSON(),
-      wgs84?.toJSON(),
-    );
+    const id = await this.coreWrapper.add(object.toJSON(), wgs84?.toJSON());
     return new ObjectAPI(id);
   }
 

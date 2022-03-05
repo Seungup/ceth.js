@@ -26,9 +26,8 @@ export class MathUtils {
   }
 
   static randomOffset() {
-		return Math.floor(Math.random() * 10000) * 0.000001;
-	}
-
+    return Math.floor(Math.random() * 10000) * 0.000001;
+  }
 
   /**
    * 절대 공차 검정 또는 상대 공차 검정을 사용하여 두 값이 같은지 여부를 확인합니다.

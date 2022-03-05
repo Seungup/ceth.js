@@ -1,8 +1,12 @@
 import { Vector3 } from "three";
-import { EARTH_RADIUS_X_SQURAE, EARTH_RADIUS_Y_SQURAE, EARTH_RADIUS_Z_SQURAE } from "../../constants";
+import {
+  EARTH_RADIUS_X_SQURAE,
+  EARTH_RADIUS_Y_SQURAE,
+  EARTH_RADIUS_Z_SQURAE,
+} from "../../constants";
 import { MathUtils } from "../utils";
 export class CT_Cartesian3 extends Vector3 {
-  static get WGS84_RADII_SQUARED() {  
+  static get WGS84_RADII_SQUARED() {
     return new CT_Cartesian3(
       EARTH_RADIUS_X_SQURAE,
       EARTH_RADIUS_Y_SQURAE,
@@ -35,7 +39,8 @@ export class CT_Cartesian3 extends Vector3 {
       Math.sin(latitude)
     ).normalizeByMagnitude();
 
-    const WGS84_RADII_SQUARED = CT_Cartesian3.WGS84_RADII_SQUARED.multiply(cartesian);
+    const WGS84_RADII_SQUARED =
+      CT_Cartesian3.WGS84_RADII_SQUARED.multiply(cartesian);
 
     const gamma = Math.sqrt(WGS84_RADII_SQUARED.dot(cartesian));
 

@@ -1,8 +1,7 @@
-import { Vector4 } from 'three';
-import { CT_Cartesian3 } from '.';
+import { Vector4 } from "three";
+import { CT_Cartesian3 } from ".";
 
 export class CT_Quaternion extends Vector4 {
-  
   private static _fromAxisAngleScratch = new CT_Cartesian3();
 
   static fromAxisAngle(
@@ -23,7 +22,6 @@ export class CT_Quaternion extends Vector4 {
       Math.cos(halfAngle)
     );
   }
-
 
   private static _scratchHPRQuaternion = new CT_Quaternion();
   private static _scratchHeadingQuaternion = new CT_Quaternion();
@@ -61,4 +59,3 @@ export class CT_Quaternion extends Vector4 {
     );
   }
 }
-

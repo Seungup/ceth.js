@@ -22,7 +22,7 @@ function $parcel$exportWildcard(dest, source) {
 function $parcel$export(e, n, v, s) {
   Object.defineProperty(e, n, {get: v, set: s, enumerable: true, configurable: true});
 }
-const $234747a9630b4642$export$3545e07a80636437 = '0dev';
+const $234747a9630b4642$export$3545e07a80636437 = "0dev";
 const $234747a9630b4642$export$d055d6f746a0dadb = 6378137;
 const $234747a9630b4642$export$e586789a40edc0eb = 6378137;
 const $234747a9630b4642$export$9d8be9f67f903df8 = 6356752.314245179;
@@ -57,13 +57,13 @@ class $d1b8e958636edac6$export$adfa9d260876eca5 {
     init(canvas) {
         const params = {
             canvas: canvas,
-            powerPreference: 'high-performance',
+            powerPreference: "high-performance",
             alpha: true,
             antialias: true,
             logarithmicDepthBuffer: true,
             depth: false
         };
-        const context = canvas.getContext('webgl2');
+        const context = canvas.getContext("webgl2");
         if (context) params.context = context;
         this.renderer = new $hgUW1$WebGLRenderer(params);
         console.log(`[Graphic] isWebGL2Enabled : ${this.renderer.capabilities.isWebGL2}`);
@@ -74,9 +74,9 @@ class $d1b8e958636edac6$export$adfa9d260876eca5 {
         this.renderer?.setSize(width, height, false);
     }
     /**
-	 * 장면을 렌더링합니다.
-	 * @param param
-	 */ render(param) {
+   * 장면을 렌더링합니다.
+   * @param param
+   */ render(param) {
         if (this.renderer) {
             this.camera.matrixAutoUpdate = false;
             // prettier-ignore
@@ -95,17 +95,17 @@ class $d1b8e958636edac6$export$adfa9d260876eca5 {
 
 class $f20f17e129275ffd$export$8890c8adaae71a72 {
     /**
-	 * 다음 장면을 그립니다.
-	 */ _renderNextAnimationFrame() {
+   * 다음 장면을 그립니다.
+   */ _renderNextAnimationFrame() {
         this.param = this._queue.pop();
         if (this.param) this.graphic.render(this.param);
         this._handle = requestAnimationFrame(this._bindRenderNextAnimationFrame);
         this._renderSubject.next();
     }
     /**
-	 * 다음 장면을 요청합니다.
-	 * @param param 렌더링 파라미터
-	 */ updateNextAnimationFrame(param) {
+   * 다음 장면을 요청합니다.
+   * @param param 렌더링 파라미터
+   */ updateNextAnimationFrame(param) {
         if (this._queue.length) this._queue[0] = param;
         else this._queue.push(param);
         if (!this._handle) this._renderNextAnimationFrame();
@@ -334,40 +334,40 @@ $parcel$export($23952d628235a608$exports, "CT_Transforms", () => $23952d628235a6
 
 const $23952d628235a608$var$vectorProductLocalFrame = {
     up: {
-        south: 'east',
-        north: 'west',
-        west: 'south',
-        east: 'north'
+        south: "east",
+        north: "west",
+        west: "south",
+        east: "north"
     },
     down: {
-        south: 'west',
-        north: 'east',
-        west: 'north',
-        east: 'south'
+        south: "west",
+        north: "east",
+        west: "north",
+        east: "south"
     },
     south: {
-        up: 'west',
-        down: 'east',
-        west: 'down',
-        east: 'up'
+        up: "west",
+        down: "east",
+        west: "down",
+        east: "up"
     },
     north: {
-        up: 'east',
-        down: 'west',
-        west: 'up',
-        east: 'down'
+        up: "east",
+        down: "west",
+        west: "up",
+        east: "down"
     },
     west: {
-        up: 'north',
-        down: 'south',
-        north: 'down',
-        south: 'up'
+        up: "north",
+        down: "south",
+        north: "down",
+        south: "up"
     },
     east: {
-        up: 'south',
-        down: 'north',
-        north: 'up',
-        south: 'down'
+        up: "south",
+        down: "north",
+        north: "up",
+        south: "down"
     }
 };
 // prettier-ignore
@@ -430,14 +430,14 @@ class $23952d628235a608$export$4fd467e6c04a27e1 {
             } else if ($a37d01845c731898$export$6a7ef315a0d1ef07.equalsEpsilon(origin.x, 0) && $a37d01845c731898$export$6a7ef315a0d1ef07.equalsEpsilon(origin.y, 0)) {
                 const sign = Math.sign(origin.z);
                 scratchFirstCartesian = $54db50d775dc5ee6$export$aca70b982fa554b6.unpack($23952d628235a608$var$degeneratePositionLocalFrame[firstAixs]);
-                if (firstAixs !== 'east' && firstAixs !== 'west') scratchFirstCartesian.multiplyScalar(sign);
+                if (firstAixs !== "east" && firstAixs !== "west") scratchFirstCartesian.multiplyScalar(sign);
                 scratchSecondCartesian = $54db50d775dc5ee6$export$aca70b982fa554b6.unpack(// @ts-ignore
                 $23952d628235a608$var$degeneratePositionLocalFrame[secondAxis]);
-                if (secondAxis !== 'east' && secondAxis !== 'west') scratchSecondCartesian.multiplyScalar(sign);
+                if (secondAxis !== "east" && secondAxis !== "west") scratchSecondCartesian.multiplyScalar(sign);
                 scratchThirdCartesian = $54db50d775dc5ee6$export$aca70b982fa554b6.unpack(// @ts-ignore
                 $23952d628235a608$var$degeneratePositionLocalFrame[thirdAxis]);
                 // @ts-ignore
-                if (thirdAxis !== 'east' && thirdAxis !== 'west') scratchThirdCartesian.multiplyScalar(sign);
+                if (thirdAxis !== "east" && thirdAxis !== "west") scratchThirdCartesian.multiplyScalar(sign);
             } else {
                 $19176608e346944f$export$5851ecdbb051d869.getDefaultWGS84RadiiSquaredGeodticSurfaceNormal(origin, $23952d628235a608$var$scratchCalculateCartesian.up);
                 $23952d628235a608$var$scratchCalculateCartesian.east.set(-origin.y, origin.x, 0).normalizeByMagnitude();
@@ -468,7 +468,7 @@ class $23952d628235a608$export$4fd467e6c04a27e1 {
     }
 }
 $23952d628235a608$export$4fd467e6c04a27e1.localFrameToFixedFrameCache = new Map();
-$23952d628235a608$export$4fd467e6c04a27e1.eastNorthUpToFixedFrame = $23952d628235a608$export$4fd467e6c04a27e1.localFrameToFixedFrameGenerator('east', 'north');
+$23952d628235a608$export$4fd467e6c04a27e1.eastNorthUpToFixedFrame = $23952d628235a608$export$4fd467e6c04a27e1.localFrameToFixedFrameGenerator("east", "north");
 
 
 var $9cc46a5bb5d8ad43$exports = {};
@@ -665,25 +665,25 @@ const $b920a6b4966bc37f$export$4d9f7473977bcb18 = {
 };
 class $b920a6b4966bc37f$export$e37028405a3089df {
     /**
-	 * 웹 워커를 가져옵니다.
-	 * @param workerClassName
-	 * @returns
-	 */ static getWorker(workerClassName) {
+   * 웹 워커를 가져옵니다.
+   * @param workerClassName
+   * @returns
+   */ static getWorker(workerClassName) {
         let worker;
         const workerURL = $b920a6b4966bc37f$export$4d9f7473977bcb18[workerClassName];
         if (!this.workerMap.has(workerURL)) {
             worker = new Worker(workerURL, {
-                type: 'module'
+                type: "module"
             });
             this.workerMap.set(workerURL, worker);
         } else worker = this.workerMap.get(workerURL);
         return worker;
     }
     /**
-	 * 웹 워커의 Warpper 를 가져옵니다.
-	 * @param workerClassName
-	 * @returns
-	 */ static getWrapper(workerClassName) {
+   * 웹 워커의 Warpper 를 가져옵니다.
+   * @param workerClassName
+   * @returns
+   */ static getWrapper(workerClassName) {
         const worker = $b920a6b4966bc37f$export$e37028405a3089df.getWorker(workerClassName);
         const workerURL = $b920a6b4966bc37f$export$4d9f7473977bcb18[workerClassName];
         let wrapper;
@@ -705,8 +705,8 @@ $b920a6b4966bc37f$export$e37028405a3089df.wrapperMap = new Map();
 class $e71b51a0ba2fbda5$export$ca67b0b0fa758253 {
     constructor(viewer){
         this.viewer = viewer;
-        this.coreWorker = $b920a6b4966bc37f$export$e37028405a3089df.getWorker('CoreThread');
-        this.coreWrapper = $b920a6b4966bc37f$export$e37028405a3089df.getWrapper('CoreThread');
+        this.coreWorker = $b920a6b4966bc37f$export$e37028405a3089df.getWorker("CoreThread");
+        this.coreWrapper = $b920a6b4966bc37f$export$e37028405a3089df.getWrapper("CoreThread");
         this.coreWrapper.setPixelRatio(window.devicePixelRatio);
         this.coreWrapper.initCamera({
             fov: $hgUW1$Math.toDegrees(this.viewer.camera.frustum.fovy),
@@ -748,7 +748,7 @@ $parcel$exportWildcard($b303505768f2368e$exports, $0df7ca19a0800c87$exports);
 
 class $1f355be06b059ce1$export$362079230e3f7f0b {
     constructor(id){
-        this._coreThread = $b920a6b4966bc37f$export$e37028405a3089df.getWrapper('CoreThread');
+        this._coreThread = $b920a6b4966bc37f$export$e37028405a3089df.getWrapper("CoreThread");
         this.id = id;
     }
     getUserData(key) {
@@ -812,7 +812,7 @@ class $9c4a242349458aaf$export$19321809bd793da0 {
 class $077c9942e0ea3920$export$2c17cb06bc53e24 {
     constructor(viewer){
         this.viewer = viewer;
-        this.coreWrapper = $b920a6b4966bc37f$export$e37028405a3089df.getWrapper('CoreThread');
+        this.coreWrapper = $b920a6b4966bc37f$export$e37028405a3089df.getWrapper("CoreThread");
     }
     async flyTo(id) {
         debugger;
@@ -830,24 +830,24 @@ class $077c9942e0ea3920$export$2c17cb06bc53e24 {
 class $1b983a38f3bf9a9b$export$3c33b7cf4c12f471 {
     constructor(viewer){
         this.viewer = viewer;
-        this.coreWrapper = $b920a6b4966bc37f$export$e37028405a3089df.getWrapper('CoreThread');
+        this.coreWrapper = $b920a6b4966bc37f$export$e37028405a3089df.getWrapper("CoreThread");
         const root = viewer.container.parentElement;
-        this.container = document.createElement('div');
-        this.container.id = 'ThreeContainer';
-        this.container.style.position = 'absolute';
-        this.container.style.top = '0';
-        this.container.style.left = '0';
-        this.container.style.height = '100%';
-        this.container.style.width = '100%';
-        this.container.style.margin = '0';
-        this.container.style.overflow = 'hidden';
-        this.container.style.padding = '0';
-        this.container.style.pointerEvents = 'none';
-        const canvas = document.createElement('canvas');
+        this.container = document.createElement("div");
+        this.container.id = "ThreeContainer";
+        this.container.style.position = "absolute";
+        this.container.style.top = "0";
+        this.container.style.left = "0";
+        this.container.style.height = "100%";
+        this.container.style.width = "100%";
+        this.container.style.margin = "0";
+        this.container.style.overflow = "hidden";
+        this.container.style.padding = "0";
+        this.container.style.pointerEvents = "none";
+        const canvas = document.createElement("canvas");
         this.container.append(canvas);
-        if (!root) throw new Error('cannot fond parent element');
+        if (!root) throw new Error("cannot fond parent element");
         else root.append(this.container);
-        if (viewer.useDefaultRenderLoop) console.warn('Please set Cesium viewer.useDefaultRenderLoop = false for syncronize animation frame to this plug-in');
+        if (viewer.useDefaultRenderLoop) console.warn("Please set Cesium viewer.useDefaultRenderLoop = false for syncronize animation frame to this plug-in");
         // @ts-ignore
         const offscreen = canvas.transferControlToOffscreen();
         offscreen.width = canvas.clientWidth;
@@ -859,7 +859,7 @@ class $1b983a38f3bf9a9b$export$3c33b7cf4c12f471 {
             this.coreWrapper.setPixelRatio(window.devicePixelRatio);
         });
         this.onWindowResize();
-        window.addEventListener('resize', this.onWindowResize.bind(this));
+        window.addEventListener("resize", this.onWindowResize.bind(this));
     }
     onWindowResize() {
         this.renderer.setSize(this.viewer.container.clientWidth, this.viewer.container.clientHeight);
