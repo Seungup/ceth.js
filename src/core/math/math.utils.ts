@@ -72,14 +72,14 @@ export class MathUtils {
 		static localWGS84ToMattrix4(position: ThreeWGS84, height: number, result: Matrix4 = new Matrix4()) {
 			const matrix = Transforms.headingPitchRollToFixedFrame(
 				Cartesian3.fromDegree(position.longitude, position.latitude, height)
-			);
+			).elements;
 	
 			// prettier-ignore
 			return result.set(
-				matrix.elements[0], matrix.elements[4], matrix.elements[ 8], matrix.elements[12],
-				matrix.elements[1], matrix.elements[5], matrix.elements[ 9], matrix.elements[13],
-				matrix.elements[2], matrix.elements[6], matrix.elements[10], matrix.elements[14],
-				matrix.elements[3], matrix.elements[7], matrix.elements[11], matrix.elements[15]
+				matrix[ 0], matrix[ 4], matrix[ 8], matrix[12],
+				matrix[ 1], matrix[ 5], matrix[ 9], matrix[13],
+				matrix[ 2], matrix[ 6], matrix[10], matrix[14],
+				matrix[ 3], matrix[ 7], matrix[11], matrix[15]
 			);
 		}
 
