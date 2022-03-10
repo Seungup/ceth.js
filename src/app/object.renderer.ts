@@ -32,10 +32,10 @@ export class ObjectRenderer {
 	 *
 	 * @default false
 	 *
-	 * @param visible 렌더링 여부
+	 * @param doRender
 	 */
-	async setRenderBehindEarthOfObject(visible: boolean) {
-		await this.coreWrapper.setRenderBehindEarthOfObject(visible);
+	async setRenderBehindEarthOfObject(doRender: boolean) {
+		await this.coreWrapper.setRenderBehindEarthOfObject(doRender);
 	}
 	/**
 	 * 지구 뒷편에 존재하는 오브젝트의 렌더링 여부를 가져옵니다.
