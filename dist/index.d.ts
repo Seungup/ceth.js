@@ -172,7 +172,9 @@ declare class ObjectManager {
 }
 declare class ObjectUtil {
     constructor(viewer: Cesium.Viewer);
-    flyTo(id: number): Promise<void>;
+    flyByObjectAPI(api: ObjectAPI): Promise<void>;
+    flyByObjectId(id: number): Promise<void>;
+    flyByWGS84(position: IWGS84, radius?: number | undefined): Promise<void>;
 }
 export class InterfcaeFactory {
     constructor(viewer: Cesium.Viewer);

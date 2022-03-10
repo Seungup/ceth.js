@@ -1,5 +1,5 @@
 import {expose as $d9Ejt$expose} from "comlink";
-import {ObjectLoader as $d9Ejt$ObjectLoader, BoxHelper as $d9Ejt$BoxHelper, Box3 as $d9Ejt$Box3, Scene as $d9Ejt$Scene, PerspectiveCamera as $d9Ejt$PerspectiveCamera, WebGLRenderer as $d9Ejt$WebGLRenderer, Vector3 as $d9Ejt$Vector3, Matrix4 as $d9Ejt$Matrix4, Vector4 as $d9Ejt$Vector4} from "three";
+import {ObjectLoader as $d9Ejt$ObjectLoader, BoxHelper as $d9Ejt$BoxHelper, Box3 as $d9Ejt$Box3, Scene as $d9Ejt$Scene, Matrix3 as $d9Ejt$Matrix3, Vector3 as $d9Ejt$Vector3, PerspectiveCamera as $d9Ejt$PerspectiveCamera, WebGLRenderer as $d9Ejt$WebGLRenderer, Matrix4 as $d9Ejt$Matrix4, Vector4 as $d9Ejt$Vector4} from "three";
 import {Subject as $d9Ejt$Subject} from "rxjs";
 
 function $parcel$exportWildcard(dest, source) {
@@ -26,6 +26,9 @@ function $parcel$export(e, n, v, s) {
 class $d1b8e958636edac6$export$adfa9d260876eca5 {
     constructor(scene = new $d9Ejt$Scene()){
         this.scene = scene;
+        this._normalMatrix = new $d9Ejt$Matrix3();
+        this._tempVector3 = new $d9Ejt$Vector3();
+        this._cameraToPoint = new $d9Ejt$Vector3();
         this.camera = new $d9Ejt$PerspectiveCamera();
     }
     static getInstance() {
@@ -42,13 +45,13 @@ class $d1b8e958636edac6$export$adfa9d260876eca5 {
     init(canvas) {
         const params = {
             canvas: canvas,
-            powerPreference: "high-performance",
+            powerPreference: 'high-performance',
             alpha: true,
             antialias: true,
             logarithmicDepthBuffer: true,
             depth: false
         };
-        const context = canvas.getContext("webgl2");
+        const context = canvas.getContext('webgl2');
         if (context) params.context = context;
         this.renderer = new $d9Ejt$WebGLRenderer(params);
         console.log(`[Graphic] isWebGL2Enabled : ${this.renderer.capabilities.isWebGL2}`);
@@ -59,9 +62,9 @@ class $d1b8e958636edac6$export$adfa9d260876eca5 {
         this.renderer?.setSize(width, height, false);
     }
     /**
-   * 장면을 렌더링합니다.
-   * @param param
-   */ render(param) {
+	 * 장면을 렌더링합니다.
+	 * @param param
+	 */ render(param) {
         if (this.renderer) {
             this.camera.matrixAutoUpdate = false;
             // prettier-ignore
@@ -69,8 +72,33 @@ class $d1b8e958636edac6$export$adfa9d260876eca5 {
             // prettier-ignore
             this.camera.matrixWorldInverse.set(param.cvm[0], param.cvm[4], param.cvm[8], param.cvm[12], param.cvm[1], param.cvm[5], param.cvm[9], param.cvm[13], param.cvm[2], param.cvm[6], param.cvm[10], param.cvm[14], param.cvm[3], param.cvm[7], param.cvm[11], param.cvm[15]);
             this.camera.updateProjectionMatrix();
+            this._normalMatrix.getNormalMatrix(this.camera.matrixWorldInverse);
+            this.scene.traverse(this._setObjectVisible.bind(this));
             this.renderer.render(this.scene, this.camera);
         }
+    }
+    /**
+	 * 오브젝트의 지구 뒷면 렌더링을 제어합니다.
+	 *
+	 * @param object
+	 * @returns
+	 */ _setObjectVisible(object) {
+        // 위치를 가지는 오브젝트만 선정
+        if (!object.userData.wgs84) return;
+        this._tempVector3.copy(object.position).applyMatrix3(this._normalMatrix);
+        this._cameraToPoint.copy(object.position).applyMatrix4(this.camera.matrixWorldInverse).normalize();
+        /**
+		 * 카메라에서 현재 위치의 방향(벡터) 값으로 카메라에서 지구본 위 위치값 까지의
+		 * 방향 값을 구한 후, 이 값으로 스칼라 곱을 구한다.
+		 *
+		 * == -1 : 카메라를 정면으로 바라봄
+		 *
+		 * ==  0 : 카메라에서 구면에 정확히 접선함.
+		 *
+		 * >=  0 : 카메라 뒷면에 있음
+		 */ const dot = this._tempVector3.dot(this._cameraToPoint);
+        const maxDot = -0.2;
+        object.visible = dot < maxDot;
     }
 }
 
@@ -80,17 +108,17 @@ class $d1b8e958636edac6$export$adfa9d260876eca5 {
 
 class $f20f17e129275ffd$export$8890c8adaae71a72 {
     /**
-   * 다음 장면을 그립니다.
-   */ _renderNextAnimationFrame() {
+	 * 다음 장면을 그립니다.
+	 */ _renderNextAnimationFrame() {
         this.param = this._queue.pop();
         if (this.param) this.graphic.render(this.param);
         this._handle = requestAnimationFrame(this._bindRenderNextAnimationFrame);
         this._renderSubject.next();
     }
     /**
-   * 다음 장면을 요청합니다.
-   * @param param 렌더링 파라미터
-   */ updateNextAnimationFrame(param) {
+	 * 다음 장면을 요청합니다.
+	 * @param param 렌더링 파라미터
+	 */ updateNextAnimationFrame(param) {
         if (this._queue.length) this._queue[0] = param;
         else this._queue.push(param);
         if (!this._handle) this._renderNextAnimationFrame();
@@ -529,7 +557,7 @@ class $c895e49b264c1790$export$2e2bcd8739ae039 {
         this._renderQueue = new $f20f17e129275ffd$export$8890c8adaae71a72();
         this._renderQueue.renderNextFrame$.subscribe(()=>{
             self.postMessage({
-                type: "onRender"
+                type: 'onRender'
             });
         });
         self.onmessage = (e)=>{
@@ -572,12 +600,12 @@ class $c895e49b264c1790$export$2e2bcd8739ae039 {
     setBoxHelperTo(id) {
         const object = this.getObject(id);
         if (object) {
-            if (this.helpers.has("BoxHelper")) {
-                const helper = this.helpers.get("BoxHelper");
+            if (this.helpers.has('BoxHelper')) {
+                const helper = this.helpers.get('BoxHelper');
                 helper.update(object);
             } else {
                 const helper = new $d9Ejt$BoxHelper(object);
-                this.helpers.set("BoxHelper", helper);
+                this.helpers.set('BoxHelper', helper);
                 this.graphic.scene.add(helper);
             }
         }
@@ -613,7 +641,6 @@ class $c895e49b264c1790$export$2e2bcd8739ae039 {
         return !!object;
     }
     getWGS84(id) {
-        debugger;
         const wgs84 = this.getObject(id)?.userData.wgs84;
         if (wgs84 && wgs84.latitude !== undefined && wgs84.longitude !== undefined && wgs84.height !== undefined) return {
             latitude: wgs84.longitude,

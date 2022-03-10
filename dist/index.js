@@ -1,5 +1,5 @@
 import {transfer as $hgUW1$transfer, wrap as $hgUW1$wrap, expose as $hgUW1$expose} from "comlink";
-import {ObjectLoader as $hgUW1$ObjectLoader, BoxHelper as $hgUW1$BoxHelper, Box3 as $hgUW1$Box3, Scene as $hgUW1$Scene, PerspectiveCamera as $hgUW1$PerspectiveCamera, WebGLRenderer as $hgUW1$WebGLRenderer, Vector3 as $hgUW1$Vector3, Matrix4 as $hgUW1$Matrix4, Vector4 as $hgUW1$Vector4} from "three";
+import {ObjectLoader as $hgUW1$ObjectLoader, BoxHelper as $hgUW1$BoxHelper, Box3 as $hgUW1$Box3, Scene as $hgUW1$Scene, Matrix3 as $hgUW1$Matrix3, Vector3 as $hgUW1$Vector3, PerspectiveCamera as $hgUW1$PerspectiveCamera, WebGLRenderer as $hgUW1$WebGLRenderer, Matrix4 as $hgUW1$Matrix4, Vector4 as $hgUW1$Vector4} from "three";
 import {Subject as $hgUW1$Subject} from "rxjs";
 import {Math as $hgUW1$Math, Cartesian3 as $hgUW1$Cartesian3, BoundingSphere as $hgUW1$BoundingSphere} from "cesium";
 
@@ -41,6 +41,9 @@ $parcel$export($1b983a38f3bf9a9b$exports, "InterfcaeFactory", () => $1b983a38f3b
 class $d1b8e958636edac6$export$adfa9d260876eca5 {
     constructor(scene = new $hgUW1$Scene()){
         this.scene = scene;
+        this._normalMatrix = new $hgUW1$Matrix3();
+        this._tempVector3 = new $hgUW1$Vector3();
+        this._cameraToPoint = new $hgUW1$Vector3();
         this.camera = new $hgUW1$PerspectiveCamera();
     }
     static getInstance() {
@@ -57,13 +60,13 @@ class $d1b8e958636edac6$export$adfa9d260876eca5 {
     init(canvas) {
         const params = {
             canvas: canvas,
-            powerPreference: "high-performance",
+            powerPreference: 'high-performance',
             alpha: true,
             antialias: true,
             logarithmicDepthBuffer: true,
             depth: false
         };
-        const context = canvas.getContext("webgl2");
+        const context = canvas.getContext('webgl2');
         if (context) params.context = context;
         this.renderer = new $hgUW1$WebGLRenderer(params);
         console.log(`[Graphic] isWebGL2Enabled : ${this.renderer.capabilities.isWebGL2}`);
@@ -74,9 +77,9 @@ class $d1b8e958636edac6$export$adfa9d260876eca5 {
         this.renderer?.setSize(width, height, false);
     }
     /**
-   * 장면을 렌더링합니다.
-   * @param param
-   */ render(param) {
+	 * 장면을 렌더링합니다.
+	 * @param param
+	 */ render(param) {
         if (this.renderer) {
             this.camera.matrixAutoUpdate = false;
             // prettier-ignore
@@ -84,8 +87,33 @@ class $d1b8e958636edac6$export$adfa9d260876eca5 {
             // prettier-ignore
             this.camera.matrixWorldInverse.set(param.cvm[0], param.cvm[4], param.cvm[8], param.cvm[12], param.cvm[1], param.cvm[5], param.cvm[9], param.cvm[13], param.cvm[2], param.cvm[6], param.cvm[10], param.cvm[14], param.cvm[3], param.cvm[7], param.cvm[11], param.cvm[15]);
             this.camera.updateProjectionMatrix();
+            this._normalMatrix.getNormalMatrix(this.camera.matrixWorldInverse);
+            this.scene.traverse(this._setObjectVisible.bind(this));
             this.renderer.render(this.scene, this.camera);
         }
+    }
+    /**
+	 * 오브젝트의 지구 뒷면 렌더링을 제어합니다.
+	 *
+	 * @param object
+	 * @returns
+	 */ _setObjectVisible(object) {
+        // 위치를 가지는 오브젝트만 선정
+        if (!object.userData.wgs84) return;
+        this._tempVector3.copy(object.position).applyMatrix3(this._normalMatrix);
+        this._cameraToPoint.copy(object.position).applyMatrix4(this.camera.matrixWorldInverse).normalize();
+        /**
+		 * 카메라에서 현재 위치의 방향(벡터) 값으로 카메라에서 지구본 위 위치값 까지의
+		 * 방향 값을 구한 후, 이 값으로 스칼라 곱을 구한다.
+		 *
+		 * == -1 : 카메라를 정면으로 바라봄
+		 *
+		 * ==  0 : 카메라에서 구면에 정확히 접선함.
+		 *
+		 * >=  0 : 카메라 뒷면에 있음
+		 */ const dot = this._tempVector3.dot(this._cameraToPoint);
+        const maxDot = -0.2;
+        object.visible = dot < maxDot;
     }
 }
 
@@ -95,17 +123,17 @@ class $d1b8e958636edac6$export$adfa9d260876eca5 {
 
 class $f20f17e129275ffd$export$8890c8adaae71a72 {
     /**
-   * 다음 장면을 그립니다.
-   */ _renderNextAnimationFrame() {
+	 * 다음 장면을 그립니다.
+	 */ _renderNextAnimationFrame() {
         this.param = this._queue.pop();
         if (this.param) this.graphic.render(this.param);
         this._handle = requestAnimationFrame(this._bindRenderNextAnimationFrame);
         this._renderSubject.next();
     }
     /**
-   * 다음 장면을 요청합니다.
-   * @param param 렌더링 파라미터
-   */ updateNextAnimationFrame(param) {
+	 * 다음 장면을 요청합니다.
+	 * @param param 렌더링 파라미터
+	 */ updateNextAnimationFrame(param) {
         if (this._queue.length) this._queue[0] = param;
         else this._queue.push(param);
         if (!this._handle) this._renderNextAnimationFrame();
@@ -536,7 +564,7 @@ class $c895e49b264c1790$export$2e2bcd8739ae039 {
         this._renderQueue = new $f20f17e129275ffd$export$8890c8adaae71a72();
         this._renderQueue.renderNextFrame$.subscribe(()=>{
             self.postMessage({
-                type: "onRender"
+                type: 'onRender'
             });
         });
         self.onmessage = (e)=>{
@@ -579,12 +607,12 @@ class $c895e49b264c1790$export$2e2bcd8739ae039 {
     setBoxHelperTo(id) {
         const object = this.getObject(id);
         if (object) {
-            if (this.helpers.has("BoxHelper")) {
-                const helper = this.helpers.get("BoxHelper");
+            if (this.helpers.has('BoxHelper')) {
+                const helper = this.helpers.get('BoxHelper');
                 helper.update(object);
             } else {
                 const helper = new $hgUW1$BoxHelper(object);
-                this.helpers.set("BoxHelper", helper);
+                this.helpers.set('BoxHelper', helper);
                 this.graphic.scene.add(helper);
             }
         }
@@ -620,7 +648,6 @@ class $c895e49b264c1790$export$2e2bcd8739ae039 {
         return !!object;
     }
     getWGS84(id) {
-        debugger;
         const wgs84 = this.getObject(id)?.userData.wgs84;
         if (wgs84 && wgs84.latitude !== undefined && wgs84.longitude !== undefined && wgs84.height !== undefined) return {
             latitude: wgs84.longitude,
@@ -707,8 +734,8 @@ $b920a6b4966bc37f$export$e37028405a3089df.wrapperMap = new Map();
 class $e71b51a0ba2fbda5$export$ca67b0b0fa758253 {
     constructor(viewer){
         this.viewer = viewer;
-        this.coreWorker = $b920a6b4966bc37f$export$e37028405a3089df.getWorker("CoreThread");
-        this.coreWrapper = $b920a6b4966bc37f$export$e37028405a3089df.getWrapper("CoreThread");
+        this.coreWorker = $b920a6b4966bc37f$export$e37028405a3089df.getWorker('CoreThread');
+        this.coreWrapper = $b920a6b4966bc37f$export$e37028405a3089df.getWrapper('CoreThread');
         this.coreWrapper.setPixelRatio(window.devicePixelRatio);
         this.coreWrapper.initCamera({
             fov: $hgUW1$Math.toDegrees(this.viewer.camera.frustum.fovy),
@@ -721,8 +748,8 @@ class $e71b51a0ba2fbda5$export$ca67b0b0fa758253 {
         return this.coreWrapper.setSize(width, height);
     }
     render() {
-        const cvm = new Float32Array(this.viewer.camera.viewMatrix);
-        const civm = new Float32Array(this.viewer.camera.inverseViewMatrix);
+        const cvm = new Float64Array(this.viewer.camera.viewMatrix);
+        const civm = new Float64Array(this.viewer.camera.inverseViewMatrix);
         this.coreWorker.postMessage({
             type: $c895e49b264c1790$export$8d9ecf8a6190d0ad.RENDER,
             param: {
@@ -804,7 +831,7 @@ class $9c4a242349458aaf$export$19321809bd793da0 {
         };
     }
     constructor(){
-        this.coreWrapper = $b920a6b4966bc37f$export$e37028405a3089df.getWrapper("CoreThread");
+        this.coreWrapper = $b920a6b4966bc37f$export$e37028405a3089df.getWrapper('CoreThread');
     }
 }
 
@@ -814,17 +841,24 @@ class $9c4a242349458aaf$export$19321809bd793da0 {
 class $077c9942e0ea3920$export$2c17cb06bc53e24 {
     constructor(viewer){
         this.viewer = viewer;
-        this.coreWrapper = $b920a6b4966bc37f$export$e37028405a3089df.getWrapper("CoreThread");
+        this.coreWrapper = $b920a6b4966bc37f$export$e37028405a3089df.getWrapper('CoreThread');
     }
-    async flyTo(id) {
-        debugger;
-        let position = await this.coreWrapper.getWGS84(id);
+    async flyByObjectAPI(api) {
+        return this.flyByObjectId(api.id);
+    }
+    async flyByObjectId(id) {
+        const position = await this.coreWrapper.getWGS84(id);
         if (position) {
-            const wgs84Position = $hgUW1$Cartesian3.fromDegrees(position.latitude, position.longitude, position.height);
             const result = await this.coreWrapper.getBox3(id);
             const radius = result ? result.z * 2 : undefined;
-            this.viewer.camera.flyToBoundingSphere(new $hgUW1$BoundingSphere(wgs84Position, radius));
+            return this.flyByWGS84(position, radius);
         }
+    }
+    async flyByWGS84(position, radius) {
+        const wgs84Position = $hgUW1$Cartesian3.fromDegrees(position.latitude, position.longitude, position.height);
+        this.viewer.camera.flyToBoundingSphere(new $hgUW1$BoundingSphere(wgs84Position, radius), {
+            duration: 1
+        });
     }
 }
 
@@ -884,5 +918,5 @@ $parcel$exportWildcard($6235842b1284d102$exports, $1b983a38f3bf9a9b$exports);
 
 
 
-export {$234747a9630b4642$export$3545e07a80636437 as REVISION, $54db50d775dc5ee6$export$aca70b982fa554b6 as CT_Cartesian3, $19176608e346944f$export$5851ecdbb051d869 as CT_Ellipsoid, $b5a7119ef71cd3f1$export$e6eceaa934a6d3e5 as CT_Matrix4, $809c87f5dbed8e16$export$487e31a511bfcc15 as CT_Quaternion, $23952d628235a608$export$4fd467e6c04a27e1 as CT_Transforms, $9cc46a5bb5d8ad43$export$2779d2581814b131 as CT_WGS84, $a37d01845c731898$export$6a7ef315a0d1ef07 as MathUtils, $1b983a38f3bf9a9b$export$3c33b7cf4c12f471 as InterfcaeFactory};
+export {$234747a9630b4642$export$3545e07a80636437 as REVISION, $1b983a38f3bf9a9b$export$3c33b7cf4c12f471 as InterfcaeFactory, $54db50d775dc5ee6$export$aca70b982fa554b6 as CT_Cartesian3, $19176608e346944f$export$5851ecdbb051d869 as CT_Ellipsoid, $b5a7119ef71cd3f1$export$e6eceaa934a6d3e5 as CT_Matrix4, $809c87f5dbed8e16$export$487e31a511bfcc15 as CT_Quaternion, $23952d628235a608$export$4fd467e6c04a27e1 as CT_Transforms, $9cc46a5bb5d8ad43$export$2779d2581814b131 as CT_WGS84, $a37d01845c731898$export$6a7ef315a0d1ef07 as MathUtils};
 //# sourceMappingURL=index.js.map
