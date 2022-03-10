@@ -109,26 +109,29 @@ class $d1b8e958636edac6$export$adfa9d260876eca5 {
 class $f20f17e129275ffd$export$8890c8adaae71a72 {
     /**
 	 * 다음 장면을 그립니다.
-	 */ _renderNextAnimationFrame() {
-        this.param = this._queue.pop();
-        if (this.param) this.graphic.render(this.param);
-        this._handle = requestAnimationFrame(this._bindRenderNextAnimationFrame);
-        this._renderSubject.next();
+	 */ _render() {
+        if (this.param) {
+            this.graphic.render(this.param);
+            this.param = undefined;
+            this._renderSubject.next();
+        }
+        this._isRequestRender = false;
     }
     /**
 	 * 다음 장면을 요청합니다.
 	 * @param param 렌더링 파라미터
-	 */ updateNextAnimationFrame(param) {
-        if (this._queue.length) this._queue[0] = param;
-        else this._queue.push(param);
-        if (!this._handle) this._renderNextAnimationFrame();
+	 */ requestRender(param) {
+        if (!this._isRequestRender) {
+            this._isRequestRender = true;
+            this.param = param;
+            this._render();
+        }
     }
     constructor(){
-        this._queue = [];
         this.graphic = $d1b8e958636edac6$export$adfa9d260876eca5.getInstance();
-        this._bindRenderNextAnimationFrame = this._renderNextAnimationFrame.bind(this);
         this._renderSubject = new $d9Ejt$Subject();
         this.renderNextFrame$ = this._renderSubject.pipe();
+        this._isRequestRender = false;
     }
 }
 
@@ -564,7 +567,7 @@ class $c895e49b264c1790$export$2e2bcd8739ae039 {
             const message = e.data;
             if (message) switch(message.type){
                 case $c895e49b264c1790$export$8d9ecf8a6190d0ad.RENDER:
-                    this._renderQueue.updateNextAnimationFrame({
+                    this._renderQueue.requestRender({
                         ...message.param
                     });
                     break;
