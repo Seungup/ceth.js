@@ -62,6 +62,9 @@ export class Graphic {
 		this.renderer?.setSize(width, height, false);
 	}
 
+	// 지구 뒷편 오브젝트 렌더링 여부
+	renderBehindEarthOfObject: boolean = false;
+
 	private _normalMatrix = new THREE.Matrix3();
 	/**
 	 * 장면을 렌더링합니다.
@@ -87,8 +90,12 @@ export class Graphic {
 			);
 			this.camera.updateProjectionMatrix();
 
-			this._normalMatrix.getNormalMatrix(this.camera.matrixWorldInverse);
-			this.scene.traverse(this._setObjectVisible.bind(this));
+			if (!this.renderBehindEarthOfObject) {
+				this._normalMatrix.getNormalMatrix(
+					this.camera.matrixWorldInverse
+				);
+				this.scene.traverse(this._setObjectVisible.bind(this));
+			}
 
 			this.renderer.render(this.scene, this.camera);
 		}

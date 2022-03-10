@@ -36,6 +36,14 @@ export default class CoreThread {
 		};
 	}
 
+	getRenderBehindEarthOfObject() {
+		return this.graphic.renderBehindEarthOfObject;
+	}
+
+	setRenderBehindEarthOfObject(visible: boolean) {
+		this.graphic.renderBehindEarthOfObject = visible;
+	}
+
 	init(canvas: HTMLCanvasElement) {
 		this.graphic.init(canvas);
 	}
@@ -111,7 +119,7 @@ export default class CoreThread {
 
 		if (wgs84) {
 			if (wgs84.height === 0) {
-				wgs84.height = box3.y;
+				wgs84.height = box3.z;
 			}
 			object.applyMatrix4(
 				CT_WGS84.fromThreeWGS84(
