@@ -50,10 +50,10 @@ export class ObjectRenderer {
 	 * 장면을 그리기 위한 크기를 설정합니다.
 	 * @param width
 	 * @param height
-	 * @returns
+	 *
 	 */
 	setSize(width: number, height: number) {
-		return this.coreWrapper.setSize(width, height);
+		this.coreWrapper.setSize(width, height);
 	}
 
 	/**
@@ -72,5 +72,6 @@ export class ObjectRenderer {
 			},
 			[cvm.buffer, civm.buffer]
 		);
+		// cvm, civm 은 postMessage 로 보내진 후 오브젝트가 자동으로 파기되어 더 이상 사용 불가함.
 	}
 }
