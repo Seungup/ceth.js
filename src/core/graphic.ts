@@ -63,7 +63,7 @@ export class Graphic {
 	}
 
 	// 지구 뒷편 오브젝트 렌더링 여부
-	renderBehindEarthOfObject: boolean = false;
+	renderBehindEarthOfObject: boolean = true;
 
 	private _normalMatrix = new THREE.Matrix3();
 	/**
@@ -90,6 +90,7 @@ export class Graphic {
 			);
 			this.camera.updateProjectionMatrix();
 
+			// 지구 뒷편 오브젝트 계산 여부
 			if (!this.renderBehindEarthOfObject) {
 				this._normalMatrix.getNormalMatrix(
 					this.camera.matrixWorldInverse

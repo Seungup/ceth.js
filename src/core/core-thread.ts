@@ -171,7 +171,6 @@ export default class CoreThread {
 		camera.far = param.far;
 		camera.near = param.near;
 		camera.fov = param.fov;
-		console.table(param);
 		camera.updateProjectionMatrix();
 	}
 
