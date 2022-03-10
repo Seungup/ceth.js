@@ -25,7 +25,7 @@ export default class CoreThread {
 			if (message) {
 				switch (message.type) {
 					case RequestType.RENDER:
-						this._renderQueue.updateNextAnimationFrame({
+						this._renderQueue.requestRender({
 							...message.param,
 						});
 						break;
