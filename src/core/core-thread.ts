@@ -138,7 +138,6 @@ export default class CoreThread {
 	}
 
 	getWGS84(id: number) {
-		debugger;
 		const wgs84: CT_WGS84 | undefined = this.getObject(id)?.userData.wgs84;
 		if (
 			wgs84 &&
