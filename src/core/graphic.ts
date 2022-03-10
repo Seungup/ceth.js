@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { CT_Cartesian3, IWGS84 } from '.';
 
 export interface CurrentExtent {
 	xmin: number;
@@ -61,6 +62,7 @@ export class Graphic {
 		this.renderer?.setSize(width, height, false);
 	}
 
+	private _normalMatrix = new THREE.Matrix3();
 	/**
 	 * 장면을 렌더링합니다.
 	 * @param param
@@ -84,7 +86,47 @@ export class Graphic {
 				param.cvm[ 3], param.cvm[ 7], param.cvm[11], param.cvm[15]
 			);
 			this.camera.updateProjectionMatrix();
+
+			this._normalMatrix.getNormalMatrix(this.camera.matrixWorldInverse);
+			this.scene.traverse(this._setObjectVisible.bind(this));
+
 			this.renderer.render(this.scene, this.camera);
 		}
+	}
+
+	private _tempVector3 = new THREE.Vector3();
+	private _cameraToPoint = new THREE.Vector3();
+	/**
+	 * 오브젝트의 지구 뒷면 렌더링을 제어합니다.
+	 *
+	 * @param object
+	 * @returns
+	 */
+	private _setObjectVisible(object: THREE.Object3D) {
+		// 위치를 가지는 오브젝트만 선정
+		if (!object.userData.wgs84) return;
+
+		this._tempVector3
+			.copy(object.position)
+			.applyMatrix3(this._normalMatrix);
+
+		this._cameraToPoint
+			.copy(object.position)
+			.applyMatrix4(this.camera.matrixWorldInverse)
+			.normalize();
+
+		/**
+		 * 카메라에서 현재 위치의 방향(벡터) 값으로 카메라에서 지구본 위 위치값 까지의
+		 * 방향 값을 구한 후, 이 값으로 스칼라 곱을 구한다.
+		 *
+		 * == -1 : 카메라를 정면으로 바라봄
+		 *
+		 * ==  0 : 카메라에서 구면에 정확히 접선함.
+		 *
+		 * >=  0 : 카메라 뒷면에 있음
+		 */
+		const dot = this._tempVector3.dot(this._cameraToPoint);
+		const maxDot = -0.2;
+		object.visible = dot < maxDot;
 	}
 }
