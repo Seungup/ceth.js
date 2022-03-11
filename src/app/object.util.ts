@@ -42,7 +42,7 @@ export class ObjectUtil {
   flyByObjectAPI(api: ObjectAPI) {
     const position = api.getPosition();
     const box3 = api.getBox3();
-    if (position && box3) {
+    if (position) {
       const radius = box3 ? box3.z * 3 : undefined;
       return this.flyByWGS84(position, radius);
     }
