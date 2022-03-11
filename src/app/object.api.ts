@@ -1,44 +1,54 @@
+import { Vector3 } from 'three';
 import { IWGS84 } from '../core';
 import { SingletonWorkerFactory } from '../core/worker-factory';
 
 export class ObjectAPI {
-	readonly id: number;
-	private readonly _coreThread =
-		SingletonWorkerFactory.getWrapper('CoreThread');
+    readonly id: number;
+    private readonly _coreThread =
+        SingletonWorkerFactory.getWrapper('CoreThread');
 
-	constructor(id: number) {
-		this.id = id;
-	}
+    private _cachedPosition: IWGS84 | undefined;
+    private _cachedBox3: Vector3 | undefined;
+    constructor(id: number) {
+        this.id = id;
+        this._coreThread.getUserData(this.id).then((userData) => {
+            if (userData) {
+                this._cachedPosition = userData.wgs84;
+                this._cachedBox3 = new Vector3(
+                    userData.box3.x,
+                    userData.box3.y,
+                    userData.box3.z
+                );
+            }
+        });
+    }
 
-	getUserData(key: string) {
-		return this._coreThread.getUserDataAt(this.id, key);
-	}
+    hide() {
+        return this._coreThread.hide(this.id);
+    }
 
-	setUserData(key: string, value: any) {
-		return this._coreThread.setUserDataAt(this.id, key, value);
-	}
+    show() {
+        return this._coreThread.show(this.id);
+    }
 
-	hide() {
-		return this._coreThread.hide(this.id);
-	}
+    setPosition(position: IWGS84) {
+        this._cachedPosition = position;
+        return this._coreThread.setPosition(this.id, position);
+    }
 
-	show() {
-		return this._coreThread.show(this.id);
-	}
+    getBox3() {
+        return this._cachedBox3;
+    }
 
-	setPosition(position: IWGS84) {
-		return this._coreThread.setPosition(this.id, position);
-	}
+    getPosition() {
+        return this._cachedPosition;
+    }
 
-	getPosition() {
-		return this._coreThread.getPosition(this.id);
-	}
+    dispose() {
+        return this._coreThread.delete(this.id);
+    }
 
-	dispose() {
-		return this._coreThread.delete(this.id);
-	}
-
-	isDisposed() {
-		return this._coreThread.isExist(this.id);
-	}
+    isDisposed() {
+        return this._coreThread.isExist(this.id);
+    }
 }
