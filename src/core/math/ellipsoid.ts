@@ -1,10 +1,10 @@
-import { Vector3 } from "three";
+import { Vector3 } from 'three';
 import {
   EARTH_RADIUS_X,
   EARTH_RADIUS_Y,
   EARTH_RADIUS_Z,
-} from "../../constants";
-import { CT_Cartesian3 } from "./cartesian3";
+} from '../../constants';
+import { CT_Cartesian3 } from './cartesian3';
 
 export class CT_Ellipsoid extends Vector3 {
   private _oneOverRadiiSquared: CT_Cartesian3;

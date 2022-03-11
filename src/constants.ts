@@ -1,4 +1,4 @@
-export const REVISION = "0dev";
+export const REVISION = '0dev';
 export const EARTH_RADIUS_X = 6378137.0;
 export const EARTH_RADIUS_Y = 6378137.0;
 export const EARTH_RADIUS_Z = 6356752.3142451793;

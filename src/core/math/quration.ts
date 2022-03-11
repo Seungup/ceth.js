@@ -1,5 +1,5 @@
-import { Vector4 } from "three";
-import { CT_Cartesian3 } from ".";
+import { Vector4 } from 'three';
+import { CT_Cartesian3 } from '.';
 
 export class CT_Quaternion extends Vector4 {
   private static _fromAxisAngleScratch = new CT_Cartesian3();

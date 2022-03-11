@@ -1,11 +1,11 @@
-import { wrap, Remote } from "comlink";
-import CoreThread from "./core-thread";
+import { wrap, Remote } from 'comlink';
+import CoreThread from './core-thread';
 
 interface WorkerMap {
   CoreThread: CoreThread;
 }
 export const WorkerURL = {
-  CoreThread: new URL("./core-thread", import.meta.url),
+  CoreThread: new URL('./core-thread', import.meta.url),
 } as const;
 
 export type WorkerURL = typeof WorkerURL[keyof typeof WorkerURL];
@@ -21,7 +21,7 @@ export class SingletonWorkerFactory {
     let worker: Worker;
     const workerURL = WorkerURL[workerClassName];
     if (!this.workerMap.has(workerURL)) {
-      worker = new Worker(workerURL, { type: "module" });
+      worker = new Worker(workerURL, { type: 'module' });
       this.workerMap.set(workerURL, worker);
     } else {
       worker = this.workerMap.get(workerURL)!;
