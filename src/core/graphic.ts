@@ -74,18 +74,18 @@ export class Graphic {
 
       // prettier-ignore
       this.camera.matrixWorld.set(
-				param.civm[ 0], param.civm[ 4], param.civm[ 8], param.civm[12],
-				param.civm[ 1], param.civm[ 5], param.civm[ 9], param.civm[13],
-				param.civm[ 2], param.civm[ 6], param.civm[10], param.civm[14],
-				param.civm[ 3], param.civm[ 7], param.civm[11], param.civm[15]
-			);
+	  param.civm[ 0], param.civm[ 4], param.civm[ 8], param.civm[12],
+	  param.civm[ 1], param.civm[ 5], param.civm[ 9], param.civm[13],
+	  param.civm[ 2], param.civm[ 6], param.civm[10], param.civm[14],
+	  param.civm[ 3], param.civm[ 7], param.civm[11], param.civm[15]
+      );
       // prettier-ignore
       this.camera.matrixWorldInverse.set(
-				param.cvm[ 0], param.cvm[ 4], param.cvm[ 8], param.cvm[12],
-				param.cvm[ 1], param.cvm[ 5], param.cvm[ 9], param.cvm[13],
-				param.cvm[ 2], param.cvm[ 6], param.cvm[10], param.cvm[14],
-				param.cvm[ 3], param.cvm[ 7], param.cvm[11], param.cvm[15]
-			);
+	  param.cvm[ 0], param.cvm[ 4], param.cvm[ 8], param.cvm[12],
+	  param.cvm[ 1], param.cvm[ 5], param.cvm[ 9], param.cvm[13],
+	  param.cvm[ 2], param.cvm[ 6], param.cvm[10], param.cvm[14],
+	  param.cvm[ 3], param.cvm[ 7], param.cvm[11], param.cvm[15]
+      );
       this.camera.updateProjectionMatrix();
 
       // 지구 뒷편 오브젝트 계산 여부
