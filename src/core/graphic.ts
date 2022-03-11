@@ -1,13 +1,5 @@
 import * as THREE from 'three';
 
-export interface CurrentExtent {
-  xmin: number;
-  ymin: number;
-  xmax: number;
-  ymax: number;
-  height: number;
-}
-
 export interface RenderParam {
   cvm: Float64Array;
   civm: Float64Array;
