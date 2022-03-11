@@ -1,3 +1,3 @@
-export { REVISION } from "./constants";
-export * from "./app";
-export * from "./core";
+export { REVISION } from './constants';
+export * from './app';
+export * from './core';

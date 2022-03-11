@@ -34,16 +34,16 @@ export class ObjectRenderer {
 	 *
 	 * @param doRender
 	 */
-	async setRenderBehindEarthOfObject(doRender: boolean) {
-		await this.coreWrapper.setRenderBehindEarthOfObject(doRender);
+	async setRenderBehindEarthOfObjects(doRender: boolean) {
+		await this.coreWrapper.setRenderBehindEarthOfObjects(doRender);
 	}
 	/**
 	 * 지구 뒷편에 존재하는 오브젝트의 렌더링 여부를 가져옵니다.
 	 *
 	 * @returns 렌더링 여부
 	 */
-	async getRenderBehindEarthOfObject() {
-		return await this.coreWrapper.getRenderBehindEarthOfObject();
+	async getRenderBehindEarthOfObjects() {
+		return await this.coreWrapper.getRenderBehindEarthOfObjects();
 	}
 
 	/**
@@ -73,5 +73,9 @@ export class ObjectRenderer {
 			[cvm.buffer, civm.buffer]
 		);
 		// cvm, civm 은 postMessage 로 보내진 후 오브젝트가 자동으로 파기되어 더 이상 사용 불가함.
+	}
+
+	visible(show: boolean) {
+		this.coreWrapper.visible(show);
 	}
 }

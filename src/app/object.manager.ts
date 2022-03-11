@@ -13,14 +13,6 @@ export class ObjectManager {
 		SingletonWorkerFactory.getWrapper('CoreThread');
 
 	async add(object: Object3D, position?: IWGS84): Promise<ObjectAPI> {
-		const wgs84 = position
-			? CT_WGS84.fromCesiumWGS84(
-					position.latitude,
-					position.longitude,
-					position.height
-			  ).toJSON()
-			: undefined;
-
 		/**
 		 * 위치 값을 가지는 오브젝트인 경우 90도 회전하여,
 		 * Cesium 에서 정상적으로 보이도록 변환한다.
@@ -30,7 +22,7 @@ export class ObjectManager {
 			object.applyMatrix4(matrixRot90X);
 		}
 
-		const id = await this.coreWrapper.add(object.toJSON(), wgs84);
+		const id = await this.coreWrapper.add(object.toJSON(), position);
 		return new ObjectAPI(id);
 	}
 

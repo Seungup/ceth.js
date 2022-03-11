@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { CT_Cartesian3, IWGS84 } from '.';
 
 export interface CurrentExtent {
 	xmin: number;
@@ -40,9 +39,11 @@ export class Graphic {
 			canvas: canvas,
 			powerPreference: 'high-performance',
 			alpha: true,
-			antialias: true,
+			antialias: false,
 			logarithmicDepthBuffer: true,
 			depth: false,
+			preserveDrawingBuffer: false,
+			stencil: false,
 		};
 
 		const context = canvas.getContext('webgl2');
@@ -51,9 +52,6 @@ export class Graphic {
 		}
 
 		this.renderer = new THREE.WebGLRenderer(params);
-		console.log(
-			`[Graphic] isWebGL2Enabled : ${this.renderer.capabilities.isWebGL2}`
-		);
 	}
 
 	setSize(width: number, height: number) {
@@ -63,7 +61,7 @@ export class Graphic {
 	}
 
 	// 지구 뒷편 오브젝트 렌더링 여부
-	renderBehindEarthOfObject: boolean = true;
+	renderBehindEarthOfObjects: boolean = true;
 
 	private _normalMatrix = new THREE.Matrix3();
 	/**
@@ -91,7 +89,7 @@ export class Graphic {
 			this.camera.updateProjectionMatrix();
 
 			// 지구 뒷편 오브젝트 계산 여부
-			if (!this.renderBehindEarthOfObject) {
+			if (!this.renderBehindEarthOfObjects) {
 				this._normalMatrix.getNormalMatrix(
 					this.camera.matrixWorldInverse
 				);
@@ -123,18 +121,8 @@ export class Graphic {
 			.applyMatrix4(this.camera.matrixWorldInverse)
 			.normalize();
 
-		/**
-		 * 카메라에서 현재 위치의 방향(벡터) 값으로 카메라에서 지구본 위 위치값 까지의
-		 * 방향 값을 구한 후, 이 값으로 스칼라 곱을 구한다.
-		 *
-		 * == -1 : 카메라를 정면으로 바라봄
-		 *
-		 * ==  0 : 카메라에서 구면에 정확히 접선함.
-		 *
-		 * >=  0 : 카메라 뒷면에 있음
-		 */
 		const dot = this._tempVector3.dot(this._cameraToPoint);
-		const maxDot = -0.2;
-		object.visible = dot < maxDot;
+
+		object.visible = dot < 0;
 	}
 }

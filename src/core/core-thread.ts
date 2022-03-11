@@ -1,8 +1,17 @@
 import { expose } from 'comlink';
 import { Graphic } from './graphic';
-import { Box3, BoxHelper, Object3D, ObjectLoader, Vector3 } from 'three';
+import {
+	Box3,
+	BoxHelper,
+	Matrix4,
+	Object3D,
+	ObjectLoader,
+	Vector3,
+} from 'three';
 import { RenderQueue } from './render-queue';
 import { CT_WGS84, IWGS84 } from './math';
+import { pointInsideTriangle } from 'cesium';
+import { BehaviorSubject } from 'rxjs';
 
 export interface CameraInitParam {
 	aspect: number;
@@ -36,12 +45,12 @@ export default class CoreThread {
 		};
 	}
 
-	getRenderBehindEarthOfObject() {
-		return this.graphic.renderBehindEarthOfObject;
+	getRenderBehindEarthOfObjects() {
+		return this.graphic.renderBehindEarthOfObjects;
 	}
 
-	setRenderBehindEarthOfObject(visible: boolean) {
-		this.graphic.renderBehindEarthOfObject = visible;
+	setRenderBehindEarthOfObjects(visible: boolean) {
+		this.graphic.renderBehindEarthOfObjects = visible;
 	}
 
 	init(canvas: HTMLCanvasElement) {
@@ -95,6 +104,14 @@ export default class CoreThread {
 		}
 	}
 
+	visible(show: boolean) {
+		this.graphic.scene.visible = show;
+	}
+
+	isVisible() {
+		return this.graphic.scene.visible;
+	}
+
 	hide(id: number) {
 		const object = this.getObject(id);
 		if (object) {
@@ -111,24 +128,19 @@ export default class CoreThread {
 		return !!object;
 	}
 
-	add(json: any, wgs84: IWGS84 | undefined) {
+	add(json: any, position: IWGS84 | undefined) {
 		const object = this.objectLoader.parse(json);
 
 		const box3 = new Box3().setFromObject(object).max;
 		object.userData.box3 = box3;
 
-		if (wgs84) {
-			if (wgs84.height === 0) {
-				wgs84.height = box3.z;
+		if (position) {
+			if (position.height === 0) {
+				position.height = box3.z;
 			}
-			object.applyMatrix4(
-				CT_WGS84.fromThreeWGS84(
-					wgs84.latitude,
-					wgs84.longitude,
-					wgs84.height
-				).getMatrix4()
-			);
-			object.userData.wgs84 = wgs84;
+			const wgs84 = new CT_WGS84(position);
+			object.applyMatrix4(wgs84.getMatrix4());
+			object.userData.wgs84 = wgs84.toIWGS84();
 		}
 
 		this.graphic.scene.add(object);
@@ -145,20 +157,29 @@ export default class CoreThread {
 		return !!object;
 	}
 
-	getWGS84(id: number) {
-		const wgs84: CT_WGS84 | undefined = this.getObject(id)?.userData.wgs84;
-		if (
-			wgs84 &&
-			wgs84.latitude !== undefined &&
-			wgs84.longitude !== undefined &&
-			wgs84.height !== undefined
-		) {
-			return {
-				latitude: wgs84.longitude,
-				longitude: wgs84.latitude,
-				height: wgs84.height,
-			} as IWGS84;
+	getPosition(id: number): IWGS84 | undefined {
+		return this.getObject(id)?.userData.wgs84;
+	}
+
+	setPosition(id: number, position: IWGS84) {
+		const object = this.getObject(id);
+		if (object) {
+			if (position.height === 0) {
+				let box3: Vector3 | undefined = object.userData.box3;
+				if (!box3) {
+					box3 = new Box3().setFromObject(object).max;
+					object.userData.box3 = box3;
+				}
+				position.height = box3.z;
+			}
+			const wgs84 = new CT_WGS84(position);
+			console.log(wgs84.toIWGS84());
+			object.position.set(0, 0, 0);
+			object.rotation.set(0, 0, 0);
+			object.applyMatrix4(wgs84.getMatrix4());
+			object.userData.wgs84 = wgs84.toIWGS84();
 		}
+		return !!object;
 	}
 
 	setSize(width: number, height: number) {
@@ -172,23 +193,6 @@ export default class CoreThread {
 		camera.near = param.near;
 		camera.fov = param.fov;
 		camera.updateProjectionMatrix();
-	}
-
-	updatePosition(id: number, position: IWGS84) {
-		const object = this.getObject(id);
-		if (object) {
-			position.height = position.height
-				? new Box3().setFromObject(object).max.y
-				: 0;
-			const wgs84 = CT_WGS84.fromCesiumWGS84(
-				position.latitude,
-				position.longitude,
-				position.height
-			);
-			object.applyMatrix4(wgs84.getMatrix4());
-			object.userData.wgs84 = wgs84;
-		}
-		return !!object;
 	}
 
 	delete(id: number) {
