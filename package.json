@@ -20,11 +20,11 @@
 		"comlink": "^4.3.1",
 		"parcel": "^2.2.1",
 		"rxjs": "^7.5.3",
-		"three": "^0.138.3"
+		"three": "0.138.3"
 	},
 	"peerDependencies": {
-		"three": "0.138.3",
-		"cesium": "^1.90.0"
+		"cesium": "^1.90.0",
+		"three": "0.138.3"
 	},
 	"devDependencies": {
 		"@parcel/config-default": "^2.2.1",
@@ -34,6 +34,7 @@
 		"@types/offscreencanvas": "^2019.6.4",
 		"@types/three": "^0.138.0",
 		"typescript": "^4.5.5",
-		"cesium": "^1.90.0"
+		"cesium": "^1.90.0",
+		"three": "^0.138.3"
 	}
 }
