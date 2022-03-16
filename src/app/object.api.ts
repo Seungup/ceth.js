@@ -1,54 +1,63 @@
-import { Vector3 } from 'three';
-import { IWGS84 } from '../core';
-import { SingletonWorkerFactory } from '../core/worker-factory';
+import { Vector3 } from "three";
+import { IWGS84 } from "../core";
+import { SingletonWorkerFactory } from "../core/worker-factory";
 
 export class ObjectAPI {
-  readonly id: number;
-  private readonly _coreThread =
-    SingletonWorkerFactory.getWrapper('CoreThread');
+    readonly id: number;
+    private readonly _coreThread =
+        SingletonWorkerFactory.getWrapper("CoreThread");
 
-  private _cachedPosition: IWGS84 | undefined;
-  private _cachedBox3: Vector3 | undefined;
-  constructor(id: number) {
-    this.id = id;
-    this._coreThread.getUserData(this.id).then((userData) => {
-      if (userData) {
-        this._cachedPosition = userData.wgs84;
-        this._cachedBox3 = new Vector3(
-          userData.box3.x,
-          userData.box3.y,
-          userData.box3.z
-        );
-      }
-    });
-  }
+    private _cachedPosition: IWGS84 | undefined;
+    private _cachedBox3: Vector3 | undefined;
+    constructor(id: number) {
+        this.id = id;
+    }
 
-  hide() {
-    return this._coreThread.hide(this.id);
-  }
+    async update() {
+        const userData = await this._coreThread.getUserData(this.id);
 
-  show() {
-    return this._coreThread.show(this.id);
-  }
+        if (userData) {
+            this._cachedPosition = userData.wgs84;
+            this._cachedBox3 = new Vector3(
+                userData.box3.x,
+                userData.box3.y,
+                userData.box3.z
+            );
+        }
+    }
 
-  setPosition(position: IWGS84) {
-    this._cachedPosition = position;
-    return this._coreThread.setPosition(this.id, position);
-  }
+    hide() {
+        return this._coreThread.hide(this.id);
+    }
 
-  getBox3() {
-    return this._cachedBox3;
-  }
+    show() {
+        return this._coreThread.show(this.id);
+    }
 
-  getPosition() {
-    return this._cachedPosition;
-  }
+    setPosition(position: IWGS84) {
+        this._cachedPosition = position;
+        return this._coreThread.setPosition(this.id, position);
+    }
 
-  dispose() {
-    return this._coreThread.delete(this.id);
-  }
+    async getBox3() {
+        if (!this._cachedBox3) {
+            await this.update();
+        }
+        return this._cachedBox3;
+    }
 
-  isDisposed() {
-    return this._coreThread.isExist(this.id);
-  }
+    async getPosition() {
+        if (!this._cachedPosition) {
+            await this.update();
+        }
+        return this._cachedPosition;
+    }
+
+    dispose() {
+        return this._coreThread.delete(this.id);
+    }
+
+    isDisposed() {
+        return this._coreThread.isExist(this.id);
+    }
 }

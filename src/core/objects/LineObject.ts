@@ -31,7 +31,7 @@ export class LineObject extends Line2 implements IMetaObject {
         const colors = [];
         const color = new Color(param.color);
 
-        if (positions.length == 0) {
+        if (param.points.length == 0) {
             colors.push(color.r, color.g, color.b);
         } else {
             for (let i = 0; i < param.points.length; i++) {

@@ -39,7 +39,6 @@ export default class CoreThread {
                                 metaClass.getObject3D(),
                                 message.position
                             );
-                            console.log(metaClass);
                             this.graphic.scene.add(metaClass.getObject3D());
                         }
                         break;
@@ -126,8 +125,25 @@ export default class CoreThread {
 
     add(json: any, position: IWGS84 | undefined) {
         const object = this.objectLoader.parse(json);
-        this.beforeAdd(object, position);
+        object.userData.original = {
+            position: object.position.clone(),
+            rotation: object.rotation.clone(),
+            scale: object.scale.clone(),
+        };
+        const box3 = new Box3().setFromObject(object).max;
+        object.userData.box3 = box3;
+
+        if (position) {
+            if (position.height === 0) {
+                position.height = box3.z;
+            }
+            const wgs84 = new CT_WGS84(position, WGS84_TYPE.CESIUM);
+            object.applyMatrix4(wgs84.getMatrix4());
+            object.userData.wgs84 = wgs84.toIWGS84();
+        }
+
         this.graphic.scene.add(object);
+
         return object.id;
     }
 
