@@ -1,7 +1,7 @@
-import { LineObject } from "./LineObject";
+import { CircleObject } from './CircleObject';
 
 export const ObjectStore = {
-    LineObject,
+	CircleObject,
 } as const;
 
 export type ObjectStore = typeof ObjectStore[keyof typeof ObjectStore];
