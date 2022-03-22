@@ -1,6 +1,5 @@
 import { Matrix4, Vector3 } from 'three';
 import { CT_Cartesian3, CT_Transforms } from '.';
-import { CT_Matrix4 } from './matrix4';
 
 export interface IWGS84 {
 	latitude: number;
@@ -47,7 +46,7 @@ export class CT_WGS84 extends Vector3 {
 		this.setZ(value);
 	}
 
-	getMatrix4(result: CT_Matrix4 = new CT_Matrix4()) {
+	getMatrix4(result: Matrix4 = new Matrix4()) {
 		const matrix = CT_Transforms.matrix4ToFixedFrame(
 			CT_Cartesian3.fromDegree(
 				this.longitude,

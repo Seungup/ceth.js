@@ -1,4 +1,4 @@
-import { BufferGeometry, Object3D } from 'three';
+import { Object3D } from 'three';
 
 export class MetaObjectCache {
 	private static _class = new Map<string, { new (): IMetaObject }>();
