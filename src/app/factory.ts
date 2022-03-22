@@ -46,7 +46,6 @@ export class InterfcaeFactory {
 		const offscreen = canvas.transferControlToOffscreen();
 		offscreen.width = this.viewer.canvas.width;
 		offscreen.height = this.viewer.canvas.height;
-		console.log(offscreen);
 		this.coreWorker.postMessage(
 			{
 				type: RequestType.INIT,
