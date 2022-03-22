@@ -1,7 +1,5 @@
-import { Subject } from 'rxjs';
 import { Object3D } from 'three';
-import { IWGS84, CT_Matrix4, ObjectStore } from '../core';
-import { RequestType } from '../core/core-thread';
+import { IWGS84, MetaObjectConstructorMap, MetaObjectClassMap } from '../core';
 import { SingletonWorkerFactory } from '../core/worker-factory';
 import { ObjectAPI } from './object.api';
 
@@ -14,9 +12,13 @@ export class ObjectManager {
 	private readonly coreWrapper =
 		SingletonWorkerFactory.getWrapper('CoreThread');
 
-	async addObject(_class: ObjectStore, initParam: any, position: IWGS84) {
+	async addObject<T extends keyof MetaObjectClassMap>(
+		_class: T,
+		initParam: MetaObjectConstructorMap[T],
+		position: IWGS84 | undefined = undefined
+	) {
 		const id = await this.coreWrapper.createObject(
-			_class.name,
+			_class,
 			initParam,
 			position
 		);
