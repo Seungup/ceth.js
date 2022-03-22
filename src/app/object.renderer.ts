@@ -3,6 +3,7 @@ import { RenderParam } from '../core/graphic';
 import { SingletonWorkerFactory } from '../core/worker-factory';
 import { Math as CesiumMath, PerspectiveFrustum } from 'cesium';
 import { RequestType } from '../core/core-thread';
+import { getCameraPosition } from './common.utils';
 
 export class ObjectRenderer {
 	private readonly coreWorker =
@@ -28,28 +29,8 @@ export class ObjectRenderer {
 		});
 
 		this.coreWrapper.setSize(w, h);
-	}
-
-	/**
-	 * 지구 뒷편에 존재하는 오브젝트 렌더링 여부 설정합니다.
-	 *
-	 * 만약 오브젝트의 위치가 전 세계가 아닐 경우
-	 * true 로 설정하여 성능을 향상시킬 수 있습니다.
-	 *
-	 * @default false
-	 *
-	 * @param doRender
-	 */
-	async setRenderBehindEarthOfObjects(doRender: boolean) {
-		await this.coreWrapper.setRenderBehindEarthOfObjects(doRender);
-	}
-	/**
-	 * 지구 뒷편에 존재하는 오브젝트의 렌더링 여부를 가져옵니다.
-	 *
-	 * @returns 렌더링 여부
-	 */
-	async getRenderBehindEarthOfObjects() {
-		return await this.coreWrapper.getRenderBehindEarthOfObjects();
+		// 카메라의 높이가 1km 보다 작을 경우, 내부 오브젝트 포지션 계산을 중지하여, 가까운 물체의 가시성이 삭제되는 현상 보완
+		this.coreWrapper.setRenderBehindEarthOfObjects(getCameraPosition(this.viewer).height < 1000);
 	}
 
 	/**
