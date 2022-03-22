@@ -1,12 +1,8 @@
 import * as Cesium from 'cesium';
 import { IWGS84 } from '..';
-import { SingletonWorkerFactory } from '../core/worker-factory';
 import { ObjectAPI } from './object.api';
 
 export class ObjectUtil {
-	private readonly coreWrapper =
-		SingletonWorkerFactory.getWrapper('CoreThread');
-
 	constructor(private readonly viewer: Cesium.Viewer) {
 		this.viewer.canvas.addEventListener(
 			'contextmenu',
@@ -36,8 +32,8 @@ export class ObjectUtil {
 
 			return {
 				height: 0,
-				latitude: Number(lat.toFixed(15)),
-				longitude: Number(lon.toFixed(15)),
+				latitude: lat,
+				longitude: lon,
 			} as IWGS84;
 		}
 	}
