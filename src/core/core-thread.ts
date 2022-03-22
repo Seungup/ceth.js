@@ -65,6 +65,13 @@ export default class CoreThread {
 	}
 
 	setRenderBehindEarthOfObjects(visible: boolean) {
+		if (visible) {
+			this.graphic.scene.traverse((object) => {
+				if (object.userData.wgs84 && !object.visible) {
+					object.visible = true
+				};
+			})
+		}
 		this.graphic.renderBehindEarthOfObjects = visible;
 	}
 
