@@ -4,7 +4,7 @@ import { Box3, Object3D, ObjectLoader, Vector3 } from 'three';
 import { RenderQueue } from './render-queue';
 import { CT_WGS84, IWGS84 } from './math';
 import { MetaObjectCache } from './objects/MetaObject';
-import { ObjectStore, WGS84_TYPE } from '.';
+import { MetaObjectClassMap, MetaObjectConstructorMap, WGS84_TYPE } from '.';
 
 export interface CameraInitParam {
 	aspect: number;
@@ -30,6 +30,9 @@ export default class CoreThread {
 							...message.param,
 						});
 						break;
+					case RequestType.INIT:
+						this.graphic.init(message.canvas);
+						break;
 					default:
 						break;
 				}
@@ -37,15 +40,19 @@ export default class CoreThread {
 		};
 	}
 
-	createObject(_class: string, initParam: any, position: IWGS84) {
-		const MetaClass = MetaObjectCache.get(_class);
+	createObject<T extends keyof MetaObjectClassMap>(
+		_class: T,
+		initParam: MetaObjectConstructorMap[T],
+		position: IWGS84 | undefined
+	) {
+		const MetaClass = MetaObjectCache.get(MetaObjectClassMap[_class].name);
 		if (MetaClass) {
 			const metaClass = new MetaClass();
 			metaClass.onInitialization(initParam);
-			this.beforeAdd(
-				metaClass,
-				new CT_WGS84(position, WGS84_TYPE.CESIUM).toIWGS84()
-			);
+			if (position) {
+				position = new CT_WGS84(position, WGS84_TYPE.CESIUM).toIWGS84();
+			}
+			this.beforeAdd(metaClass, position);
 			this.graphic.scene.add(metaClass);
 			return metaClass.id;
 		}
@@ -57,14 +64,6 @@ export default class CoreThread {
 
 	setRenderBehindEarthOfObjects(visible: boolean) {
 		this.graphic.renderBehindEarthOfObjects = visible;
-	}
-
-	init(canvas: HTMLCanvasElement) {
-		this.graphic.init(canvas);
-	}
-
-	setPixelRatio(value: number) {
-		this.graphic.setPixelRatio(value);
 	}
 
 	getUserData(id: number) {
@@ -114,15 +113,18 @@ export default class CoreThread {
 		};
 		const box3 = new Box3().setFromObject(object).max;
 		object.userData.box3 = box3;
-
-		if (position) {
-			if (position.height === 0) {
-				position.height = box3.z;
-			}
-			const wgs84 = new CT_WGS84(position, WGS84_TYPE.CESIUM);
-			object.applyMatrix4(wgs84.getMatrix4());
-			object.userData.wgs84 = wgs84.toIWGS84();
+		if (!position) {
+			position = { height: 0, latitude: 0, longitude: 0 };
 		}
+
+		// 높이가 존재하는 물체라면, 높이 적용
+		if (position.height === 0 && box3.z !== 0) {
+			position.height = box3.z;
+		}
+
+		const wgs84 = new CT_WGS84(position, WGS84_TYPE.CESIUM);
+		object.applyMatrix4(wgs84.getMatrix4());
+		object.userData.wgs84 = wgs84.toIWGS84();
 	}
 
 	add(json: any, position: IWGS84 | undefined) {
@@ -209,6 +211,7 @@ export default class CoreThread {
 
 export const RequestType = Object.freeze({
 	RENDER: 0,
+	INIT: 1,
 });
 
 expose(new CoreThread());
