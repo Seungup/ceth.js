@@ -7,14 +7,31 @@
 import { Viewer } from 'cesium';
 import './css/main.css';
 import * as CT from '../../src';
-import { CircleObjectInitializationParam } from '../../src/core/objects/CircleObject';
 
-const viewer = new Viewer('cesiumContainer', { useDefaultRenderLoop: false });
+const constructorOptions: Viewer.ConstructorOptions = {
+	useDefaultRenderLoop: false,
+};
+
+(function setViewerConstructorOptions(option: Viewer.ConstructorOptions) {
+	option.infoBox = false;
+	option.timeline = false;
+	option.vrButton = false;
+	option.geocoder = false;
+	option.animation = false;
+	option.sceneModePicker = false;
+	option.baseLayerPicker = false;
+	option.projectionPicker = false;
+	option.fullscreenButton = false;
+	option.navigationHelpButton = false;
+})(constructorOptions);
+
+const viewer = new Viewer('cesiumContainer', constructorOptions);
 
 const factory = new CT.InterfcaeFactory(viewer);
 const manager = factory.manager;
 const util = factory.util;
 const renderer = factory.renderer;
+// renderer.setRenderBehindEarthOfObjects(true);
 
 (function animation() {
 	requestAnimationFrame(animation);
@@ -22,21 +39,28 @@ const renderer = factory.renderer;
 	viewer.render();
 })();
 
-manager
-	.addObject(
-		CT.ObjectStore.CircleObject,
-		{
-			color: 0xffffff,
-			radius: 100,
-		} as CircleObjectInitializationParam,
-		{
-			height: 0,
-			latitude: 37.5666805,
-			longitude: 126.9784147,
+async function example() {
+	let flyed = false;
+	for (let i = 0; i < 90; i++) {
+		for (let j = 0; j < 30; j++) {
+			const api = await manager.addObject(
+				'CircleObject',
+				{
+					color: Math.random() * 0xffffff,
+					radius: 500,
+				},
+				{
+					height: 0,
+					latitude: 37.5666805 + j * 10,
+					longitude: 126.9784147 + i * 4,
+				}
+			);
+			if (api && !flyed) {
+				await util.flyByObjectAPI(api);
+				flyed = true;
+			}
 		}
-	)
-	.then((api) => {
-		if (api) {
-			util.flyByObjectAPI(api);
-		}
-	});
+	}
+}
+
+example();
