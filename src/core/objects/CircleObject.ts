@@ -52,6 +52,7 @@ export class CircleObject
 			'position',
 			new Float32BufferAttribute(vertices, 3)
 		);
+		this.material.color.set(param.color);
 		this.scale.addScalar(param.radius);
 	}
 }
