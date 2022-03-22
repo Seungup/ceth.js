@@ -1,7 +1,11 @@
-import { CircleObject } from './CircleObject';
+import { CircleObject, CircleObjectInitializationParam } from './CircleObject';
+export interface MetaObjectConstructorMap {
+	CircleObject: CircleObjectInitializationParam;
+}
+export interface MetaObjectClassMap {
+	CircleObject: CircleObject;
+}
 
-export const ObjectStore = {
-	CircleObject,
-} as const;
-
-export type ObjectStore = typeof ObjectStore[keyof typeof ObjectStore];
+export const MetaObjectClassMap = {
+	CircleObject: CircleObject,
+};
