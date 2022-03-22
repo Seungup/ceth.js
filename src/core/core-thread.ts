@@ -60,18 +60,12 @@ export default class CoreThread {
 		}
 	}
 
-	getRenderBehindEarthOfObjects() {
-		return this.graphic.renderBehindEarthOfObjects;
-	}
-
+	/**
+	 * 지구 뒷편에 존재하는 오브젝트의 렌더 여부를 결정합니다.
+	 * 
+	 * @param visible 가시 여부
+	 */
 	setRenderBehindEarthOfObjects(visible: boolean) {
-		if (visible) {
-			this.graphic.scene.traverse((object) => {
-				if (object.userData.wgs84 && !object.visible) {
-					object.visible = true
-				};
-			})
-		}
 		this.graphic.renderBehindEarthOfObjects = visible;
 	}
 
