@@ -13,46 +13,37 @@ export interface RequestResult {
 export class ObjectManager {
 	private readonly coreWrapper =
 		SingletonWorkerFactory.getWrapper('CoreThread');
-	private readonly coreWorker =
-		SingletonWorkerFactory.getWorker('CoreThread');
 
-	private readonly _addSubject = new Subject<number>();
-	readonly add$ = this._addSubject.pipe();
-	constructor() {
-		this.coreWorker.onmessage = (ev) => {
-			const message = ev.data;
-			const type = message.type;
-			if (typeof type === 'number') {
-				switch (type) {
-					case RequestType.ADD:
-						const id = message.id;
-						if (typeof id === 'number') {
-							this._addSubject.next(id);
-						}
-						break;
-					default:
-						break;
-				}
-			}
-		};
-	}
-	addFeature(_class: ObjectStore, updateArgs: any, position: IWGS84) {
-		this.coreWorker.postMessage({
-			type: RequestType.ADD,
-			class: _class.name,
-			update: updateArgs,
-			position: position,
-		});
+	async addObject(_class: ObjectStore, initParam: any, position: IWGS84) {
+		const id = await this.coreWrapper.createObject(
+			_class.name,
+			initParam,
+			position
+		);
+		if (id) {
+			return await new ObjectAPI(id).update();
+		}
 	}
 
-	async add(object: Object3D, position?: IWGS84): Promise<ObjectAPI> {
+	async add<T extends Object3D>(
+		object: T,
+		position?: IWGS84
+	): Promise<{
+		object: T;
+		api: ObjectAPI;
+	}> {
 		const id = await this.coreWrapper.add(object.toJSON(), position);
-		return new ObjectAPI(id);
+		return {
+			object: object,
+			api: await new ObjectAPI(id).update(),
+		};
 	}
 
 	async get(id: number) {
 		const isExist = await this.coreWrapper.isExist(id);
-		if (isExist) return new ObjectAPI(id);
+		if (isExist) {
+			return await new ObjectAPI(id).update();
+		}
 	}
 
 	async updateObject(id: number, object: Object3D): Promise<RequestResult> {

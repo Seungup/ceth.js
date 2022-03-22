@@ -24,6 +24,7 @@ export class ObjectAPI {
 				userData.box3.z
 			);
 		}
+		return this;
 	}
 
 	hide() {

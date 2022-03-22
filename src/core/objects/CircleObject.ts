@@ -1,11 +1,7 @@
 import {
-	MeshBasicMaterial,
 	ColorRepresentation,
 	DoubleSide,
-	ShapeGeometry,
-	Shape,
 	BufferGeometry,
-	LineSegments,
 	LineBasicMaterial,
 	Vector3,
 	Float32BufferAttribute,

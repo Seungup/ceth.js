@@ -1,15 +1,10 @@
 import { expose } from 'comlink';
 import { Graphic } from './graphic';
-import {
-	Box3,
-	IcosahedronBufferGeometry,
-	Object3D,
-	ObjectLoader,
-	Vector3,
-} from 'three';
+import { Box3, Object3D, ObjectLoader, Vector3 } from 'three';
 import { RenderQueue } from './render-queue';
-import { CT_WGS84, IWGS84, WGS84_TYPE } from './math';
+import { CT_WGS84, IWGS84 } from './math';
 import { MetaObjectCache } from './objects/MetaObject';
+import { ObjectStore, WGS84_TYPE } from '.';
 
 export interface CameraInitParam {
 	aspect: number;
@@ -19,7 +14,6 @@ export interface CameraInitParam {
 }
 
 export default class CoreThread {
-	private readonly helpers = new Map<string, Object3D>();
 	private readonly graphic = Graphic.getInstance();
 	private readonly objectLoader = new ObjectLoader();
 	private _renderQueue = new RenderQueue();
@@ -36,20 +30,25 @@ export default class CoreThread {
 							...message.param,
 						});
 						break;
-					case RequestType.ADD:
-						const MetaClass = MetaObjectCache.get(message.class);
-						if (MetaClass) {
-							const metaClass = new MetaClass();
-							metaClass.onInitialization(message.update);
-							this.beforeAdd(metaClass, message.position);
-							this.graphic.scene.add(metaClass);
-						}
-						break;
 					default:
 						break;
 				}
 			}
 		};
+	}
+
+	createObject(_class: string, initParam: any, position: IWGS84) {
+		const MetaClass = MetaObjectCache.get(_class);
+		if (MetaClass) {
+			const metaClass = new MetaClass();
+			metaClass.onInitialization(initParam);
+			this.beforeAdd(
+				metaClass,
+				new CT_WGS84(position, WGS84_TYPE.CESIUM).toIWGS84()
+			);
+			this.graphic.scene.add(metaClass);
+			return metaClass.id;
+		}
 	}
 
 	getRenderBehindEarthOfObjects() {
@@ -210,7 +209,6 @@ export default class CoreThread {
 
 export const RequestType = Object.freeze({
 	RENDER: 0,
-	ADD: 1,
 });
 
 expose(new CoreThread());
