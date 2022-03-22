@@ -3,7 +3,7 @@ import { Graphic } from './graphic';
 import { Box3, Object3D, ObjectLoader, Vector3 } from 'three';
 import { RenderQueue } from './render-queue';
 import { CT_WGS84, IWGS84 } from './math';
-import { MetaObjectCache } from './objects/MetaObject';
+import { isMetaObject, MetaObjectClassCache } from './objects/MetaObject';
 import { MetaObjectClassMap, MetaObjectConstructorMap, WGS84_TYPE } from '.';
 
 export interface CameraInitParam {
@@ -40,12 +40,14 @@ export default class CoreThread {
 		};
 	}
 
-	createObject<T extends keyof MetaObjectClassMap>(
+	createObject<T extends keyof typeof MetaObjectClassMap>(
 		_class: T,
 		initParam: MetaObjectConstructorMap[T],
 		position: IWGS84 | undefined
 	) {
-		const MetaClass = MetaObjectCache.get(MetaObjectClassMap[_class].name);
+		const MetaClass = MetaObjectClassCache.get(
+			MetaObjectClassMap[_class].name
+		);
 		if (MetaClass) {
 			const metaClass = new MetaClass();
 			metaClass.onInitialization(initParam);
@@ -203,6 +205,9 @@ export default class CoreThread {
 	delete(id: number) {
 		const object = this.getObject(id);
 		if (object) {
+			if (isMetaObject(object)) {
+				object.dispose();
+			}
 			this.graphic.scene.remove(object);
 		}
 		return !!object;

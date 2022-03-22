@@ -12,7 +12,7 @@ export class ObjectManager {
 	private readonly coreWrapper =
 		SingletonWorkerFactory.getWrapper('CoreThread');
 
-	async addObject<T extends keyof MetaObjectClassMap>(
+	async addObject<T extends keyof typeof MetaObjectClassMap>(
 		_class: T,
 		initParam: MetaObjectConstructorMap[T],
 		position: IWGS84 | undefined = undefined

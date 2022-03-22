@@ -1,6 +1,6 @@
 import { Object3D } from 'three';
 
-export class MetaObjectCache {
+export class MetaObjectClassCache {
 	private static _class = new Map<string, { new (): IMetaObject }>();
 	static add(target: { new (): IMetaObject }) {
 		this._class.set(target.name, target);
@@ -14,7 +14,7 @@ export class MetaObjectCache {
 		return this._class.has(key);
 	}
 }
-export function isIMetaObject(object: any): object is IMetaObject {
+export function isMetaObject(object: any): object is IMetaObject {
 	return (<IMetaObject>object).isMetaObject !== undefined;
 }
 
@@ -35,4 +35,9 @@ export interface IMetaObject extends Object3D {
 	 * 자신의 클래스 명을 가져옵니다.
 	 */
 	getClassName(): string;
+
+	/**
+	 * 오브젝트를 폐기합니다.
+	 */
+	dispose(): void;
 }
