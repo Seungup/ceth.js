@@ -1,22 +1,22 @@
 import { Matrix4 } from 'three';
-import { CT_Ellipsoid } from './ellipsoid';
-import { CT_Cartesian3 } from './cartesian3';
+import { Ellipsoid } from './ellipsoid';
+import { Cartesian3 } from './cartesian3';
 
-export class CT_Transforms {
-	private static scratchFirstCartesian: CT_Cartesian3;
-	private static scratchSecondCartesian: CT_Cartesian3;
-	private static scratchThirdCartesian: CT_Cartesian3;
+export class Transforms {
+	private static scratchFirstCartesian: Cartesian3;
+	private static scratchSecondCartesian: Cartesian3;
+	private static scratchThirdCartesian: Cartesian3;
 	private static scratchCalculateCartesian = {
-		east: new CT_Cartesian3(),
-		north: new CT_Cartesian3(),
-		up: new CT_Cartesian3(),
+		east: new Cartesian3(),
+		north: new Cartesian3(),
+		up: new Cartesian3(),
 	};
 
 	static eastNorthUpToFixedFrame(
-		origin: CT_Cartesian3,
+		origin: Cartesian3,
 		result: Matrix4 = new Matrix4()
 	) {
-		CT_Ellipsoid.getDefaultWGS84RadiiSquaredGeodticSurfaceNormal(
+		Ellipsoid.getDefaultWGS84RadiiSquaredGeodticSurfaceNormal(
 			origin,
 			this.scratchCalculateCartesian.up
 		);
@@ -43,7 +43,7 @@ export class CT_Transforms {
 	}
 
 	static matrix4ToFixedFrame(
-		origin: CT_Cartesian3,
+		origin: Cartesian3,
 		matrix: Matrix4 = new Matrix4(),
 		result: Matrix4 = new Matrix4()
 	) {

@@ -1,10 +1,13 @@
-import { SingletonWorkerFactory } from '../core/worker-factory';
+import { SingletonWorkerFactory } from '../worker-factory';
 import * as Cesium from 'cesium';
 import { transfer } from 'comlink';
 import { ObjectRenderer } from './object.renderer';
 import { ObjectManager } from './object.manager';
 import { ObjectUtil } from './object.util';
-import { RequestType } from '../core/core-thread';
+import {
+	CoreThreadRequestType,
+	ICoreThreadRequetMessage,
+} from '../core/core-thread';
 
 export class InterfcaeFactory {
 	private readonly coreWorker =
@@ -48,9 +51,9 @@ export class InterfcaeFactory {
 		offscreen.height = this.viewer.canvas.height;
 		this.coreWorker.postMessage(
 			{
-				type: RequestType.INIT,
+				CoreThreadRequestType: CoreThreadRequestType.INIT,
 				canvas: offscreen,
-			},
+			} as ICoreThreadRequetMessage,
 			[offscreen]
 		);
 	}

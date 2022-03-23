@@ -1,5 +1,5 @@
 import * as Cesium from 'cesium';
-import { IWGS84 } from '..';
+import { IWGS84 } from '../math';
 import { ObjectAPI } from './object.api';
 
 export class ObjectUtil {
@@ -14,12 +14,14 @@ export class ObjectUtil {
 				const selectedLocation =
 					this.convertScreenPixelToLocation(mousePosition);
 				if (selectedLocation) {
-					console.log(selectedLocation);
+					this.onSelectLocation(selectedLocation);
 				}
 			},
 			false
 		);
 	}
+
+	onSelectLocation: { (location: IWGS84): void } = () => {};
 
 	convertScreenPixelToLocation(position: Cesium.Cartesian2) {
 		const ellipsoid = this.viewer.scene.globe.ellipsoid;
@@ -27,13 +29,10 @@ export class ObjectUtil {
 
 		if (cartesian) {
 			const cartographic = ellipsoid.cartesianToCartographic(cartesian);
-			const lon = Cesium.Math.toDegrees(cartographic.longitude);
-			const lat = Cesium.Math.toDegrees(cartographic.latitude);
-
 			return {
 				height: 0,
-				latitude: lat,
-				longitude: lon,
+				latitude: Cesium.Math.toDegrees(cartographic.latitude),
+				longitude: Cesium.Math.toDegrees(cartographic.longitude),
 			} as IWGS84;
 		}
 	}
@@ -60,10 +59,7 @@ export class ObjectUtil {
 			position.height
 		);
 		this.viewer.camera.flyToBoundingSphere(
-			new Cesium.BoundingSphere(wgs84Position, radius),
-			{
-				duration: 1,
-			}
+			new Cesium.BoundingSphere(wgs84Position, radius)
 		);
 	}
 }

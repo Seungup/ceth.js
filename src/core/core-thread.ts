@@ -1,16 +1,33 @@
 import { expose } from 'comlink';
 import { Graphic } from './graphic';
-import { Box3, Object3D, ObjectLoader, Vector3 } from 'three';
+import { Box3, ObjectLoader, Vector3 } from 'three';
 import { RenderQueue } from './render-queue';
-import { CT_WGS84, IWGS84 } from './math';
-import { isMetaObject, MetaObjectClassCache } from './objects/MetaObject';
-import { MetaObjectClassMap, MetaObjectConstructorMap, WGS84_TYPE } from '.';
+import { CT_WGS84, IWGS84 } from '../math';
+import { isMetaObject } from './meta-object';
+import { WGS84_TYPE } from '../math';
 
 export interface CameraInitParam {
 	aspect: number;
 	far: number;
 	near: number;
 	fov: number;
+}
+export enum CoreThreadRequestType {
+	RENDER,
+	INIT,
+}
+
+function isCoreThreadRequestType(
+	object: any
+): object is ICoreThreadRequetMessage {
+	return (
+		typeof (<ICoreThreadRequetMessage>object).CoreThreadRequestType ===
+		'number'
+	);
+}
+export interface ICoreThreadRequetMessage {
+	CoreThreadRequestType: CoreThreadRequestType;
+	[key: string]: any;
 }
 
 export default class CoreThread {
@@ -21,16 +38,19 @@ export default class CoreThread {
 		this._renderQueue.renderNextFrame$.subscribe(() => {
 			self.postMessage({ type: 'onRender' });
 		});
+
+		// 짧은 시간안에 즉각적으로 실행되어야하는 메서드의 경우 PostMessage 를 통하여 인자값을 전달 받습니다.
+
 		self.onmessage = (e: MessageEvent) => {
 			const message = e.data;
-			if (message) {
-				switch (message.type) {
-					case RequestType.RENDER:
+			if (isCoreThreadRequestType(message)) {
+				switch (message.CoreThreadRequestType) {
+					case CoreThreadRequestType.RENDER:
 						this._renderQueue.requestRender({
 							...message.param,
 						});
 						break;
-					case RequestType.INIT:
+					case CoreThreadRequestType.INIT:
 						this.graphic.init(message.canvas);
 						break;
 					default:
@@ -40,35 +60,20 @@ export default class CoreThread {
 		};
 	}
 
-	createObject<T extends keyof typeof MetaObjectClassMap>(
-		_class: T,
-		initParam: MetaObjectConstructorMap[T],
-		position: IWGS84 | undefined
-	) {
-		const MetaClass = MetaObjectClassCache.get(
-			MetaObjectClassMap[_class].name
-		);
-		if (MetaClass) {
-			const metaClass = new MetaClass();
-			metaClass.onInitialization(initParam);
-			if (position) {
-				position = new CT_WGS84(position, WGS84_TYPE.CESIUM).toIWGS84();
-			}
-			this.beforeAdd(metaClass, position);
-			this.graphic.scene.add(metaClass);
-			return metaClass.id;
-		}
-	}
-
 	/**
 	 * 지구 뒷편에 존재하는 오브젝트의 렌더 여부를 결정합니다.
-	 * 
+	 *
 	 * @param visible 가시 여부
 	 */
 	setRenderBehindEarthOfObjects(visible: boolean) {
 		this.graphic.renderBehindEarthOfObjects = visible;
 	}
 
+	/**
+	 * 오브젝트의 유저 데이터를 가져옵니다.
+	 * @param id
+	 * @returns
+	 */
 	getUserData(id: number) {
 		const object = this.getObject(id);
 		if (object) {
@@ -76,22 +81,30 @@ export default class CoreThread {
 		}
 	}
 
+	/**
+	 * 오브젝트를 장면에서 가져옵니다.
+	 * @param value
+	 * @returns
+	 */
 	private getObject(value: number) {
 		return this.graphic.scene.getObjectById(value);
 	}
 
+	/**
+	 * 오브젝트가 장면에 추가되어있는지 확인합니다.
+	 *
+	 * @param id
+	 * @returns
+	 */
 	isExist(id: number) {
 		return !!this.getObject(id);
 	}
 
-	visible(show: boolean) {
-		this.graphic.scene.visible = show;
-	}
-
-	isVisible() {
-		return this.graphic.scene.visible;
-	}
-
+	/**
+	 * 오브젝트를 숨깁니다.
+	 * @param id
+	 * @returns
+	 */
 	hide(id: number) {
 		const object = this.getObject(id);
 		if (object) {
@@ -100,6 +113,11 @@ export default class CoreThread {
 		return !!object;
 	}
 
+	/**
+	 * 오브젝트가 보여지도록 설정합니다.
+	 * @param id
+	 * @returns
+	 */
 	show(id: number) {
 		const object = this.getObject(id);
 		if (object) {
@@ -108,28 +126,12 @@ export default class CoreThread {
 		return !!object;
 	}
 
-	private beforeAdd(object: Object3D, position: IWGS84 | undefined) {
-		object.userData.original = {
-			position: object.position.clone(),
-			rotation: object.rotation.clone(),
-			scale: object.scale.clone(),
-		};
-		const box3 = new Box3().setFromObject(object).max;
-		object.userData.box3 = box3;
-		if (!position) {
-			position = { height: 0, latitude: 0, longitude: 0 };
-		}
-
-		// 높이가 존재하는 물체라면, 높이 적용
-		if (position.height === 0 && box3.z !== 0) {
-			position.height = box3.z;
-		}
-
-		const wgs84 = new CT_WGS84(position, WGS84_TYPE.CESIUM);
-		object.applyMatrix4(wgs84.getMatrix4());
-		object.userData.wgs84 = wgs84.toIWGS84();
-	}
-
+	/**
+	 * 오브젝트를 장면에 추가합니다.
+	 * @param json
+	 * @param position
+	 * @returns 오브젝트 아이디
+	 */
 	add(json: any, position: IWGS84 | undefined) {
 		const object = this.objectLoader.parse(json);
 		object.userData.original = {
@@ -150,15 +152,11 @@ export default class CoreThread {
 		return object.id;
 	}
 
-	update(id: number, json: any) {
-		let object = this.getObject(id);
-		if (object) {
-			const updateObject = this.objectLoader.parse(json);
-			object.copy(updateObject);
-		}
-		return !!object;
-	}
-
+	/**
+	 * 오브젝트의 위치값을 가져옵니다.
+	 * @param id
+	 * @returns
+	 */
 	getPosition(id: number): IWGS84 | undefined {
 		const wgs84: IWGS84 | undefined = this.getObject(id)?.userData.wgs84;
 		if (wgs84) {
@@ -166,6 +164,12 @@ export default class CoreThread {
 		}
 	}
 
+	/**
+	 * 오브젝트의 위치를 설정합니다.
+	 * @param id
+	 * @param position
+	 * @returns
+	 */
 	setPosition(id: number, position: IWGS84) {
 		const object = this.getObject(id);
 		if (object && object.userData.original) {
@@ -190,10 +194,19 @@ export default class CoreThread {
 		}
 	}
 
+	/**
+	 * 렌더러의 크기를 설정합니다.
+	 * @param width
+	 * @param height
+	 */
 	setSize(width: number, height: number) {
 		this.graphic.setSize(width, height);
 	}
 
+	/**
+	 * 렌더러의 카메라를 초기화합니다.
+	 * @param param
+	 */
 	initCamera(param: CameraInitParam) {
 		const camera = this.graphic.camera;
 		camera.aspect = param.aspect;
@@ -203,21 +216,24 @@ export default class CoreThread {
 		camera.updateProjectionMatrix();
 	}
 
+	/**
+	 * 오브젝트를 삭제합니다.
+	 * @param id
+	 * @returns
+	 */
 	delete(id: number) {
 		const object = this.getObject(id);
-		if (object) {
-			if (isMetaObject(object)) {
+
+		if (object && isMetaObject(object)) {
+			if (object.dispose) {
 				object.dispose();
 			}
+
 			this.graphic.scene.remove(object);
 		}
+
 		return !!object;
 	}
 }
-
-export const RequestType = Object.freeze({
-	RENDER: 0,
-	INIT: 1,
-});
 
 expose(new CoreThread());

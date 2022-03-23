@@ -1,9 +1,12 @@
 import { Viewer } from 'cesium';
 import { RenderParam } from '../core/graphic';
-import { SingletonWorkerFactory } from '../core/worker-factory';
+import { SingletonWorkerFactory } from '../worker-factory';
 import { Math as CesiumMath, PerspectiveFrustum } from 'cesium';
-import { RequestType } from '../core/core-thread';
-import { getCameraPosition } from './common.utils';
+import {
+	CoreThreadRequestType,
+	ICoreThreadRequetMessage,
+} from '../core/core-thread';
+import { getCameraPosition } from './cesium.utils';
 
 export class ObjectRenderer {
 	private readonly coreWorker =
@@ -29,8 +32,11 @@ export class ObjectRenderer {
 		});
 
 		this.coreWrapper.setSize(w, h);
-		// 카메라의 높이가 1km 보다 작을 경우, 내부 오브젝트 포지션 계산을 중지하여, 가까운 물체의 가시성이 삭제되는 현상 보완
-		this.coreWrapper.setRenderBehindEarthOfObjects(getCameraPosition(this.viewer).height < 1000);
+		// 카메라의 높이가 10km 보다 작을 경우, 내부 오브젝트 포지션 계산을 중지하여, 가까운 물체의 가시성이 삭제되는 현상 보완
+
+		this.coreWrapper.setRenderBehindEarthOfObjects(
+			getCameraPosition(this.viewer).height < 50 * 1000
+		);
 	}
 
 	/**
@@ -44,18 +50,14 @@ export class ObjectRenderer {
 		const civm = new Float64Array(this.viewer.camera.inverseViewMatrix);
 		this.coreWorker.postMessage(
 			{
-				type: RequestType.RENDER,
+				CoreThreadRequestType: CoreThreadRequestType.RENDER,
 				param: {
 					cvm: cvm,
 					civm: civm,
 				} as RenderParam,
-			},
+			} as ICoreThreadRequetMessage,
 			[cvm.buffer, civm.buffer]
 		);
 		// cvm, civm 은 postMessage 로 보내진 후 오브젝트가 자동으로 파기되어 더 이상 사용 불가함.
-	}
-
-	visible(show: boolean) {
-		this.coreWrapper.visible(show);
 	}
 }

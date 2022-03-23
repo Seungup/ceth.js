@@ -91,17 +91,15 @@ export class Graphic {
 		// 위치를 가지는 오브젝트만 선정
 		if (!object.userData.wgs84) return;
 
-		this._tempVector3
-			.copy(object.position)
-			.applyMatrix3(this._normalMatrix);
-
-		this._cameraToPoint
-			.copy(object.position)
-			.applyMatrix4(this.camera.matrixWorldInverse)
-			.normalize();
-
-		const dot = this._tempVector3.dot(this._cameraToPoint);
-
-		object.visible = dot < 0;
+		object.visible =
+			this._tempVector3
+				.copy(object.position)
+				.applyMatrix3(this._normalMatrix)
+				.dot(
+					this._cameraToPoint
+						.copy(object.position)
+						.applyMatrix4(this.camera.matrixWorldInverse)
+						.normalize()
+				) < 0;
 	}
 }
