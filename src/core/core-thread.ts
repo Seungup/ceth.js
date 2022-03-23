@@ -101,32 +101,6 @@ export default class CoreThread {
 	}
 
 	/**
-	 * 오브젝트를 숨깁니다.
-	 * @param id
-	 * @returns
-	 */
-	hide(id: number) {
-		const object = this.getObject(id);
-		if (object) {
-			object.visible = false;
-		}
-		return !!object;
-	}
-
-	/**
-	 * 오브젝트가 보여지도록 설정합니다.
-	 * @param id
-	 * @returns
-	 */
-	show(id: number) {
-		const object = this.getObject(id);
-		if (object) {
-			object.visible = true;
-		}
-		return !!object;
-	}
-
-	/**
 	 * 오브젝트를 장면에 추가합니다.
 	 * @param json
 	 * @param position
@@ -224,8 +198,8 @@ export default class CoreThread {
 	delete(id: number) {
 		const object = this.getObject(id);
 
-		if (object && isMetaObject(object)) {
-			if (object.dispose) {
+		if (object) {
+			if (isMetaObject(object) && object.dispose) {
 				object.dispose();
 			}
 

@@ -27,14 +27,6 @@ export class ObjectAPI {
 		return this;
 	}
 
-	hide() {
-		return this._coreThread.hide(this.id);
-	}
-
-	show() {
-		return this._coreThread.show(this.id);
-	}
-
 	setPosition(position: IWGS84) {
 		this._cachedPosition = position;
 		return this._coreThread.setPosition(this.id, position);
