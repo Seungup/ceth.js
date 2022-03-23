@@ -11,6 +11,8 @@ export class CustomObject
 			new THREE.BoxGeometry(size, size, size),
 			new THREE.MeshNormalMaterial({
 				side: THREE.DoubleSide,
+				opacity: 0.5,
+				transparent: true,
 			})
 		);
 	}

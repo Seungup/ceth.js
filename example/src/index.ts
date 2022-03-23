@@ -42,11 +42,9 @@ let objectAPI: ObjectAPI | undefined;
 util.onSelectLocation = (location) => {
 	const size = Math.random() * getCameraPosition(viewer).height * 0.05 + 10;
 	manager.add(new CustomObject(size), location).then((api) => {
-		api.getPosition().then((position) => {
-			if (objectAPI && position) {
-				objectAPI.setPosition(position);
-			}
-			objectAPI = api;
-		});
+		if (objectAPI) {
+			objectAPI.dispose();
+		}
+		objectAPI = api;
 	});
 };
