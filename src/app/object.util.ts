@@ -42,8 +42,16 @@ export class ObjectUtil {
 		const box3 = await api.getBox3();
 		if (position) {
 			let radius = undefined;
-			if (box3 && box3.z) {
-				radius = box3.z * 3;
+			if (box3) {
+				if (box3.z > 0) {
+					radius = box3.z * 3;
+				} else if (box3.y > 0) {
+					radius = box3.y * 3;
+				} else if (box3.x > 0) {
+					radius = box3.x * 3;
+				} else {
+					radius = 50;
+				}
 			}
 			if (isNaN(position.height)) {
 				position.height = 0;

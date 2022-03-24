@@ -1,15 +1,6 @@
 import { Object3D } from 'three';
 
 /**
- * 오브젝트의 형이 MetaObject 인터페이스의 형태를 가지고 있는지 확인합니다.
- * @param object
- * @returns
- */
-export function isMetaObject(object: any): object is IMetaObject {
-	return (<IMetaObject>object).isMetaObject === true;
-}
-
-/**
  * 오브젝트가 워커 스레드에서 관리 할 수 있도도록 정의된
  * 인터페이스입니다.
  */

@@ -3,7 +3,7 @@ import { Graphic } from './graphic';
 import { Box3, ObjectLoader, Vector3 } from 'three';
 import { RenderQueue } from './render-queue';
 import { CT_WGS84, IWGS84 } from '../math';
-import { isMetaObject } from './meta-object';
+import { isMetaObject } from '../meta';
 import { WGS84_TYPE } from '../math';
 
 export interface CameraInitParam {
@@ -108,14 +108,28 @@ export default class CoreThread {
 	 */
 	add(json: any, position: IWGS84 | undefined) {
 		const object = this.objectLoader.parse(json);
+
 		object.userData.original = {
 			position: object.position.clone(),
 			rotation: object.rotation.clone(),
 			scale: object.scale.clone(),
 		};
+
 		const box3 = new Box3().setFromObject(object).max;
+		if (Math.abs(box3.x) === Infinity) {
+			box3.setX(0);
+		}
+		if (Math.abs(box3.y) === Infinity) {
+			box3.setY(0);
+		}
+		if (Math.abs(box3.z) === Infinity) {
+			box3.setZ(0);
+		}
+
 		object.userData.box3 = box3;
+
 		this.graphic.scene.add(object);
+
 		if (position) {
 			this.setPosition(object.id, {
 				height: position.height,
@@ -123,6 +137,7 @@ export default class CoreThread {
 				longitude: position.latitude,
 			});
 		}
+
 		return object.id;
 	}
 

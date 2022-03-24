@@ -1,6 +1,6 @@
 {
   "exclude": [
-    "cesium-project"
+    "example"
   ],
   "compilerOptions": {
     "experimentalDecorators": true,
