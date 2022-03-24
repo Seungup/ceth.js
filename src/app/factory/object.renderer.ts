@@ -8,21 +8,6 @@ import {
 import { RenderParam } from '../../core/graphic';
 import { SingletonWorkerFactory } from '../../worker-factory';
 
-/**
- * 오브젝트를 렌더링 하도록 요청을 보낼 수 있는 렌더러 클래스입니다.
- *
- * @example
- * const viewer = new Cesium.Viewer('container', { useDefaultRenderLoop: false });
- * const factory = Cesium3.Factory(viewer);
- * const renderer = factory.renderer;
- *
- * (function animation() {
- * 	requestAnimationFrame(animation);
- * 	viewer.render();
- * 	renderer.render();
- * })();
- *
- */
 export class ObjectRenderer {
 	private readonly coreWorker =
 		SingletonWorkerFactory.getWorker('CoreThread');

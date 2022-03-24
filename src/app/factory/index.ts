@@ -76,6 +76,18 @@ export class InterfcaeFactory {
 	private _renderer: ObjectRenderer | undefined;
 	/**
 	 * 오브젝트를 렌더링하기 위한 렌더러 클래스를 가져옵니다.
+	 *
+	 * @example
+	 * const viewer = new Cesium.Viewer('container', { useDefaultRenderLoop: false });
+	 * const factory = Cesium3.Factory(viewer);
+	 * const renderer = factory.renderer;
+	 *
+	 * (function animation() {
+	 * 	requestAnimationFrame(animation);
+	 * 	viewer.render();
+	 * 	renderer.render();
+	 * })();
+	 *
 	 */
 	get renderer() {
 		return (
