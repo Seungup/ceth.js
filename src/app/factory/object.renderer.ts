@@ -1,5 +1,4 @@
-import { Viewer } from 'cesium';
-import { Math as CesiumMath, PerspectiveFrustum } from 'cesium';
+import { Viewer, Math as CesiumMath, PerspectiveFrustum } from 'cesium';
 import { getCameraPosition } from '..';
 import {
 	CoreThreadRequestType,

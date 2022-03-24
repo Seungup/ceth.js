@@ -2,7 +2,7 @@ import { SingletonWorkerFactory } from '../../worker-factory';
 import { Viewer } from 'cesium';
 import { ObjectRenderer } from './object.renderer';
 import { ObjectManager } from './object.manager';
-import { ObjectUtil } from './object.util';
+import { ObjectEvent } from './object.event';
 import {
 	CoreThreadRequestType,
 	ICoreThreadRequetMessage,
@@ -66,12 +66,12 @@ export class InterfcaeFactory {
 		return this._manager || (this._manager = new ObjectManager());
 	}
 
-	private _util: ObjectUtil | undefined;
+	private _event: ObjectEvent | undefined;
 	/**
 	 * 오브젝트의 유용한 기능을 사용할 수 있는 유틸 클래스를 가져옵니다.
 	 */
-	get util() {
-		return this._util || (this._util = new ObjectUtil(this.viewer));
+	get event() {
+		return this._event || (this._event = new ObjectEvent(this.viewer));
 	}
 
 	private _renderer: ObjectRenderer | undefined;

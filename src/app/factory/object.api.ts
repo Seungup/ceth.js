@@ -14,6 +14,7 @@ export class ObjectAPI {
 	}
 
 	async update(): Promise<this> {
+		debugger;
 		const userData = await this._coreThread.getUserData(this.id);
 
 		if (userData) {

@@ -1,23 +1,30 @@
-import * as Cesium from 'cesium';
+import {
+	Cartesian2,
+	Cartographic,
+	Math,
+	Viewer,
+	Cartesian3,
+	BoundingSphere,
+} from 'cesium';
 import { IWGS84 } from '../math';
 import { ObjectAPI } from './factory/object.api';
 
-export function getCameraPosition(viewer: Cesium.Viewer) {
-	const result = new Cesium.Cartographic();
+export function getCameraPosition(viewer: Viewer) {
+	const result = new Cartographic();
 	viewer.scene.globe.ellipsoid.cartesianToCartographic(
 		viewer.camera.positionWC,
 		result
 	);
 	return {
-		longitude: Cesium.Math.toDegrees(result.longitude),
-		latitude: Cesium.Math.toDegrees(result.latitude),
+		longitude: Math.toDegrees(result.longitude),
+		latitude: Math.toDegrees(result.latitude),
 		height: result.height,
 	} as IWGS84;
 }
 
-const _scratchCartesian2 = new Cesium.Cartesian2();
+const _scratchCartesian2 = new Cartesian2();
 
-export function mousePositionToWGS84(viewer: Cesium.Viewer, event: MouseEvent) {
+export function mousePositionToWGS84(viewer: Viewer, event: MouseEvent) {
 	_scratchCartesian2.x = event.clientX;
 	_scratchCartesian2.y = event.clientY;
 
@@ -36,8 +43,8 @@ export function mousePositionToWGS84(viewer: Cesium.Viewer, event: MouseEvent) {
 }
 
 export function convertScreenPixelToLocation(
-	viewer: Cesium.Viewer,
-	position: Cesium.Cartesian2
+	viewer: Viewer,
+	position: Cartesian2
 ) {
 	const ellipsoid = viewer.scene.globe.ellipsoid;
 	const cartesian = viewer.camera.pickEllipsoid(position, ellipsoid);
@@ -46,12 +53,12 @@ export function convertScreenPixelToLocation(
 		const cartographic = ellipsoid.cartesianToCartographic(cartesian);
 		return {
 			height: 0,
-			latitude: Cesium.Math.toDegrees(cartographic.latitude),
-			longitude: Cesium.Math.toDegrees(cartographic.longitude),
+			latitude: Math.toDegrees(cartographic.latitude),
+			longitude: Math.toDegrees(cartographic.longitude),
 		} as IWGS84;
 	}
 }
-export async function flyByObjectAPI(viewer: Cesium.Viewer, api: ObjectAPI) {
+export async function flyByObjectAPI(viewer: Viewer, api: ObjectAPI) {
 	const position = await api.getPosition();
 	const box3 = await api.getBox3();
 	if (position) {
@@ -75,16 +82,16 @@ export async function flyByObjectAPI(viewer: Cesium.Viewer, api: ObjectAPI) {
 }
 
 export function flyByWGS84(
-	viewer: Cesium.Viewer,
+	viewer: Viewer,
 	position: IWGS84,
 	radius: number | undefined = undefined
 ) {
-	const wgs84Position = Cesium.Cartesian3.fromDegrees(
+	const wgs84Position = Cartesian3.fromDegrees(
 		position.longitude,
 		position.latitude,
 		position.height
 	);
 	viewer.camera.flyToBoundingSphere(
-		new Cesium.BoundingSphere(wgs84Position, radius)
+		new BoundingSphere(wgs84Position, radius)
 	);
 }

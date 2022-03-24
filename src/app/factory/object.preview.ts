@@ -1,9 +1,9 @@
 import { Viewer } from 'cesium';
-import { BoxHelper, Object3D } from 'three';
-import { IMetaObject, IWGS84 } from '../..';
+import { Object3D } from 'three';
+import { IMetaObject } from '../..';
 import { SingletonWorkerFactory } from '../../worker-factory';
 import { ObjectAPI } from './object.api';
-import { flyByObjectAPI, mousePositionToWGS84 } from '..';
+import { mousePositionToWGS84 } from '..';
 
 export class ObjectPreview {
 	private readonly coreWrapper =
@@ -12,7 +12,6 @@ export class ObjectPreview {
 	private _attachedObjectAPI: ObjectAPI | undefined;
 	constructor(private readonly viewer: Viewer) {
 		const canvas = this.viewer.canvas;
-
 		canvas.addEventListener('pointermove', this._onMouseEvent.bind(this));
 	}
 
@@ -21,25 +20,15 @@ export class ObjectPreview {
 	 *
 	 * @param object
 	 */
-	attach(object: IMetaObject | Object3D) {
+	async attach(object: IMetaObject | Object3D) {
 		this.detach();
-		const temp = object.clone();
+		const id = await this.coreWrapper.add(
+			object.clone().toJSON(),
+			undefined
+		);
 
-		temp.add(new BoxHelper(temp));
-
-		this.coreWrapper.add(temp.toJSON(), undefined).then((id) => {
-			new ObjectAPI(id).update().then((api) => {
-				this._attachedObjectAPI = api;
-				flyByObjectAPI(this.viewer, api);
-			});
-		});
+		this._attachedObjectAPI = await new ObjectAPI(id).update();
 	}
-
-	/**
-	 * 오브젝트의 미리보기 위치를 마우스의 위치에 맞게 업데이트합니다.
-	 * @default true
-	 */
-	updateObjectPositionToMousePosition: boolean = true;
 
 	/**
 	 * 오브젝트가 attach 되었는가
@@ -50,15 +39,9 @@ export class ObjectPreview {
 	}
 
 	/**
-	 * 오브젝트의 위치를 업데이트합니다.
-	 * @param position
+	 * 자동으로 오브젝트의 위치를 업데이트합니다.
 	 */
-	setObjectPosition(position: IWGS84) {
-		if (this.updateObjectPositionToMousePosition) return;
-		if (this._attachedObjectAPI) {
-			this._attachedObjectAPI.setPosition(position);
-		}
-	}
+	autoPositionUpdate: boolean = true;
 
 	/**
 	 * 오브젝트를 분리합니다.
@@ -76,7 +59,7 @@ export class ObjectPreview {
 
 	private _onMouseEvent(event: MouseEvent) {
 		if (!this._attachedObjectAPI) return;
-		if (!this.updateObjectPositionToMousePosition) return;
+		if (!this.autoPositionUpdate) return;
 
 		const position = mousePositionToWGS84(this.viewer, event);
 

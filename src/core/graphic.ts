@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { sRGBEncoding } from 'three';
 
 export interface RenderParam {
 	cvm: Float64Array;
@@ -36,7 +35,7 @@ export class Graphic {
 		}
 
 		this.renderer = new THREE.WebGLRenderer(params);
-		this.renderer.outputEncoding = sRGBEncoding;
+		this.renderer.outputEncoding = THREE.sRGBEncoding;
 	}
 
 	setSize(width: number, height: number) {

@@ -5,6 +5,12 @@ import { RenderQueue } from './render-queue';
 import { CT_WGS84, IWGS84 } from '../math';
 import { isMetaObject } from '../meta';
 import { WGS84_TYPE } from '../math';
+import {
+	API_MAP_APIFunctionArgs,
+	API_MAP_APIFunctions,
+	API_MAP_APIKeys,
+	excute,
+} from './API';
 
 export interface CameraInitParam {
 	aspect: number;
@@ -34,6 +40,7 @@ export default class CoreThread {
 	private readonly graphic = Graphic.getInstance();
 	private readonly objectLoader = new ObjectLoader();
 	private _renderQueue = new RenderQueue();
+
 	constructor() {
 		this._renderQueue.renderNextFrame$.subscribe(() => {
 			self.postMessage({ type: 'onRender' });
@@ -58,6 +65,14 @@ export default class CoreThread {
 				}
 			}
 		};
+	}
+
+	excuteAPI<
+		API_NAME extends API_MAP_APIKeys,
+		API_METHOD extends API_MAP_APIFunctions<API_NAME>,
+		API_ARGS extends API_MAP_APIFunctionArgs<API_NAME, API_METHOD>
+	>(apiName: API_NAME, apiMethod: API_METHOD, apiArgs: API_ARGS) {
+		excute(apiName, apiMethod, apiArgs);
 	}
 
 	/**
@@ -107,6 +122,7 @@ export default class CoreThread {
 	 * @returns 오브젝트 아이디
 	 */
 	add(json: any, position: IWGS84 | undefined) {
+		debugger;
 		const object = this.objectLoader.parse(json);
 
 		object.userData.original = {
