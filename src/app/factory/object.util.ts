@@ -1,5 +1,5 @@
 import * as Cesium from 'cesium';
-import { IWGS84 } from '../math';
+import { IWGS84 } from '../..';
 import { ObjectAPI } from './object.api';
 
 export class ObjectUtil {

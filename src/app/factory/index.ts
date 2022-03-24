@@ -58,16 +58,25 @@ export class InterfcaeFactory {
 	}
 
 	private _manager: ObjectManager | undefined;
+	/**
+	 * 오브젝트를 관리하는 메니저 클래스를 가져옵니다.
+	 */
 	get manager() {
 		return this._manager || (this._manager = new ObjectManager());
 	}
 
 	private _util: ObjectUtil | undefined;
+	/**
+	 * 오브젝트의 유용한 기능을 사용할 수 있는 유틸 클래스를 가져옵니다.
+	 */
 	get util() {
 		return this._util || (this._util = new ObjectUtil(this.viewer));
 	}
 
 	private _renderer: ObjectRenderer | undefined;
+	/**
+	 * 오브젝트를 렌더링하기 위한 렌더러 클래스를 가져옵니다.
+	 */
 	get renderer() {
 		return (
 			this._renderer || (this._renderer = new ObjectRenderer(this.viewer))

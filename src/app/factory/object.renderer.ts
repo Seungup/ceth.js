@@ -8,6 +8,21 @@ import {
 import { RenderParam } from '../../core/graphic';
 import { SingletonWorkerFactory } from '../../worker-factory';
 
+/**
+ * 오브젝트를 렌더링 하도록 요청을 보낼 수 있는 렌더러 클래스입니다.
+ *
+ * @example
+ * const viewer = new Cesium.Viewer('container', { useDefaultRenderLoop: false });
+ * const factory = Cesium3.Factory(viewer);
+ * const renderer = factory.renderer;
+ *
+ * (function animation() {
+ * 	requestAnimationFrame(animation);
+ * 	viewer.render();
+ * 	renderer.render();
+ * })();
+ *
+ */
 export class ObjectRenderer {
 	private readonly coreWorker =
 		SingletonWorkerFactory.getWorker('CoreThread');
@@ -15,10 +30,10 @@ export class ObjectRenderer {
 		SingletonWorkerFactory.getWrapper('CoreThread');
 
 	constructor(private readonly viewer: Viewer) {
-		this.update();
+		this._update();
 	}
 
-	update() {
+	private _update() {
 		const w = this.viewer.canvas.width;
 		const h = this.viewer.canvas.height;
 
@@ -43,8 +58,7 @@ export class ObjectRenderer {
 	 * 다음 장면을 요청합니다.
 	 */
 	render() {
-		// 업데이트
-		this.update();
+		this._update();
 
 		const cvm = new Float64Array(this.viewer.camera.viewMatrix);
 		const civm = new Float64Array(this.viewer.camera.inverseViewMatrix);

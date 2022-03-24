@@ -1,5 +1,5 @@
 import * as Cesium from 'cesium';
-import { InterfcaeFactory, MetaSVG } from '../../src';
+import { Cesium3, MetaSVG } from '../../src';
 import './css/main.css';
 
 const constructorOptions: Cesium.Viewer.ConstructorOptions = {
@@ -23,7 +23,7 @@ const constructorOptions: Cesium.Viewer.ConstructorOptions = {
 
 const viewer = new Cesium.Viewer('cesiumContainer', constructorOptions);
 
-const factory = new InterfcaeFactory(viewer);
+const factory = new Cesium3.Factory(viewer);
 const manager = factory.manager;
 const util = factory.util;
 const renderer = factory.renderer;
