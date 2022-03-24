@@ -1,4 +1,13 @@
-import * as THREE from 'three';
+import {
+	Matrix3,
+	Object3D,
+	PerspectiveCamera,
+	Scene,
+	sRGBEncoding,
+	Vector3,
+	WebGLRenderer,
+	WebGLRendererParameters,
+} from 'three';
 
 export interface RenderParam {
 	cvm: Float64Array;
@@ -11,8 +20,8 @@ export interface InitParam {
 
 export class Graphic {
 	private static instance: Graphic;
-	readonly camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera();
-	readonly scene: THREE.Scene = new THREE.Scene();
+	readonly camera: PerspectiveCamera = new PerspectiveCamera();
+	readonly scene: Scene = new Scene();
 	private constructor() {
 		this.scene.matrixAutoUpdate = false;
 	}
@@ -21,10 +30,10 @@ export class Graphic {
 		return this.instance || (this.instance = new this());
 	}
 
-	renderer?: THREE.WebGLRenderer;
+	renderer?: WebGLRenderer;
 
 	init(param: InitParam) {
-		const params: THREE.WebGLRendererParameters = {
+		const params: WebGLRendererParameters = {
 			canvas: param.canvas,
 			powerPreference: 'high-performance',
 			alpha: true,
@@ -39,8 +48,8 @@ export class Graphic {
 			params.context = context;
 		}
 
-		this.renderer = new THREE.WebGLRenderer(params);
-		this.renderer.outputEncoding = THREE.sRGBEncoding;
+		this.renderer = new WebGLRenderer(params);
+		this.renderer.outputEncoding = sRGBEncoding;
 	}
 
 	setSize(width: number, height: number) {
@@ -50,7 +59,7 @@ export class Graphic {
 	// 지구 뒷편 오브젝트 렌더링 여부
 	renderBehindEarthOfObjects: boolean = false;
 
-	private _normalMatrix = new THREE.Matrix3();
+	private _normalMatrix = new Matrix3();
 	/**
 	 * 장면을 렌더링합니다.
 	 * @param param
@@ -86,15 +95,15 @@ export class Graphic {
 		}
 	}
 
-	private _tempVector3 = new THREE.Vector3();
-	private _cameraToPoint = new THREE.Vector3();
+	private _tempVector3 = new Vector3();
+	private _cameraToPoint = new Vector3();
 	/**
 	 * 오브젝트의 지구 뒷면 렌더링을 제어합니다.
 	 *
 	 * @param object
 	 * @returns
 	 */
-	private _setObjectVisible(object: THREE.Object3D) {
+	private _setObjectVisible(object: Object3D) {
 		// 위치를 가지는 오브젝트만 선정
 		if (!object.userData.wgs84) return;
 

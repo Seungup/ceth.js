@@ -1,8 +1,6 @@
 import { Viewer, Math as CesiumMath, PerspectiveFrustum } from 'cesium';
 import { getCameraPosition } from '..';
-import { CoreThreadCommand, ICoreThreadCommand } from '../../core';
-import {} from '../../core/core-thread';
-import { RenderParam } from '../../core/graphic';
+import { CoreThreadCommand } from '../../core';
 import { CoreAPI } from './core-api';
 
 export class ObjectRenderer {
