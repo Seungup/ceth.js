@@ -1,9 +1,7 @@
-import { IWGS84 } from '../math';
-import { IMetaObject } from '../meta';
-import { SingletonWorkerFactory } from '../worker-factory';
 import { ObjectAPI } from './object.api';
 import { Object3D } from 'three';
-import { isMetaObject } from '../meta';
+import { SingletonWorkerFactory } from '../../worker-factory';
+import { IMetaObject, isMetaObject, IWGS84 } from '../..';
 
 export class ObjectManager {
 	private readonly coreWrapper =

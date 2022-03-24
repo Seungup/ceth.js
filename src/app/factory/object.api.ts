@@ -1,6 +1,6 @@
 import { Vector3 } from 'three';
-import { IWGS84 } from '../math';
-import { SingletonWorkerFactory } from '../worker-factory';
+import { IWGS84 } from '../../math';
+import { SingletonWorkerFactory } from '../../worker-factory';
 
 export class ObjectAPI {
 	readonly id: number;

@@ -1,6 +1,6 @@
 import * as Cesium from 'cesium';
-import './css/main.css';
 import { InterfcaeFactory, MetaSVG } from '../../src';
+import './css/main.css';
 
 const constructorOptions: Cesium.Viewer.ConstructorOptions = {
 	useDefaultRenderLoop: false,

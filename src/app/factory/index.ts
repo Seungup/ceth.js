@@ -1,13 +1,12 @@
-import { SingletonWorkerFactory } from '../worker-factory';
+import { SingletonWorkerFactory } from '../../worker-factory';
 import * as Cesium from 'cesium';
-import { transfer } from 'comlink';
 import { ObjectRenderer } from './object.renderer';
 import { ObjectManager } from './object.manager';
 import { ObjectUtil } from './object.util';
 import {
 	CoreThreadRequestType,
 	ICoreThreadRequetMessage,
-} from '../core/core-thread';
+} from '../../core/core-thread';
 
 export class InterfcaeFactory {
 	private readonly coreWorker =

@@ -1,12 +1,12 @@
 import { Viewer } from 'cesium';
-import { RenderParam } from '../core/graphic';
-import { SingletonWorkerFactory } from '../worker-factory';
 import { Math as CesiumMath, PerspectiveFrustum } from 'cesium';
+import { getCameraPosition } from '..';
 import {
 	CoreThreadRequestType,
 	ICoreThreadRequetMessage,
-} from '../core/core-thread';
-import { getCameraPosition } from './cesium.utils';
+} from '../../core/core-thread';
+import { RenderParam } from '../../core/graphic';
+import { SingletonWorkerFactory } from '../../worker-factory';
 
 export class ObjectRenderer {
 	private readonly coreWorker =
