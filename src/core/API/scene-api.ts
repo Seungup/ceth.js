@@ -20,6 +20,40 @@ export namespace SceneAPI {
 		}
 	}
 
+	/**
+	 * 오브젝트의 유저 데이터를 가져옵니다.
+	 * @param id
+	 * @returns
+	 */
+	export function getUserData(id: number) {
+		return getObject(id, {
+			onSuccess(object) {
+				return object.userData;
+			},
+		});
+	}
+
+	/**
+	 * 오브젝트의 포지션을 가져옵니다.
+	 * @param id
+	 * @returns
+	 */
+	export function getObjectPosition(id: number) {
+		return getObject(id, {
+			onSuccess(object) {
+				const wgs84: IWGS84 | undefined = object.userData.wgs84;
+				if (wgs84) {
+					return new CT_WGS84(wgs84, WGS84_TYPE.THREEJS).toIWGS84();
+				}
+			},
+		});
+	}
+
+	/**
+	 * 오브젝트의 포지션을 설정합니다.
+	 * @param id
+	 * @param position
+	 */
 	export function setObjectPosition(id: number | Object3D, position: IWGS84) {
 		let object: Object3D | undefined;
 
@@ -52,6 +86,12 @@ export namespace SceneAPI {
 		}
 	}
 
+	/**
+	 * 오브젝트를 추가합니다.
+	 * @param json
+	 * @param position
+	 * @returns
+	 */
 	export function add(json: any, position?: IWGS84) {
 		const object = new ObjectLoader().parse(json);
 
@@ -90,6 +130,10 @@ export namespace SceneAPI {
 		return object.id;
 	}
 
+	/**
+	 * 오브젝트를 제거합니다.
+	 * @param id
+	 */
 	export function remove(id: number) {
 		getObject(id, {
 			onSuccess(object) {
@@ -102,6 +146,11 @@ export namespace SceneAPI {
 		});
 	}
 
+	/**
+	 * 오브젝트의 JSON 데이터를 가져옵니다.
+	 * @param id
+	 * @returns
+	 */
 	export function getObjectJSON(id: number) {
 		return getObject(id, {
 			onSuccess(object) {

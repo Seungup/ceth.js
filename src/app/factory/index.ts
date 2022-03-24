@@ -1,42 +1,34 @@
-import { SingletonWorkerFactory } from '../../worker-factory';
 import { Viewer } from 'cesium';
 import { ObjectRenderer } from './object.renderer';
 import { ObjectManager } from './object.manager';
 import { ObjectEvent } from './object.event';
-import {
-	CoreThreadRequestType,
-	ICoreThreadRequetMessage,
-} from '../../core/core-thread';
 import { ObjectPreview } from './object.preview';
+import { CoreAPI } from './core-api';
+import { CoreThreadCommand } from '../../core';
 
 export class InterfcaeFactory {
-	private readonly coreWorker =
-		SingletonWorkerFactory.getWorker('CoreThread');
-
-	private readonly container: HTMLDivElement;
-
 	constructor(private readonly viewer: Viewer) {
 		const root = viewer.container.parentElement;
 
-		this.container = document.createElement('div');
-		this.container.id = 'ThreeContainer';
-		this.container.style.position = 'absolute';
-		this.container.style.top = '0';
-		this.container.style.left = '0';
-		this.container.style.height = '100%';
-		this.container.style.width = '100%';
-		this.container.style.margin = '0';
-		this.container.style.overflow = 'hidden';
-		this.container.style.padding = '0';
-		this.container.style.pointerEvents = 'none';
+		const container = document.createElement('div');
+		container.id = 'ThreeContainer';
+		container.style.position = 'absolute';
+		container.style.top = '0';
+		container.style.left = '0';
+		container.style.height = '100%';
+		container.style.width = '100%';
+		container.style.margin = '0';
+		container.style.overflow = 'hidden';
+		container.style.padding = '0';
+		container.style.pointerEvents = 'none';
 
 		const canvas = document.createElement('canvas');
-		this.container.append(canvas);
+		container.append(canvas);
 
 		if (!root) {
 			throw new Error('cannot fond parent element');
 		} else {
-			root.append(this.container);
+			root.append(container);
 		}
 
 		if (viewer.useDefaultRenderLoop) {
@@ -49,13 +41,9 @@ export class InterfcaeFactory {
 		const offscreen = canvas.transferControlToOffscreen();
 		offscreen.width = this.viewer.canvas.width;
 		offscreen.height = this.viewer.canvas.height;
-		this.coreWorker.postMessage(
-			{
-				CoreThreadRequestType: CoreThreadRequestType.INIT,
-				canvas: offscreen,
-			} as ICoreThreadRequetMessage,
-			[offscreen]
-		);
+		CoreAPI.excuteCommand(CoreThreadCommand.INIT, { canvas: offscreen }, [
+			offscreen,
+		]);
 	}
 
 	private _manager: ObjectManager | undefined;

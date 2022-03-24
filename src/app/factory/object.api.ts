@@ -1,11 +1,9 @@
 import { Vector3 } from 'three';
 import { IWGS84 } from '../../math';
-import { SingletonWorkerFactory } from '../../worker-factory';
+import { CoreAPI } from './core-api';
 
 export class ObjectAPI {
 	readonly id: number;
-	private readonly _coreThread =
-		SingletonWorkerFactory.getWrapper('CoreThread');
 
 	private _cachedPosition: IWGS84 | undefined;
 	private _cachedBox3: Vector3 | undefined;
@@ -14,8 +12,9 @@ export class ObjectAPI {
 	}
 
 	async update(): Promise<this> {
-		debugger;
-		const userData = await this._coreThread.getUserData(this.id);
+		const userData = await CoreAPI.excuteAPI('SceneAPI', 'getUserData', [
+			this.id,
+		]);
 
 		if (userData) {
 			if (userData.wgs84) {
@@ -32,9 +31,12 @@ export class ObjectAPI {
 		return this;
 	}
 
-	setPosition(position: IWGS84) {
+	async setPosition(position: IWGS84) {
 		this._cachedPosition = position;
-		return this._coreThread.setPosition(this.id, position);
+		return await CoreAPI.excuteAPI('SceneAPI', 'setObjectPosition', [
+			this.id,
+			position,
+		]);
 	}
 
 	async getBox3() {
@@ -51,11 +53,11 @@ export class ObjectAPI {
 		return this._cachedPosition;
 	}
 
-	delete() {
-		return this._coreThread.delete(this.id);
+	async remove() {
+		return await CoreAPI.excuteAPI('SceneAPI', 'remove', [this.id]);
 	}
 
-	isDisposed() {
-		return this._coreThread.isExist(this.id);
+	async isExistObject() {
+		return await CoreAPI.excuteAPI('SceneAPI', 'isExistObject', [this.id]);
 	}
 }

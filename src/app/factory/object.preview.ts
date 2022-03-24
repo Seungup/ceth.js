@@ -1,14 +1,11 @@
 import { Viewer } from 'cesium';
 import { Object3D } from 'three';
 import { IMetaObject } from '../..';
-import { SingletonWorkerFactory } from '../../worker-factory';
 import { ObjectAPI } from './object.api';
 import { mousePositionToWGS84 } from '..';
+import { CoreAPI } from './core-api';
 
 export class ObjectPreview {
-	private readonly coreWrapper =
-		SingletonWorkerFactory.getWrapper('CoreThread');
-
 	private _attachedObjectAPI: ObjectAPI | undefined;
 	constructor(private readonly viewer: Viewer) {
 		const canvas = this.viewer.canvas;
@@ -22,10 +19,11 @@ export class ObjectPreview {
 	 */
 	async attach(object: IMetaObject | Object3D) {
 		this.detach();
-		const id = await this.coreWrapper.add(
+
+		const id = await CoreAPI.excuteAPI('SceneAPI', 'add', [
 			object.clone().toJSON(),
-			undefined
-		);
+			undefined,
+		]);
 
 		this._attachedObjectAPI = await new ObjectAPI(id).update();
 	}
@@ -50,7 +48,7 @@ export class ObjectPreview {
 	 */
 	detach() {
 		if (this._attachedObjectAPI) {
-			this._attachedObjectAPI.delete();
+			this._attachedObjectAPI.remove();
 			this._attachedObjectAPI = undefined;
 			return true;
 		}

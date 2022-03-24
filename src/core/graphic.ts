@@ -5,6 +5,10 @@ export interface RenderParam {
 	civm: Float64Array;
 }
 
+export interface InitParam {
+	canvas: HTMLCanvasElement;
+}
+
 export class Graphic {
 	private static instance: Graphic;
 	readonly camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera();
@@ -18,9 +22,10 @@ export class Graphic {
 	}
 
 	renderer?: THREE.WebGLRenderer;
-	init(canvas: HTMLCanvasElement) {
+
+	init(param: InitParam) {
 		const params: THREE.WebGLRendererParameters = {
-			canvas: canvas,
+			canvas: param.canvas,
 			powerPreference: 'high-performance',
 			alpha: true,
 			logarithmicDepthBuffer: true,
@@ -29,7 +34,7 @@ export class Graphic {
 			stencil: false,
 		};
 
-		const context = canvas.getContext('webgl2');
+		const context = param.canvas.getContext('webgl2');
 		if (context) {
 			params.context = context;
 		}
