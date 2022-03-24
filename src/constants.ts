@@ -1,4 +1,3 @@
-export const REVISION = '0dev';
 /**
  * 적도에서 지구 반경
  */

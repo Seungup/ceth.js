@@ -32,8 +32,9 @@ export class ObjectRenderer {
 		});
 
 		this.coreWrapper.setSize(w, h);
-		// 카메라의 높이가 10km 보다 작을 경우, 내부 오브젝트 포지션 계산을 중지하여, 가까운 물체의 가시성이 삭제되는 현상 보완
 
+		// 카메라의 높이가 50km 보다 낮을 경우,
+		// 내부 오브젝트 포지션 계산을 중지하여, 가까운 물체의 가시성이 삭제되는 현상 보완
 		this.coreWrapper.setRenderBehindEarthOfObjects(
 			getCameraPosition(this.viewer).height < 50 * 1000
 		);

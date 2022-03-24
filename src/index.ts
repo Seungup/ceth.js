@@ -1,5 +1,4 @@
-import { REVISION } from '../dist';
-import { InterfcaeFactory } from './app';
+import { InterfcaeFactory as Factory } from './app';
 
 /**
  * CesiumGS 와 Three.js 동기화 라이브러리입니다.
@@ -10,15 +9,15 @@ export namespace Cesium3 {
 	 *
 	 * @example
 	 * const viewer = new Cesium.Viewer('cesium-container');
-	 * const factory = new Cesium3.Factory(viewer);
+	 * const factory = new Cesium3.InterfcaeFactory(viewer);
 	 *
 	 */
-	export const Factory = InterfcaeFactory;
+	export const InterfcaeFactory = Factory;
 
 	/**
 	 * Version
 	 */
-	export const VERSION = REVISION;
+	export const VERSION = '0dev';
 }
 
 export * from './meta';

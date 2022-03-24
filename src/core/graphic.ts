@@ -8,9 +8,10 @@ export interface RenderParam {
 
 export class Graphic {
 	private static instance: Graphic;
-	readonly camera: THREE.PerspectiveCamera;
-	private constructor(readonly scene = new THREE.Scene()) {
-		this.camera = new THREE.PerspectiveCamera();
+	readonly camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera();
+	readonly scene: THREE.Scene = new THREE.Scene();
+	private constructor() {
+		this.scene.matrixAutoUpdate = false;
 	}
 
 	static getInstance() {

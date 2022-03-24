@@ -1,5 +1,5 @@
 import { SingletonWorkerFactory } from '../../worker-factory';
-import * as Cesium from 'cesium';
+import { Viewer } from 'cesium';
 import { ObjectRenderer } from './object.renderer';
 import { ObjectManager } from './object.manager';
 import { ObjectUtil } from './object.util';
@@ -7,6 +7,7 @@ import {
 	CoreThreadRequestType,
 	ICoreThreadRequetMessage,
 } from '../../core/core-thread';
+import { ObjectPreview } from './object.preview';
 
 export class InterfcaeFactory {
 	private readonly coreWorker =
@@ -14,7 +15,7 @@ export class InterfcaeFactory {
 
 	private readonly container: HTMLDivElement;
 
-	constructor(private readonly viewer: Cesium.Viewer) {
+	constructor(private readonly viewer: Viewer) {
 		const root = viewer.container.parentElement;
 
 		this.container = document.createElement('div');
@@ -78,10 +79,7 @@ export class InterfcaeFactory {
 	 * 오브젝트를 렌더링하기 위한 렌더러 클래스를 가져옵니다.
 	 *
 	 * @example
-	 * const viewer = new Cesium.Viewer('container', { useDefaultRenderLoop: false });
-	 * const factory = Cesium3.Factory(viewer);
 	 * const renderer = factory.renderer;
-	 *
 	 * (function animation() {
 	 * 	requestAnimationFrame(animation);
 	 * 	viewer.render();
@@ -92,6 +90,13 @@ export class InterfcaeFactory {
 	get renderer() {
 		return (
 			this._renderer || (this._renderer = new ObjectRenderer(this.viewer))
+		);
+	}
+
+	private _preview: ObjectPreview | undefined;
+	get preview() {
+		return (
+			this._preview || (this._preview = new ObjectPreview(this.viewer))
 		);
 	}
 }

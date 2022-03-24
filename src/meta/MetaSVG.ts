@@ -2,18 +2,21 @@ import {
 	SVGLoader,
 	SVGResultPaths,
 } from 'three/examples/jsm/loaders/SVGLoader';
-import { DoubleSide, MeshBasicMaterial, ShapeGeometry } from 'three';
+import { BoxHelper, DoubleSide, MeshBasicMaterial, ShapeGeometry } from 'three';
 import { MetaMesh } from './MetaMesh';
 import { MetaGroup } from './MetaGroup';
 import { IMetaObject } from '.';
-
 export class MetaSVG extends MetaGroup implements IMetaObject {
 	isMetaObject: boolean = true;
 
-	private constructor(paths: SVGResultPaths[]) {
-		super();
-		this.position.x = -7000;
-		this.position.y = 7000;
+	private _update(paths: SVGResultPaths[], scale: number = 1): this {
+		this.dispose();
+
+		this.scale.multiplyScalar(0.25);
+
+		this.position.x = -70;
+		this.position.y = 70;
+		this.scale.y *= -1;
 
 		for (let i = 0; i < paths.length; i++) {
 			const path = paths[i];
@@ -30,20 +33,27 @@ export class MetaSVG extends MetaGroup implements IMetaObject {
 				const shape = shapes[j];
 				const geometry = new ShapeGeometry(shape);
 				const mesh = new MetaMesh(geometry, material);
+				mesh.scale.x = mesh.scale.y = mesh.scale.z = scale;
+
+				mesh.matrixAutoUpdate = false;
+				mesh.updateMatrix();
+
 				this.add(mesh);
 			}
 		}
+
+		return this;
 	}
 
-	static async fromURL(url: string) {
+	async fromURL(url: string, scale: number = 1): Promise<this> {
 		const loader = new SVGLoader();
 		const data = await loader.loadAsync(url);
-		return new MetaSVG(data.paths);
+		return this._update(data.paths, scale);
 	}
 
-	static fromText(text: string) {
+	fromText(text: string, scale: number = 1): this {
 		const loader = new SVGLoader();
 		const data = loader.parse(text);
-		return new MetaSVG(data.paths);
+		return this._update(data.paths, scale);
 	}
 }

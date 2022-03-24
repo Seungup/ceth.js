@@ -13,16 +13,20 @@ export class ObjectAPI {
 		this.id = id;
 	}
 
-	async update() {
+	async update(): Promise<this> {
 		const userData = await this._coreThread.getUserData(this.id);
 
-		if (userData && userData.wgs84 && userData.box3) {
-			this._cachedPosition = userData.wgs84;
-			this._cachedBox3 = new Vector3(
-				userData.box3.x,
-				userData.box3.y,
-				userData.box3.z
-			);
+		if (userData) {
+			if (userData.wgs84) {
+				this._cachedPosition = userData.wgs84;
+			}
+			if (userData.box3) {
+				this._cachedBox3 = new Vector3(
+					userData.box3.x,
+					userData.box3.y,
+					userData.box3.z
+				);
+			}
 		}
 		return this;
 	}
@@ -46,7 +50,7 @@ export class ObjectAPI {
 		return this._cachedPosition;
 	}
 
-	dispose() {
+	delete() {
 		return this._coreThread.delete(this.id);
 	}
 

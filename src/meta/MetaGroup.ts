@@ -4,6 +4,10 @@ import { IMetaObject } from '..';
 export class MetaGroup extends Group implements IMetaObject {
 	isMetaObject: boolean = true;
 
+	constructor() {
+		super();
+	}
+
 	add(...object: IMetaObject[]): this {
 		super.add(...object);
 		return this;
