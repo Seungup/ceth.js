@@ -1,10 +1,10 @@
-import { CoreThreadCommand, ICoreThreadCommand } from '../../core';
 import {
 	API_MAP_APIFunctionArgs,
 	API_MAP_APIFunctions,
 	API_MAP_APIFuntionReturnType,
 	API_MAP_APIKeys,
 } from '../../core/API';
+import { CoreThreadCommand, ICoreThreadCommand } from '../../core/core-thread';
 import { SingletonWorkerFactory } from '../../worker-factory';
 
 export class CoreAPI {

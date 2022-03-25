@@ -17,7 +17,7 @@ export class ObjectManager {
 		object: T,
 		position?: IWGS84
 	): Promise<ObjectAPI> {
-		const id = await CoreAPI.excuteAPI('SceneAPI', 'add', [
+		const id = await CoreAPI.excuteAPI('SceneComponentAPI', 'add', [
 			object.toJSON(),
 			position,
 		]);
@@ -29,9 +29,11 @@ export class ObjectManager {
 	}
 
 	async get(id: number) {
-		const isExist = await CoreAPI.excuteAPI('SceneAPI', 'isExistObject', [
-			id,
-		]);
+		const isExist = await CoreAPI.excuteAPI(
+			'SceneComponentAPI',
+			'isExistObject',
+			[id]
+		);
 		if (isExist) {
 			return await new ObjectAPI(id).update();
 		}

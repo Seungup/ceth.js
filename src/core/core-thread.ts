@@ -1,5 +1,4 @@
 import { expose } from 'comlink';
-import { CoreThreadCommand, ICoreThreadCommand, isCoreThreadCommand } from '.';
 import {
 	API_MAP,
 	API_MAP_APIFunctionArgs,
@@ -7,21 +6,26 @@ import {
 	API_MAP_APIFuntionReturnType,
 	API_MAP_APIKeys,
 } from './API';
-import { Graphic, InitParam, RenderParam } from './graphic';
-import { RenderQueue } from './render-queue';
+import { CameraComponent } from './API/components/camera.component';
+import { RendererComponent } from './API/components/renderer.component';
+import { RenderQueue } from './API/render-queue';
+
+export enum CoreThreadCommand {
+	RENDER,
+	INIT,
+}
+
+export function isCoreThreadCommand(object: any): object is ICoreThreadCommand {
+	return typeof (<ICoreThreadCommand>object).runCommand === 'number';
+}
+
+export interface ICoreThreadCommand {
+	runCommand: CoreThreadCommand;
+	param: { [key: string]: any };
+}
 
 export default class CoreThread {
-	private readonly graphic = Graphic.getInstance();
-
-	private _renderQueue = new RenderQueue();
-
 	constructor() {
-		this._renderQueue.renderNextFrame$.subscribe(() => {
-			self.postMessage({ type: 'onRender' });
-		});
-
-		// 짧은 시간안에 즉각적으로 실행되어야하는 메서드의 경우 PostMessage 를 통하여 인자값을 전달 받습니다.
-
 		self.onmessage = (e: MessageEvent) => {
 			const message = e.data;
 			if (isCoreThreadCommand(message)) {
@@ -31,13 +35,17 @@ export default class CoreThread {
 	}
 
 	excuteCommand(data: ICoreThreadCommand) {
-		debugger;
+		const param = data.param;
 		switch (data.runCommand) {
 			case CoreThreadCommand.RENDER:
-				this._renderQueue.requestRender(data.param as RenderParam);
+				if (CameraComponent.isUpdateCameraParam(param)) {
+					RenderQueue.requestRender(param);
+				}
 				break;
 			case CoreThreadCommand.INIT:
-				this.graphic.init(data.param as InitParam);
+				if (RendererComponent.isInitializationParameter(param)) {
+					RendererComponent.API.initializationWebGLRenderer(param);
+				}
 				break;
 			default:
 				break;

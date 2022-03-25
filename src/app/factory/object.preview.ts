@@ -20,7 +20,7 @@ export class ObjectPreview {
 	async attach(object: IMetaObject | Object3D) {
 		this.detach();
 
-		const id = await CoreAPI.excuteAPI('SceneAPI', 'add', [
+		const id = await CoreAPI.excuteAPI('SceneComponentAPI', 'add', [
 			object.clone().toJSON(),
 			undefined,
 		]);

@@ -12,9 +12,11 @@ export class ObjectAPI {
 	}
 
 	async update(): Promise<this> {
-		const userData = await CoreAPI.excuteAPI('SceneAPI', 'getUserData', [
-			this.id,
-		]);
+		const userData = await CoreAPI.excuteAPI(
+			'SceneComponentAPI',
+			'getUserData',
+			[this.id]
+		);
 
 		if (userData) {
 			if (userData.wgs84) {
@@ -33,10 +35,11 @@ export class ObjectAPI {
 
 	async setPosition(position: IWGS84) {
 		this._cachedPosition = position;
-		return await CoreAPI.excuteAPI('SceneAPI', 'setObjectPosition', [
-			this.id,
-			position,
-		]);
+		return await CoreAPI.excuteAPI(
+			'SceneComponentAPI',
+			'setObjectPosition',
+			[this.id, position]
+		);
 	}
 
 	async getBox3() {
@@ -54,10 +57,14 @@ export class ObjectAPI {
 	}
 
 	async remove() {
-		return await CoreAPI.excuteAPI('SceneAPI', 'remove', [this.id]);
+		return await CoreAPI.excuteAPI('SceneComponentAPI', 'remove', [
+			this.id,
+		]);
 	}
 
 	async isExistObject() {
-		return await CoreAPI.excuteAPI('SceneAPI', 'isExistObject', [this.id]);
+		return await CoreAPI.excuteAPI('SceneComponentAPI', 'isExistObject', [
+			this.id,
+		]);
 	}
 }

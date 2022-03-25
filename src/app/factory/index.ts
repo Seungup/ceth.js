@@ -4,7 +4,7 @@ import { ObjectManager } from './object.manager';
 import { ObjectEvent } from './object.event';
 import { ObjectPreview } from './object.preview';
 import { CoreAPI } from './core-api';
-import { CoreThreadCommand } from '../../core';
+import { CoreThreadCommand } from '../../core/core-thread';
 
 export class InterfcaeFactory {
 	constructor(private readonly viewer: Viewer) {
