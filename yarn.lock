@@ -630,13 +630,6 @@
     "@parcel/utils" "^2.2.1"
     posthtml "^0.16.4"
 
-"@parcel/packager-ts@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.npmjs.org/@parcel/packager-ts/-/packager-ts-2.2.1.tgz"
-  integrity sha512-MSiV7hTTMo+QzzxfjqEjzMXTz0IJ09WOZ126AKe8jL7fYL9lp8H1ha+wGeH1gDq+EHjgIANFcjFuC1MdY2J+1Q==
-  dependencies:
-    "@parcel/plugin" "^2.2.1"
-
 "@parcel/plugin@^2.2.1":
   version "2.2.1"
   resolved "https://registry.npmjs.org/@parcel/plugin/-/plugin-2.2.1.tgz"
@@ -867,24 +860,6 @@
     posthtml-render "^3.0.0"
     semver "^5.7.1"
 
-"@parcel/transformer-typescript-types@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.npmjs.org/@parcel/transformer-typescript-types/-/transformer-typescript-types-2.2.1.tgz"
-  integrity sha512-0zpZkvTbldaEtdGkb3f3jL+1ANON4v6UmIwYFLf/4pDtDm4D2/sisAUoayc8wMhCzm6A6I6RDv2LXrZulvowBw==
-  dependencies:
-    "@parcel/diagnostic" "^2.2.1"
-    "@parcel/plugin" "^2.2.1"
-    "@parcel/source-map" "^2.0.0"
-    "@parcel/ts-utils" "^2.2.1"
-    nullthrows "^1.1.1"
-
-"@parcel/ts-utils@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.npmjs.org/@parcel/ts-utils/-/ts-utils-2.2.1.tgz"
-  integrity sha512-VBpaCrZ6TPOltr68RbMuvVaZbLVFppqs0MZFiVqoF2XQ5Jb1CIxk5gHZvoA2l8/434AMLQes1kGCaAtgaCoVTw==
-  dependencies:
-    nullthrows "^1.1.1"
-
 "@parcel/types@^2.2.1":
   version "2.2.1"
   resolved "https://registry.npmjs.org/@parcel/types/-/types-2.2.1.tgz"
@@ -924,17 +899,6 @@
     nullthrows "^1.1.1"
     open "^7.0.3"
     terminal-link "^2.1.1"
-
-"@parcel/validator-typescript@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.npmjs.org/@parcel/validator-typescript/-/validator-typescript-2.2.1.tgz"
-  integrity sha512-3w8InEIgTwVx051Rk3b2dquTiAxOfW7JVDkPA//XlAIJq9vB0eX6vFhqqlOovkL54eFxYEp4dOftCQOj9ZtYzg==
-  dependencies:
-    "@parcel/diagnostic" "^2.2.1"
-    "@parcel/plugin" "^2.2.1"
-    "@parcel/ts-utils" "^2.2.1"
-    "@parcel/types" "^2.2.1"
-    "@parcel/utils" "^2.2.1"
 
 "@parcel/watcher@^2.0.0":
   version "2.0.5"
@@ -2352,11 +2316,6 @@ json5@^2.1.2, json5@^2.2.0:
   integrity sha512-f+8cldu7X/y7RAJurMEJmdoKXGB/X550w2Nr3tTbezL6RwEE/iMcm+tZnXeoZtKuOq6ft8+CqzEkrIgx1fPoQA==
   dependencies:
     minimist "^1.2.5"
-
-lil-gui@^0.16.1:
-  version "0.16.1"
-  resolved "https://registry.npmjs.org/lil-gui/-/lil-gui-0.16.1.tgz"
-  integrity sha512-6wnnfBvQxJYRhdLyIA+w5b8utwbuVxNmtpTXElm36OSgHa8lyKp00Xz/4AEx3kvodT0AJYgbfadCFWAM0Q8DgQ==
 
 lilconfig@^2.0.3:
   version "2.0.4"
