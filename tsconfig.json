@@ -5,7 +5,6 @@
   ],
   "compilerOptions": {
     "experimentalDecorators": true,
-    "jsxImportSource": "preact",
     "module": "ESNext",
     "target": "ES2021",
     "strict": true,
