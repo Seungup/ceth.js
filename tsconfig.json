@@ -9,6 +9,11 @@
     "target": "ES2021",
     "strict": true,
     "isolatedModules": false,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "outDir": "./dist",
+    "pretty": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "declaration": true
   }
 }
