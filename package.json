@@ -1,21 +1,19 @@
 {
-	"name": "my-module",
+	"name": "cesium-three",
 	"version": "1.0.0",
-	"description": "",
+	"description": "cesium with threejs on offscreencanvas",
 	"source": "src/index.ts",
 	"module": "dist/index.js",
 	"types": "dist/index.d.ts",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"scripts": {
 		"check": "tsc --noEmit",
 		"build": "parcel build src/index.ts",
 		"dev": "parcel watch src/index.ts"
 	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
+	"keywords": ["cesium", "threejs", "webworker", "comlink", "offscreencanvas"],
+	"author": "Seungup Noh",
+	"license": "MIT",
 	"dependencies": {
 		"comlink": "^4.3.1",
 		"parcel": "^2.2.1",
