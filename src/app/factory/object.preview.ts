@@ -60,7 +60,7 @@ export class ObjectPreview {
      *
      * @returns 분리에 성공하면, true를 리턴합니다.
      */
-    detach() {
+    async detach() {
         if (this._attachedObjectAPI) {
             switch (this._attachedType) {
                 case 'Object3D':
@@ -69,9 +69,8 @@ export class ObjectPreview {
                 default:
                     break;
             }
-            this._attachedObjectAPI.getPosition().then((position) => {
-                this._onDetached?.(position);
-            });
+            const position = await this._attachedObjectAPI.getPosition();
+            this._onDetached?.(position);
             this._attachedObjectAPI = undefined;
             this._attachedType = undefined;
             return true;

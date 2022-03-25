@@ -1,8 +1,6 @@
 import { Viewer } from 'cesium';
 import { BoxBufferGeometry, DoubleSide, MeshNormalMaterial } from 'three';
 import { Cesium3, MetaMesh } from '../../src';
-import { CesiumUtils } from '../../src/app';
-import { ObjectAPI } from '../../src/app/factory/object.api';
 import './css/main.css';
 
 const constructorOptions: Viewer.ConstructorOptions = {
