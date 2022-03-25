@@ -12,5 +12,5 @@ export * from './MetaSVG';
  * @returns
  */
 export function isMetaObject(object: any): object is IMetaObject {
-	return (<IMetaObject>object).isMetaObject;
+    return (<IMetaObject>object).isMetaObject;
 }

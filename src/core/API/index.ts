@@ -11,42 +11,33 @@
  * 함수가 포함되어있을 경우 메인스레드와 워커스레드간 통신이 되지 않습니다.
  */
 
-import {
-	CameraComponent,
-	RendererComponent,
-	SceneComponent,
-} from './components';
+import { CameraComponent, RendererComponent, SceneComponent } from './components';
 import { Graphic } from './graphic';
 /**
  * API MAP
  */
 export const API_MAP = {
-	CameraComponentAPI: CameraComponent.API,
-	RendererComponentAPI: RendererComponent.API,
-	SceneComponentAPI: SceneComponent.API,
-	GraphicAPI: Graphic.API,
+    CameraComponentAPI: CameraComponent.API,
+    RendererComponentAPI: RendererComponent.API,
+    SceneComponentAPI: SceneComponent.API,
+    GraphicAPI: Graphic.API,
 } as const;
 
 export type API_MAP_Spec = typeof API_MAP;
 export type API_MAP_APIKeys = keyof API_MAP_Spec;
-export type API_MAP_APIFunctions<K extends API_MAP_APIKeys> =
-	keyof API_MAP_Spec[K];
+export type API_MAP_APIFunctions<K extends API_MAP_APIKeys> = keyof API_MAP_Spec[K];
 
 export type API_MAP_APIFuntion<
-	K extends API_MAP_APIKeys,
-	V extends API_MAP_APIFunctions<K>
+    K extends API_MAP_APIKeys,
+    V extends API_MAP_APIFunctions<K>
 > = API_MAP_Spec[K][V];
 
 export type API_MAP_APIFunctionArgs<
-	K extends API_MAP_APIKeys,
-	V extends API_MAP_APIFunctions<K>
-> = API_MAP_APIFuntion<K, V> extends (...args: infer argsType) => any
-	? argsType
-	: never;
+    K extends API_MAP_APIKeys,
+    V extends API_MAP_APIFunctions<K>
+> = API_MAP_APIFuntion<K, V> extends (...args: infer argsType) => any ? argsType : never;
 
 export type API_MAP_APIFuntionReturnType<
-	K extends API_MAP_APIKeys,
-	V extends API_MAP_APIFunctions<K>
-> = API_MAP_APIFuntion<K, V> extends (...args: any) => infer returnType
-	? returnType
-	: any;
+    K extends API_MAP_APIKeys,
+    V extends API_MAP_APIFunctions<K>
+> = API_MAP_APIFuntion<K, V> extends (...args: any) => infer returnType ? returnType : any;

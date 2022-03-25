@@ -5,13 +5,13 @@ import { Object3D } from 'three';
  * 인터페이스입니다.
  */
 export interface IMetaObject extends Object3D {
-	readonly isMetaObject: boolean;
+    readonly isMetaObject: boolean;
 
-	/**
-	 * 오브젝트를 더 이상 사용하지 않을 경우 이 함수가 자동으로 호출됩니다.
-	 *
-	 * geometry, material, texture 의 dispose 메소드를 호출하여,
-	 * GC에서 메모리를 해제할 수 있도록합니다.
-	 */
-	dispose?(): void;
+    /**
+     * 오브젝트를 더 이상 사용하지 않을 경우 이 함수가 자동으로 호출됩니다.
+     *
+     * geometry, material, texture 의 dispose 메소드를 호출하여,
+     * GC에서 메모리를 해제할 수 있도록합니다.
+     */
+    dispose?(): void;
 }

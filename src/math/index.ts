@@ -34,7 +34,7 @@ export const EPSILON_21 = 0.000000000000000000001;
  * @returns
  */
 export function randomOffset(epsilon: number = EPSILON_06) {
-	return Math.floor(Math.random() * 10000) * epsilon;
+    return Math.floor(Math.random() * 10000) * epsilon;
 }
 
 /**
@@ -50,29 +50,24 @@ export function randomOffset(epsilon: number = EPSILON_06) {
  * @param lon2
  * @returns
  */
-export function haversine(
-	lat1: number,
-	lon1: number,
-	lat2: number,
-	lon2: number
-) {
-	const R = EARTH_RADIUS_METER; // metres
-	const DEG2RAD = Math.PI / 180;
-	const φ1 = lat1 * DEG2RAD; // φ, λ in radians
-	const φ2 = lat2 * DEG2RAD;
-	const Δφ = (lat2 - lat1) * DEG2RAD;
-	const Δλ = (lon2 - lon1) * DEG2RAD;
+export function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
+    const R = EARTH_RADIUS_METER; // metres
+    const DEG2RAD = Math.PI / 180;
+    const φ1 = lat1 * DEG2RAD; // φ, λ in radians
+    const φ2 = lat2 * DEG2RAD;
+    const Δφ = (lat2 - lat1) * DEG2RAD;
+    const Δλ = (lon2 - lon1) * DEG2RAD;
 
-	// prettier-ignore
-	const a = Math.sin(Δφ/2)  * Math.sin(Δφ/2)  +
+    // prettier-ignore
+    const a = Math.sin(Δφ/2)  * Math.sin(Δφ/2)  +
               Math.cos(φ1)    * Math.cos(φ2)    *
               Math.sin(Δλ/2)  * Math.sin(Δλ/2);
 
-	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-	const d = R * c; // in metres
+    const d = R * c; // in metres
 
-	return d;
+    return d;
 }
 
 /**
@@ -84,10 +79,10 @@ export function haversine(
  * @returns
  */
 export function getDistance(ax: number, ay: number, zx: number, zy: number) {
-	const dis_x = ax - zx;
-	const dis_y = ay - zy;
-	const dist = Math.sqrt(Math.abs(dis_x ** 2) + Math.abs(dis_y ** 2));
-	return dist;
+    const dis_x = ax - zx;
+    const dis_y = ay - zy;
+    const dist = Math.sqrt(Math.abs(dis_x ** 2) + Math.abs(dis_y ** 2));
+    return dist;
 }
 
 /**
@@ -104,16 +99,14 @@ export function getDistance(ax: number, ay: number, zx: number, zy: number) {
  * @returns
  */
 export function equalsEpsilon(
-	left: number,
-	right: number,
-	relativeEpsilon: number = EPSILON_14,
-	absoluteEpsilon: number = EPSILON_14
+    left: number,
+    right: number,
+    relativeEpsilon: number = EPSILON_14,
+    absoluteEpsilon: number = EPSILON_14
 ) {
-	const absDiff = Math.abs(left - right);
-	if (absDiff <= absoluteEpsilon) return true;
-	return (
-		absDiff <= relativeEpsilon * Math.max(Math.abs(left), Math.abs(right))
-	);
+    const absDiff = Math.abs(left - right);
+    if (absDiff <= absoluteEpsilon) return true;
+    return absDiff <= relativeEpsilon * Math.max(Math.abs(left), Math.abs(right));
 }
 
 /**
@@ -122,5 +115,5 @@ export function equalsEpsilon(
  * @returns
  */
 export function magnitude(vec: { x: number; y: number; z: number }) {
-	return Math.sqrt(vec.x ** 2 + vec.y ** 2 + vec.z ** 2);
+    return Math.sqrt(vec.x ** 2 + vec.y ** 2 + vec.z ** 2);
 }
