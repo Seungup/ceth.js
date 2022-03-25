@@ -1,7 +1,9 @@
-import { Camera, Matrix3, Object3D, Vector3 } from 'three';
-import { CameraComponent } from './components/camera.component';
-import { RendererComponent } from './components/renderer.component';
-import { SceneComponent } from './components/scene.component';
+import { Matrix3, Object3D, Vector3 } from 'three';
+import {
+	RendererComponent,
+	CameraComponent,
+	SceneComponent,
+} from './components';
 
 export namespace Graphic {
 	// 지구 뒷편 오브젝트 렌더링 여부
@@ -15,19 +17,21 @@ export namespace Graphic {
 	 * @param param
 	 */
 	export const render = (param: CameraComponent.UpdateCameraParam) => {
-		CameraComponent.API.updateCamera(param);
+		if (RendererComponent.renderer) {
+			CameraComponent.updateCamera(param);
 
-		if (!renderBehindEarthOfObjects) {
-			normalMatrix.getNormalMatrix(
-				CameraComponent.camera.matrixWorldInverse
+			if (!renderBehindEarthOfObjects) {
+				normalMatrix.getNormalMatrix(
+					CameraComponent.perspectiveCamera.matrixWorldInverse
+				);
+				SceneComponent.scene.traverse(_setObjectVisible);
+			}
+
+			RendererComponent.renderer.render(
+				SceneComponent.scene,
+				CameraComponent.perspectiveCamera
 			);
-			SceneComponent.scene.traverse(_setObjectVisible);
 		}
-
-		RendererComponent.renderer?.render(
-			SceneComponent.scene,
-			CameraComponent.camera
-		);
 	};
 
 	export namespace API {
@@ -58,7 +62,9 @@ export namespace Graphic {
 				.dot(
 					cameraToPoint
 						.copy(object.position)
-						.applyMatrix4(CameraComponent.camera.matrixWorldInverse)
+						.applyMatrix4(
+							CameraComponent.perspectiveCamera.matrixWorldInverse
+						)
 						.normalize()
 				) < 0;
 	};

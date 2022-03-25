@@ -1,5 +1,5 @@
-import { CameraComponent } from './components/camera.component';
-import { Graphic } from './graphic';
+import { CameraComponent } from '../components/camera.component';
+import { Graphic } from '../graphic';
 
 /**
  * Cesium 과 three.js 의 스레드 간 렌더 비동기 이슈를 해결합니다.

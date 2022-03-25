@@ -6,9 +6,8 @@ import {
 	API_MAP_APIFuntionReturnType,
 	API_MAP_APIKeys,
 } from './API';
-import { CameraComponent } from './API/components/camera.component';
-import { RendererComponent } from './API/components/renderer.component';
-import { RenderQueue } from './API/render-queue';
+import { CameraComponent, RendererComponent } from './API/components';
+import { RenderQueue } from './API/utils';
 
 export enum CoreThreadCommand {
 	RENDER,
@@ -44,7 +43,7 @@ export default class CoreThread {
 				break;
 			case CoreThreadCommand.INIT:
 				if (RendererComponent.isInitializationParameter(param)) {
-					RendererComponent.API.initializationWebGLRenderer(param);
+					RendererComponent.initializationWebGLRenderer(param);
 				}
 				break;
 			default:
