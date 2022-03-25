@@ -1,23 +1,25 @@
 import { Viewer } from 'cesium';
 import { BoxBufferGeometry, DoubleSide, MeshNormalMaterial } from 'three';
 import { Cesium3, MetaMesh } from '../../src';
+import { CesiumUtils } from '../../src/app';
+import { ObjectAPI } from '../../src/app/factory/object.api';
 import './css/main.css';
 
 const constructorOptions: Viewer.ConstructorOptions = {
-	useDefaultRenderLoop: false,
+    useDefaultRenderLoop: false,
 };
 
 (function setViewerConstructorOptions(option: Viewer.ConstructorOptions) {
-	option.infoBox = false;
-	option.timeline = false;
-	option.vrButton = false;
-	option.geocoder = false;
-	option.animation = false;
-	option.sceneModePicker = false;
-	option.baseLayerPicker = false;
-	option.projectionPicker = false;
-	option.fullscreenButton = false;
-	option.navigationHelpButton = false;
+    option.infoBox = false;
+    option.timeline = false;
+    option.vrButton = false;
+    option.geocoder = false;
+    option.animation = false;
+    option.sceneModePicker = false;
+    option.baseLayerPicker = false;
+    option.projectionPicker = false;
+    option.fullscreenButton = false;
+    option.navigationHelpButton = false;
 })(constructorOptions);
 
 const viewer = new Viewer('cesiumContainer', constructorOptions);
@@ -29,22 +31,34 @@ const preview = factory.preview;
 const event = factory.event;
 
 (function animation() {
-	requestAnimationFrame(animation);
-	renderer.render();
-	viewer.render();
+    requestAnimationFrame(animation);
+    renderer.render();
+    viewer.render();
 })();
 
 const object = new MetaMesh(
-	new BoxBufferGeometry(10000, 10000, 10000),
-	new MeshNormalMaterial({
-		side: DoubleSide,
-	})
+    new BoxBufferGeometry(10000, 10000, 10000),
+    new MeshNormalMaterial({
+        side: DoubleSide,
+    })
 );
 
 event.onContextMenu.subscribe(() => {
-	if (preview.isAttached()) {
-		preview.detach();
-	} else {
-		preview.attach(object);
-	}
+    if (preview.isAttached()) {
+        preview.detach();
+    } else {
+        preview.attach(object, (position) => {
+            factory.manager.add(object, {
+                height: position.height,
+                latitude: position.longitude,
+                longitude: position.latitude,
+            });
+        });
+    }
+});
+
+event.onDblclick.subscribe(() => {
+    if (preview.isAttached()) {
+        preview.detach();
+    }
 });

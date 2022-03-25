@@ -2,8 +2,10 @@ import { Viewer } from 'cesium';
 import { Object3D } from 'three';
 import { IMetaObject } from '../..';
 import { ObjectAPI } from './object.api';
-import { mousePositionToWGS84 } from '..';
+import { CesiumUtils } from '..';
 import { CoreAPI } from './core-api';
+import { isMetaObject } from '../../meta';
+import { IWGS84 } from '../../math';
 
 export class ObjectPreview {
     private _attachedObjectAPI: ObjectAPI | undefined;
@@ -12,20 +14,32 @@ export class ObjectPreview {
         canvas.addEventListener('pointermove', this._onMouseEvent.bind(this));
     }
 
+    private _attachedType: 'ObjectAPI' | 'Object3D' | undefined;
+
+    private _onDetached?: { (lastPosition?: IWGS84): void };
+
     /**
      * attached 된 오브젝트는 clone되어 원본을 유지합니다.
      *
      * @param object
      */
-    async attach(object: IMetaObject | Object3D) {
+    async attach(
+        object: IMetaObject | Object3D | ObjectAPI,
+        onDetached?: { (lastPosition?: IWGS84): void }
+    ) {
         this.detach();
-
-        const id = await CoreAPI.excuteAPI('SceneComponentAPI', 'add', [
-            object.clone().toJSON(),
-            undefined,
-        ]);
-
-        this._attachedObjectAPI = await new ObjectAPI(id).update();
+        this._onDetached = onDetached;
+        if (object instanceof Object3D || isMetaObject(object)) {
+            this._attachedType = 'Object3D';
+            const id = await CoreAPI.excuteAPI('SceneComponentAPI', 'add', [
+                object.clone().toJSON(),
+                undefined,
+            ]);
+            this._attachedObjectAPI = await new ObjectAPI(id).update();
+            return;
+        }
+        this._attachedObjectAPI = object;
+        this._attachedType = 'ObjectAPI';
     }
 
     /**
@@ -48,8 +62,18 @@ export class ObjectPreview {
      */
     detach() {
         if (this._attachedObjectAPI) {
-            this._attachedObjectAPI.remove();
+            switch (this._attachedType) {
+                case 'Object3D':
+                    this._attachedObjectAPI.remove();
+                    break;
+                default:
+                    break;
+            }
+            this._attachedObjectAPI.getPosition().then((position) => {
+                this._onDetached?.(position);
+            });
             this._attachedObjectAPI = undefined;
+            this._attachedType = undefined;
             return true;
         }
         return false;
@@ -59,7 +83,7 @@ export class ObjectPreview {
         if (!this._attachedObjectAPI) return;
         if (!this.autoPositionUpdate) return;
 
-        const position = mousePositionToWGS84(this.viewer, event);
+        const position = CesiumUtils.mousePositionToWGS84(this.viewer, event);
 
         if (position) {
             this._attachedObjectAPI.setPosition(position);

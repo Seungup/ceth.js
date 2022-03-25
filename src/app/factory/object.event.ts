@@ -5,7 +5,8 @@ export class ObjectEvent {
     private readonly onKeyDownSubject = new Subject<KeyboardEvent>();
     private readonly onPointerMoveSubject = new Subject<MouseEvent>();
     private readonly onContextMenuSubject = new Subject<MouseEvent>();
-
+    private readonly onDblclickSubject = new Subject<MouseEvent>();
+    readonly onDblclick = this.onDblclickSubject.pipe();
     readonly onKeyDown = this.onKeyDownSubject.pipe();
     readonly onPointerMove = this.onPointerMoveSubject.pipe();
     readonly onContextMenu = this.onContextMenuSubject.pipe();
@@ -20,6 +21,9 @@ export class ObjectEvent {
         });
         root?.addEventListener('contextmenu', (event) => {
             this.onContextMenuSubject.next(event);
+        });
+        root?.addEventListener('dblclick', (event) => {
+            this.onDblclickSubject.next(event);
         });
     }
 }
