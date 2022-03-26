@@ -1,7 +1,8 @@
 {
   "exclude": [
     "example",
-    "node_modules"
+    "node_modules",
+    "dist"
   ],
   "compilerOptions": {
     "experimentalDecorators": true,
