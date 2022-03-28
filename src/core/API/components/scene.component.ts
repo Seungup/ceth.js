@@ -1,4 +1,4 @@
-import { Box3, Object3D, ObjectLoader, Scene, Vector3 } from 'three';
+import { Box3, Object3D, ObjectLoader, Scene } from 'three';
 import { CT_WGS84, IWGS84, WGS84_TYPE } from '../../../math';
 import { isMetaObject } from '../../../meta';
 import { ObjectData } from '../object-data';

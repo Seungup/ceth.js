@@ -14,7 +14,7 @@ export enum CoreThreadCommand {
     INIT,
 }
 
-export function isCoreThreadCommand(object: any): object is ICoreThreadCommand {
+function isCoreThreadCommand(object: any): object is ICoreThreadCommand {
     return typeof (<ICoreThreadCommand>object).runCommand === 'number';
 }
 
@@ -52,7 +52,7 @@ export default class CoreThread {
     }
 
     /**
-     * API
+     * API Entrypoint
      * @param apiName
      * @param apiMethod
      * @param args
@@ -62,7 +62,11 @@ export default class CoreThread {
         API_NAME extends API_MAP_APIKeys,
         API_METHOD extends API_MAP_APIFunctions<API_NAME>,
         API_ARGS extends API_MAP_APIFunctionArgs<API_NAME, API_METHOD>
-    >(apiName: API_NAME, apiMethod: API_METHOD, args: API_ARGS) {
+    >(
+        apiName: API_NAME,
+        apiMethod: API_METHOD,
+        args: API_ARGS
+    ): API_MAP_APIFuntionReturnType<API_NAME, API_METHOD> {
         return (
             API_MAP[apiName][apiMethod] as unknown as {
                 (...args: any): API_MAP_APIFuntionReturnType<API_NAME, API_METHOD>;

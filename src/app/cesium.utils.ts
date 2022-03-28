@@ -66,8 +66,8 @@ export namespace CesiumUtils {
                 viewer,
                 {
                     height: position.height,
-                    latitude: position.longitude,
-                    longitude: position.latitude,
+                    latitude: position.latitude,
+                    longitude: position.longitude,
                 },
                 radius
             );

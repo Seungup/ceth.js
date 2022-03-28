@@ -1,4 +1,5 @@
 import { SVGLoader, SVGResultPaths } from 'three/examples/jsm/loaders/SVGLoader';
+import { GeometryCompressionUtils } from 'three/examples/jsm/utils/GeometryCompressionUtils';
 import { DoubleSide, MeshBasicMaterial, ShapeGeometry } from 'three';
 import { MetaMesh } from './MetaMesh';
 import { MetaGroup } from './MetaGroup';
@@ -8,12 +9,6 @@ export class MetaSVG extends MetaGroup implements IMetaObject {
 
     private _update(paths: SVGResultPaths[], scale: number = 1): this {
         this.dispose();
-
-        this.scale.multiplyScalar(0.25);
-
-        this.position.x = -70;
-        this.position.y = 70;
-        this.scale.y *= -1;
 
         for (let i = 0; i < paths.length; i++) {
             const path = paths[i];
