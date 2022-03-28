@@ -2,6 +2,7 @@ import { Box3, Object3D, ObjectLoader, Scene } from 'three';
 import { CT_WGS84, IWGS84, WGS84_TYPE } from '../../../math';
 import { isMetaObject } from '../../../meta';
 import { ObjectData } from '../object-data';
+import { Cesium3Synchronization } from '../synchronization';
 
 interface IObjectCallbackFunction<T> {
     onSuccess(object: Object3D): T;
@@ -58,9 +59,14 @@ export namespace SceneComponent {
                     object.position.copy(rps.position);
                     object.rotation.copy(rps.rotation);
                     object.scale.copy(rps.scale);
-                    const wgs84 = new CT_WGS84(position, WGS84_TYPE.CESIUM);
-                    object.applyMatrix4(wgs84.getMatrix4());
-                    ObjectData.setWGS84(object.id, wgs84.toIWGS84());
+
+                    const wgs84 = Cesium3Synchronization.syncObject3DPosition(
+                        object,
+                        position,
+                        WGS84_TYPE.CESIUM
+                    );
+
+                    ObjectData.setWGS84(object.id, wgs84);
                 }
             }
         };

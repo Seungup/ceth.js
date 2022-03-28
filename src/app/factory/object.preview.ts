@@ -29,10 +29,13 @@ export class ObjectPreview {
     ) {
         this.detach();
         this._onDetached = onDetached;
+
         if (object instanceof Object3D || isMetaObject(object)) {
             this._attachedType = 'Object3D';
+            const clone = object.clone();
+
             const id = await CoreAPI.excuteAPI('SceneComponentAPI', 'add', [
-                object.clone().toJSON(),
+                clone.toJSON(),
                 undefined,
             ]);
             this._attachedObjectAPI = await new ObjectAPI(id).updateAll();

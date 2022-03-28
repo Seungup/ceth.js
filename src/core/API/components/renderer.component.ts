@@ -1,14 +1,9 @@
 import { sRGBEncoding, WebGLRenderer, WebGLRendererParameters } from 'three';
-
 export namespace RendererComponent {
     export let renderer: WebGLRenderer | undefined;
 
     export interface InitializationParameter {
         canvas: HTMLCanvasElement | OffscreenCanvas;
-    }
-
-    export function isInitializationParameter(object: any): object is InitializationParameter {
-        return (<InitializationParameter>object).canvas !== undefined;
     }
 
     /**

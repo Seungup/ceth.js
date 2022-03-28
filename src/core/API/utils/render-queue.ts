@@ -1,11 +1,11 @@
-import { CameraComponent } from '../components/camera.component';
+import { Cesium3Synchronization } from '../synchronization';
 import { Graphic } from '../graphic';
 
 /**
  * Cesium 과 three.js 의 스레드 간 렌더 비동기 이슈를 해결합니다.
  */
 export namespace RenderQueue {
-    let param: CameraComponent.UpdateCameraParam | undefined;
+    let param: Cesium3Synchronization.ISyncPerspectiveCameraParam | undefined;
     let isRequestRender: boolean = false;
 
     /**
@@ -23,10 +23,12 @@ export namespace RenderQueue {
      * 다음 장면을 요청합니다.
      * @param param 렌더링 파라미터
      */
-    export const requestRender = (updateCameraParam: CameraComponent.UpdateCameraParam) => {
+    export const requestRender = (
+        syncCameraParam: Cesium3Synchronization.ISyncPerspectiveCameraParam
+    ) => {
         if (!isRequestRender) {
             isRequestRender = true;
-            param = updateCameraParam;
+            param = syncCameraParam;
             render();
         }
     };

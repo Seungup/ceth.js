@@ -61,6 +61,20 @@ export class CT_WGS84 extends Vector3 {
 		);
     }
 
+    toString() {
+        const atl = this.height / 1000;
+        let str = '';
+        if (atl > 1) {
+            str = `${Number(atl.toFixed(1)).toLocaleString()}km`;
+        } else {
+            str = `${Number(this.height.toFixed(1)).toLocaleString()}m`;
+        }
+        return `
+        Lat: ${this.latitude}
+        Lon: ${this.longitude} 
+        Alt: ${str}`;
+    }
+
     toIWGS84(): IWGS84 {
         return {
             latitude: this.latitude,

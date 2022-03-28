@@ -6,7 +6,7 @@ import {
     API_MAP_APIFuntionReturnType,
     API_MAP_APIKeys,
 } from './API';
-import { CameraComponent, RendererComponent } from './API/components';
+import { RendererComponent } from './API/components';
 import { RenderQueue } from './API/utils';
 
 export enum CoreThreadCommand {
@@ -20,7 +20,7 @@ function isCoreThreadCommand(object: any): object is ICoreThreadCommand {
 
 export interface ICoreThreadCommand {
     runCommand: CoreThreadCommand;
-    param: { [key: string]: any };
+    param: any;
 }
 
 export default class CoreThread {
@@ -37,14 +37,10 @@ export default class CoreThread {
         const param = data.param;
         switch (data.runCommand) {
             case CoreThreadCommand.RENDER:
-                if (CameraComponent.isUpdateCameraParam(param)) {
-                    RenderQueue.requestRender(param);
-                }
+                RenderQueue.requestRender(param);
                 break;
             case CoreThreadCommand.INIT:
-                if (RendererComponent.isInitializationParameter(param)) {
-                    RendererComponent.initializationWebGLRenderer(param);
-                }
+                RendererComponent.initializationWebGLRenderer(param);
                 break;
             default:
                 break;

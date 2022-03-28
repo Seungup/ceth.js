@@ -1,6 +1,6 @@
 import { Viewer } from 'cesium';
 import { BoxBufferGeometry, DoubleSide, MeshNormalMaterial } from 'three';
-import { Cesium3, MetaMesh } from '../../src';
+import { Cesium3, CT_WGS84, MetaMesh, WGS84_TYPE } from '../../src';
 
 import './css/main.css';
 
@@ -25,33 +25,32 @@ const viewer = new Viewer('cesiumContainer', constructorOptions);
 
 const factory = new Cesium3.InterfcaeFactory(viewer);
 
-const renderer = factory.renderer;
 const preview = factory.preview;
 const event = factory.event;
+const WebGLRenderer = factory.WebGLRenderer;
+const CSS2DRenderer = factory.CSS2DRenderer;
 
 (function animation() {
     requestAnimationFrame(animation);
-    renderer.render();
+    WebGLRenderer.render();
+    CSS2DRenderer.render();
     viewer.render();
 })();
 
 const object = new MetaMesh(
-    new BoxBufferGeometry(10000, 10000, 10000),
+    new BoxBufferGeometry(100, 100, 100),
     new MeshNormalMaterial({
         side: DoubleSide,
     })
 );
-
 event.onContextMenu.subscribe(() => {
-    if (preview.isAttached()) {
-        preview.detach();
-    } else {
+    if (!preview.isAttached()) {
         preview.attach(object, (position) => {
-            factory.manager.add(object, {
-                height: position.height,
-                latitude: position.longitude,
-                longitude: position.latitude,
-            });
+            const wgs84 = new CT_WGS84(position, WGS84_TYPE.CESIUM);
+            wgs84.height = 100;
+            CSS2DRenderer.add(`${wgs84.toString()}`, wgs84, WGS84_TYPE.THREEJS);
+            wgs84.height = 0;
+            factory.manager.add(object, wgs84.toIWGS84());
         });
     }
 });

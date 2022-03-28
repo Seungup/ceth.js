@@ -8,12 +8,15 @@ export class MetaMesh<
     extends Mesh
     implements IMetaObject
 {
-    isMetaObject: boolean = true;
+    readonly isMetaObject: boolean = true;
+    readonly isMetaMesh: boolean = true;
+
     constructor(geometry?: TGeometry, material?: TMaterial) {
         super(geometry, material);
     }
 
     dispose() {
+        this.dispatchEvent({ type: 'dispose' });
         this.geometry.dispose();
         if (this.material) {
             if (this.material instanceof Array) {
