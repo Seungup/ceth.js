@@ -1,6 +1,6 @@
 import { Matrix3, Object3D, Vector3 } from 'three';
 import { RendererComponent, CameraComponent, SceneComponent } from './components';
-
+import { ObjectData } from './object-data';
 export namespace Graphic {
     // 지구 뒷편 오브젝트 렌더링 여부
     let renderBehindEarthOfObjects: boolean = false;
@@ -47,7 +47,7 @@ export namespace Graphic {
      */
     const _setObjectVisible = (object: Object3D) => {
         // 위치를 가지는 오브젝트만 선정
-        if (!object.userData.wgs84) return;
+        if (!ObjectData.API.getWGS84(object.id)) return;
 
         object.visible =
             tempVector

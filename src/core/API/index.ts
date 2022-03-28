@@ -13,6 +13,7 @@
 
 import { CameraComponent, RendererComponent, SceneComponent } from './components';
 import { Graphic } from './graphic';
+import { ObjectData } from './object-data';
 /**
  * API MAP
  */
@@ -21,6 +22,7 @@ export const API_MAP = {
     RendererComponentAPI: RendererComponent.API,
     SceneComponentAPI: SceneComponent.API,
     GraphicAPI: Graphic.API,
+    ObjectDataAPI: ObjectData.API,
 } as const;
 
 export type API_MAP_Spec = typeof API_MAP;

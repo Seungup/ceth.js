@@ -49,12 +49,12 @@ export namespace CesiumUtils {
         if (position) {
             let radius = undefined;
             if (box3) {
-                if (box3.z > 0) {
-                    radius = box3.z * 1.5;
-                } else if (box3.y > 0) {
-                    radius = box3.y * 1.5;
-                } else if (box3.x > 0) {
-                    radius = box3.x * 1.5;
+                if (box3.max.z > 0) {
+                    radius = box3.max.z * 1.5;
+                } else if (box3.max.y > 0) {
+                    radius = box3.max.y * 1.5;
+                } else if (box3.max.x > 0) {
+                    radius = box3.max.x * 1.5;
                 } else {
                     radius = 50;
                 }

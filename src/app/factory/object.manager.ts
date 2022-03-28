@@ -15,17 +15,18 @@ export class ObjectManager {
      */
     async add<T extends IMetaObject | Object3D>(object: T, position?: IWGS84): Promise<ObjectAPI> {
         const id = await CoreAPI.excuteAPI('SceneComponentAPI', 'add', [object.toJSON(), position]);
+
         if (isMetaObject(object) && object.dispose) {
             object.dispose();
         }
 
-        return await new ObjectAPI(id).update();
+        return await new ObjectAPI(id).updateAll();
     }
 
     async get(id: number) {
         const isExist = await CoreAPI.excuteAPI('SceneComponentAPI', 'isExistObject', [id]);
         if (isExist) {
-            return await new ObjectAPI(id).update();
+            return await new ObjectAPI(id).updateAll();
         }
     }
 }

@@ -1,6 +1,7 @@
 import { Box3, Object3D, ObjectLoader, Scene, Vector3 } from 'three';
 import { CT_WGS84, IWGS84, WGS84_TYPE } from '../../../math';
 import { isMetaObject } from '../../../meta';
+import { ObjectData } from '../object-data';
 
 interface IObjectCallbackFunction<T> {
     onSuccess(object: Object3D): T;
@@ -9,10 +10,6 @@ interface IObjectCallbackFunction<T> {
 
 export namespace SceneComponent {
     export const scene = new Scene();
-
-    {
-        scene.matrixAutoUpdate = false;
-    }
 
     function getObject<T>(id: number, cb: IObjectCallbackFunction<T>) {
         const object = scene.getObjectById(id);
@@ -26,34 +23,6 @@ export namespace SceneComponent {
     }
 
     export namespace API {
-        /**
-         * 오브젝트의 유저 데이터를 가져옵니다.
-         * @param id
-         * @returns
-         */
-        export const getUserData = (id: number) => {
-            return getObject(id, {
-                onSuccess(object) {
-                    return object.userData;
-                },
-            });
-        };
-        /**
-         * 오브젝트의 포지션을 가져옵니다.
-         * @param id
-         * @returns
-         */
-        export const getObjectPosition = (id: number) => {
-            return getObject(id, {
-                onSuccess(object) {
-                    const wgs84: IWGS84 | undefined = object.userData.wgs84;
-                    if (wgs84) {
-                        return new CT_WGS84(wgs84, WGS84_TYPE.THREEJS).toIWGS84();
-                    }
-                },
-            });
-        };
-
         /**
          * 오브젝트의 포지션을 설정합니다.
          * @param id
@@ -72,22 +41,27 @@ export namespace SceneComponent {
                 object = id;
             }
 
-            if (object && object.userData.original) {
-                if (position.height === 0) {
-                    let box3: Vector3 | undefined = object.userData.box3;
-                    if (!box3) {
-                        box3 = new Box3().setFromObject(object).max;
-                        box3.setZ(box3.z + 1);
-                        object.userData.box3 = box3;
+            if (object) {
+                const rps = ObjectData.API.getPositionRotationScale(object.id);
+
+                if (rps) {
+                    if (position.height === 0) {
+                        let box3 = ObjectData.API.getBox3(object.id);
+                        if (!box3) {
+                            box3 = new Box3().setFromObject(object);
+                            box3.max.setZ(box3.max.z + 1);
+                            ObjectData.setBox3(object.id, box3);
+                        }
+                        position.height = box3.max.z;
                     }
-                    position.height = box3.z;
+
+                    object.position.copy(rps.position);
+                    object.rotation.copy(rps.rotation);
+                    object.scale.copy(rps.scale);
+                    const wgs84 = new CT_WGS84(position, WGS84_TYPE.CESIUM);
+                    object.applyMatrix4(wgs84.getMatrix4());
+                    ObjectData.setWGS84(object.id, wgs84.toIWGS84());
                 }
-                const wgs84 = new CT_WGS84(position, WGS84_TYPE.CESIUM);
-                object.position.copy(object.userData.original.position);
-                object.rotation.copy(object.userData.original.rotation);
-                object.scale.copy(object.userData.original.scale);
-                object.applyMatrix4(wgs84.getMatrix4());
-                object.userData.wgs84 = wgs84.toIWGS84();
             }
         };
 
@@ -100,23 +74,11 @@ export namespace SceneComponent {
         export const add = (json: any, position?: IWGS84) => {
             const object = new ObjectLoader().parse(json);
 
-            object.userData.original = {
-                position: object.position.clone(),
-                rotation: object.rotation.clone(),
-                scale: object.scale.clone(),
-            };
-
-            const box3 = new Box3().setFromObject(object).max;
-
-            if (
-                Math.abs(box3.x) !== Infinity &&
-                Math.abs(box3.y) !== Infinity &&
-                Math.abs(box3.z) !== Infinity
-            ) {
-                object.userData.box3 = box3;
-            }
+            ObjectData.setBox3ByObject3D(object);
+            ObjectData.setPositionRotationScaleByObject3D(object);
 
             if (position) {
+                ObjectData.setWGS84(object.id, position);
                 setObjectPosition(object, {
                     height: position.height,
                     latitude: position.longitude,
@@ -141,19 +103,6 @@ export namespace SceneComponent {
                     }
 
                     scene.remove(object);
-                },
-            });
-        }
-
-        /**
-         * 오브젝트의 JSON 데이터를 가져옵니다.
-         * @param id
-         * @returns
-         */
-        export function getObjectJSON(id: number) {
-            return getObject(id, {
-                onSuccess(object) {
-                    return object.toJSON();
                 },
             });
         }

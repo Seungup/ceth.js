@@ -35,7 +35,7 @@ export class ObjectPreview {
                 object.clone().toJSON(),
                 undefined,
             ]);
-            this._attachedObjectAPI = await new ObjectAPI(id).update();
+            this._attachedObjectAPI = await new ObjectAPI(id).updateAll();
             return;
         }
         this._attachedObjectAPI = object;
