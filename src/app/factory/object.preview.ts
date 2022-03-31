@@ -79,7 +79,7 @@ export class ObjectPreview {
         const position = Utils.mousePositionToWGS84(this.viewer, event);
 
         if (position) {
-            this._attachedObjectAPI.setPosition(position, WGS84_ACTION.NONE);
+            this._attachedObjectAPI.setPosition({ ...position, height: 0 }, WGS84_ACTION.NONE);
         }
     }
 }

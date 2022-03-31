@@ -23,10 +23,9 @@ export namespace Utils {
 
         if (selectedLocation) {
             return {
-                height: 0,
                 latitude: selectedLocation.latitude,
                 longitude: selectedLocation.longitude,
-            } as IWGS84;
+            };
         }
     };
 

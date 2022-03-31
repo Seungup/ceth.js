@@ -48,7 +48,6 @@ const object = new MetaPoints(
 event.onContextMenu.subscribe(() => {
     if (!preview.isAttached()) {
         preview.attach(object, async (api) => {
-            debugger;
             const wgs84 = await api.getPosition();
             const box3 = await api.getBox3();
 
