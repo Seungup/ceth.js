@@ -1,5 +1,4 @@
 import { Matrix3, Object3D, Vector3 } from 'three';
-import { Cesium3Synchronization } from './synchronization';
 import { RendererComponent, CameraComponent, SceneComponent } from './components';
 import { ObjectData } from './object-data';
 export namespace Graphic {
@@ -11,12 +10,9 @@ export namespace Graphic {
     const cameraToPoint = new Vector3();
     /**
      * 장면을 렌더링합니다.
-     * @param param
      */
-    export const render = (param: Cesium3Synchronization.ISyncPerspectiveCameraParam) => {
+    export const render = () => {
         if (RendererComponent.renderer) {
-            Cesium3Synchronization.syncPerspectiveCamera(CameraComponent.perspectiveCamera, param);
-
             if (!renderBehindEarthOfObjects) {
                 normalMatrix.getNormalMatrix(CameraComponent.perspectiveCamera.matrixWorldInverse);
                 SceneComponent.scene.traverse(_setObjectVisible);

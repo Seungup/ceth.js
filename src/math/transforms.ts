@@ -30,11 +30,11 @@ export class Transforms {
 
         // prettier-ignore
         return result.set(
-        this.scratchFirstCartesian.x,    this.scratchSecondCartesian.x,   this.scratchThirdCartesian.x,    origin.x,
-        this.scratchFirstCartesian.y,    this.scratchSecondCartesian.y,   this.scratchThirdCartesian.y,    origin.y,
-        this.scratchFirstCartesian.z,    this.scratchSecondCartesian.z,   this.scratchThirdCartesian.z,    origin.z,
-        0.0,                             0.0,                             0.0,                             1.0
-    );
+            this.scratchFirstCartesian.x,    this.scratchSecondCartesian.x,   this.scratchThirdCartesian.x,    origin.x,
+            this.scratchFirstCartesian.y,    this.scratchSecondCartesian.y,   this.scratchThirdCartesian.y,    origin.y,
+            this.scratchFirstCartesian.z,    this.scratchSecondCartesian.z,   this.scratchThirdCartesian.z,    origin.z,
+            0.0,                             0.0,                             0.0,                             1.0
+        );
     }
 
     static matrix4ToFixedFrame(

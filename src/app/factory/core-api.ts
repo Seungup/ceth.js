@@ -42,7 +42,7 @@ export class CoreAPI {
         runCommand: CoreThreadCommand,
         args: {
             [key: string]: any;
-        },
+        } = {},
         transfer?: Array<Transferable | OffscreenCanvas>
     ) {
         this.coreWorker.postMessage(

@@ -1,15 +1,16 @@
-import { Viewer, Math as CesiumMath, PerspectiveFrustum } from 'cesium';
+import { Viewer } from 'cesium';
 import { CoreThreadCommand } from '../../../core/core-thread';
-import { Cesium3Synchronization } from '../../../core/API/synchronization';
 import { CoreAPI } from '../core-api';
 import { CameraComponent } from '../../../core/API/components';
 import { Utils } from '../../utils';
-import { BaseRenderer } from './BaseRenderer';
+import { IBaseRenderer } from './BaseRenderer';
 
-export class Object3DWebGLRenderer extends BaseRenderer {
+export class Object3DWebGLRenderer implements IBaseRenderer {
     constructor(private readonly viewer: Viewer, private readonly container: HTMLDivElement) {
-        super();
-
+        /**
+         * Object3D 를 렌더링하는 곳은 워커 스레드에서 진행되므로,
+         * 이곳에서는 워커 스레드를 초기화하는 작업이 진행되어야합니다.
+         */
         const canvas = document.createElement('canvas');
         this.container.appendChild(canvas);
 
@@ -36,27 +37,32 @@ export class Object3DWebGLRenderer extends BaseRenderer {
         CoreAPI.excuteAPI('RendererComponentAPI', 'setSize', [width, height]);
     }
 
-    setCamera(param: CameraComponent.API.CameraInitParam): void {
+    setCamera(param: CameraComponent.API.PerspectiveCameraInitParam): void {
         CoreAPI.excuteAPI('CameraComponentAPI', 'initCamera', [param]);
     }
 
-    /**
-     * 다음 장면을 요청합니다.
-     */
     render() {
-        const visible = Utils.getCameraPosition(this.viewer).height < 50 * 1000;
+        // Update Object3D Visibles
+        {
+            const threadhold = Utils.getCameraPosition(this.viewer).height < 50 * 1000;
 
-        // 카메라의 높이가 50km 보다 낮을 경우,
-        // 내부 오브젝트 포지션 계산을 중지하여, 가까운 물체의 가시성이 삭제되는 현상 보완
-        CoreAPI.excuteAPI('GraphicAPI', 'setRenderBehindEarthOfObjects', [visible]);
+            // 카메라의 높이가 50km 보다 낮을 경우,
+            // 내부 오브젝트 포지션 계산을 중지하여, 가까운 물체의 가시성이 삭제되는 현상 보완
+            CoreAPI.excuteAPI('GraphicAPI', 'setRenderBehindEarthOfObjects', [threadhold]);
+        }
 
-        const cvm = new Float64Array(this.viewer.camera.viewMatrix);
-        const civm = new Float64Array(this.viewer.camera.inverseViewMatrix);
+        // SYNC Camera
+        {
+            const cvm = new Float64Array(this.viewer.camera.viewMatrix);
+            const civm = new Float64Array(this.viewer.camera.inverseViewMatrix);
 
-        CoreAPI.excuteCommand(
-            CoreThreadCommand.RENDER,
-            { cvm: cvm, civm: civm } as Cesium3Synchronization.ISyncPerspectiveCameraParam,
-            [cvm.buffer, civm.buffer]
-        );
+            const args = { cvm: cvm, civm: civm };
+            const transfer = [cvm.buffer, civm.buffer];
+
+            CoreAPI.excuteCommand(CoreThreadCommand.SYNC, args, transfer);
+        }
+
+        // Render Request
+        CoreAPI.excuteCommand(CoreThreadCommand.RENDER);
     }
 }

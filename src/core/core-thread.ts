@@ -6,12 +6,14 @@ import {
     API_MAP_APIFuntionReturnType,
     API_MAP_APIKeys,
 } from './API';
-import { RendererComponent } from './API/components';
+import { CameraComponent, RendererComponent } from './API/components';
+import { Cesium3Synchronization } from './API/synchronization';
 import { RenderQueue } from './API/utils';
 
 export enum CoreThreadCommand {
     RENDER,
     INIT,
+    SYNC,
 }
 
 function isCoreThreadCommand(object: any): object is ICoreThreadCommand {
@@ -37,10 +39,16 @@ export default class CoreThread {
         const param = data.param;
         switch (data.runCommand) {
             case CoreThreadCommand.RENDER:
-                RenderQueue.requestRender(param);
+                RenderQueue.requestRender();
                 break;
             case CoreThreadCommand.INIT:
                 RendererComponent.initializationWebGLRenderer(param);
+                break;
+            case CoreThreadCommand.SYNC:
+                Cesium3Synchronization.syncPerspectiveCamera(
+                    CameraComponent.perspectiveCamera,
+                    param
+                );
                 break;
             default:
                 break;
@@ -63,10 +71,6 @@ export default class CoreThread {
         apiMethod: API_METHOD,
         args: API_ARGS
     ): API_MAP_APIFuntionReturnType<API_NAME, API_METHOD> {
-        const func = API_MAP[apiName][apiMethod];
-
-        func;
-
         // @ts-ignore
         return API_MAP[apiName][apiMethod](...args);
     }

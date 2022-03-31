@@ -5,15 +5,14 @@ import { CameraComponent } from '../../../core/API/components';
 import { ObjectData } from '../../../core/API/object-data';
 import { Cesium3Synchronization } from '../../../core/API/synchronization';
 import { CT_WGS84, IWGS84, WGS84_TYPE } from '../../../math';
-import { BaseRenderer } from './BaseRenderer';
+import { IBaseRenderer } from './BaseRenderer';
 
-export class Object3DCSS2DRenderer extends BaseRenderer {
+export class Object3DCSS2DRenderer implements IBaseRenderer {
     private readonly labelRenderer = new CSS2DRenderer();
     private readonly camera = new PerspectiveCamera();
     private readonly scene = new Scene();
 
     constructor(private readonly viewer: Cesium.Viewer, container: HTMLDivElement) {
-        super();
         this.labelRenderer = new CSS2DRenderer();
         this.labelRenderer.setSize(this.viewer.canvas.width, this.viewer.canvas.height);
         this.labelRenderer.domElement.style.position = 'absolute';
@@ -82,7 +81,7 @@ export class Object3DCSS2DRenderer extends BaseRenderer {
         this.labelRenderer.setSize(width, height);
     }
 
-    setCamera(param: CameraComponent.API.CameraInitParam): void {
+    setCamera(param: CameraComponent.API.PerspectiveCameraInitParam): void {
         this.camera.aspect = param.aspect;
         this.camera.far = param.far;
         this.camera.fov = param.fov;
@@ -91,27 +90,8 @@ export class Object3DCSS2DRenderer extends BaseRenderer {
     }
 
     render() {
-        const w = this.viewer.canvas.width;
-        const h = this.viewer.canvas.height;
-
-        const param: CameraComponent.API.CameraInitParam = {
-            fov: Cesium.Math.toDegrees(
-                (this.viewer.camera.frustum as Cesium.PerspectiveFrustum).fovy
-            ),
-            near: this.viewer.camera.frustum.near,
-            far: this.viewer.camera.frustum.far,
-            aspect: w / h,
-        };
-
-        this.camera.aspect = param.aspect;
-        this.camera.far = param.far;
-        this.camera.near = param.near;
-        this.camera.fov = param.fov;
-        this.camera.updateProjectionMatrix();
-
         const cvm = new Float64Array(this.viewer.camera.viewMatrix);
         const civm = new Float64Array(this.viewer.camera.inverseViewMatrix);
-
         Cesium3Synchronization.syncPerspectiveCamera(this.camera, { civm: civm, cvm: cvm });
         this.labelRenderer.render(this.scene, this.camera);
     }

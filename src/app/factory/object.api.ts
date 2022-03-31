@@ -1,4 +1,4 @@
-import { Box3, Vector3 } from 'three';
+import { Vector3 } from 'three';
 import { IWGS84 } from '../../math';
 import { CoreAPI } from './core-api';
 

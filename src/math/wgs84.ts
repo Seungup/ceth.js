@@ -14,6 +14,10 @@ export enum WGS84_TYPE {
 
 export class CT_WGS84 extends Vector3 {
     constructor(position: IWGS84, type: WGS84_TYPE) {
+        /**
+         * Cesium 에서 제공되는 좌표 위치 값은 threejs 에서의 XY 값이 반대이기 때문에
+         * 위도 경도의 위치가 서로 뒤바뀌어야합니다.
+         */
         if (type === WGS84_TYPE.CESIUM) {
             const latitude = position.latitude;
             position.latitude = position.longitude;

@@ -7,6 +7,12 @@ export namespace Cesium3Synchronization {
         civm: Float64Array;
     }
 
+    /**
+     * threejs의 카메라의 행렬을 cesium camera와 동기화합니다.
+     *
+     * @param camera threejs camera
+     * @param param cesium camera matrix param
+     */
     export const syncPerspectiveCamera = (
         camera: PerspectiveCamera,
         param: ISyncPerspectiveCameraParam
@@ -31,6 +37,13 @@ export namespace Cesium3Synchronization {
         camera.updateProjectionMatrix();
     };
 
+    /**
+     * threejs 의 오브젝트의 위치를 cesium 지구 표면의 위치와 동기화합니다.
+     * @param object threejs object3d
+     * @param position wgs84
+     * @param positionType
+     * @returns
+     */
     export const syncObject3DPosition = (
         object: Object3D,
         position: IWGS84,

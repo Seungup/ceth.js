@@ -1,5 +1,4 @@
 import { SVGLoader, SVGResultPaths } from 'three/examples/jsm/loaders/SVGLoader';
-import { GeometryCompressionUtils } from 'three/examples/jsm/utils/GeometryCompressionUtils';
 import { DoubleSide, MeshBasicMaterial, ShapeGeometry } from 'three';
 import { MetaMesh } from './MetaMesh';
 import { MetaGroup } from './MetaGroup';

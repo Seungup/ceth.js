@@ -1,15 +1,21 @@
 import { CameraComponent } from '../../../core/API/components';
 
-export class BaseRenderer {
-    setSize(width: number, height: number) {
-        throw new Error('not implements');
-    }
+export interface IBaseRenderer {
+    /**
+     * 렌더러의 크기를 설정합니다.
+     * @param width
+     * @param height
+     */
+    setSize(width: number, height: number): void;
 
-    setCamera(param: CameraComponent.API.CameraInitParam) {
-        throw new Error('not implements');
-    }
+    /**
+     * 카메라의 설정값을 변경합니다.
+     * @param param
+     */
+    setCamera(param: CameraComponent.API.PerspectiveCameraInitParam): void;
 
-    render() {
-        throw new Error('not implements');
-    }
+    /**
+     * 장면을 렌더링합니다.
+     */
+    render(): void;
 }
