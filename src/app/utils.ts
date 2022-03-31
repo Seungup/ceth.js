@@ -19,27 +19,19 @@ export namespace Utils {
         _scratchCartesian2.x = event.clientX;
         _scratchCartesian2.y = event.clientY;
 
-        const selectedLocation = convertScreenPixelToLocation(viewer, _scratchCartesian2);
-
-        if (selectedLocation) {
-            return {
-                latitude: selectedLocation.latitude,
-                longitude: selectedLocation.longitude,
-            };
-        }
+        return getLongitudeLatitudeByLocation(viewer, _scratchCartesian2);
     };
 
-    export const convertScreenPixelToLocation = (viewer: Viewer, position: Cartesian2) => {
+    export const getLongitudeLatitudeByLocation = (viewer: Viewer, position: Cartesian2) => {
         const ellipsoid = viewer.scene.globe.ellipsoid;
         const cartesian = viewer.camera.pickEllipsoid(position, ellipsoid);
 
         if (cartesian) {
             const cartographic = ellipsoid.cartesianToCartographic(cartesian);
             return {
-                height: 0,
                 latitude: Math.toDegrees(cartographic.latitude),
                 longitude: Math.toDegrees(cartographic.longitude),
-            } as IWGS84;
+            };
         }
     };
     export const flyByObjectAPI = async (viewer: Viewer, api: ObjectAPI) => {
