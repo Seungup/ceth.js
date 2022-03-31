@@ -83,12 +83,11 @@ export namespace SceneComponent {
          */
         export const add = (json: any, position?: { wgs84: IWGS84; action: WGS84_ACTION }) => {
             const object = new ObjectLoader().parse(json);
-            debugger;
+
             ObjectData.setBox3ByObject3D(object);
             ObjectData.setPositionRotationScaleByObject3D(object);
 
             if (position) {
-                debugger;
                 const wgs84 = new CT_WGS84(position.wgs84, position.action);
                 ObjectData.setWGS84(object.id, wgs84.toIWGS84());
                 setObjectPosition(object, { ...position });
