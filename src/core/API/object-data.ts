@@ -17,8 +17,9 @@ export namespace ObjectData {
             return RPSMap.get(id);
         };
 
-        export const getBox3 = (id: number) => {
-            return box3Map.get(id);
+        export const getBox3Max = (id: number) => {
+            debugger;
+            return box3Map.get(id)?.max;
         };
 
         export const getWGS84 = (id: number) => {

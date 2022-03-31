@@ -22,8 +22,13 @@ export class CoreAPI {
         API_NAME extends API_MAP_APIKeys,
         API_METHOD extends API_MAP_APIFunctions<API_NAME>,
         API_ARGS extends API_MAP_APIFunctionArgs<API_NAME, API_METHOD>
-    >(apiName: API_NAME, apiMethod: API_METHOD, args: API_ARGS) {
-        return await this.coreWrapper.excuteAPI(apiName, apiMethod as never, args);
+    >(
+        apiName: API_NAME,
+        apiMethod: API_METHOD,
+        args: API_ARGS
+    ): Promise<API_MAP_APIFuntionReturnType<API_NAME, API_METHOD>> {
+        // @ts-ignore
+        return await this.coreWrapper.excuteAPI(apiName, apiMethod, args);
     }
 
     /**

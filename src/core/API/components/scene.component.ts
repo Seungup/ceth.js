@@ -47,13 +47,14 @@ export namespace SceneComponent {
 
                 if (rps) {
                     if (position.height === 0) {
-                        let box3 = ObjectData.API.getBox3(object.id);
-                        if (!box3) {
-                            box3 = new Box3().setFromObject(object);
+                        let max = ObjectData.API.getBox3Max(object.id);
+                        if (!max) {
+                            const box3 = new Box3().setFromObject(object);
                             box3.max.setZ(box3.max.z + 1);
                             ObjectData.setBox3(object.id, box3);
+                            max = box3.max;
                         }
-                        position.height = box3.max.z;
+                        position.height = max.z;
                     }
 
                     object.position.copy(rps.position);
@@ -78,6 +79,7 @@ export namespace SceneComponent {
          * @returns
          */
         export const add = (json: any, position?: IWGS84) => {
+            debugger;
             const object = new ObjectLoader().parse(json);
 
             ObjectData.setBox3ByObject3D(object);

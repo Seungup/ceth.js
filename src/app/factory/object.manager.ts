@@ -14,6 +14,7 @@ export class ObjectManager {
      * @returns
      */
     async add<T extends IMetaObject | Object3D>(object: T, position?: IWGS84): Promise<ObjectAPI> {
+        debugger;
         const id = await CoreAPI.excuteAPI('SceneComponentAPI', 'add', [object.toJSON(), position]);
 
         if (isMetaObject(object) && object.dispose) {

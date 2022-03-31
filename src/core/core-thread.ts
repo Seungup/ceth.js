@@ -63,7 +63,8 @@ export default class CoreThread {
         apiMethod: API_METHOD,
         args: API_ARGS
     ): API_MAP_APIFuntionReturnType<API_NAME, API_METHOD> {
-        return Object.call(API_MAP[apiName][apiMethod], args);
+        // @ts-ignore
+        return API_MAP[apiName][apiMethod](...args);
     }
 }
 
