@@ -1,4 +1,4 @@
-import { Matrix4, Vector3 } from 'three';
+import { Matrix4 } from 'three';
 import { Cartesian3, Transforms } from '.';
 
 export interface IWGS84 {
@@ -7,52 +7,33 @@ export interface IWGS84 {
     height: number;
 }
 
-export enum WGS84_TYPE {
-    CESIUM,
-    THREEJS,
+export enum WGS84_ACTION {
+    NONE,
+    SWAP,
 }
 
-export class CT_WGS84 extends Vector3 {
-    constructor(position: IWGS84, type: WGS84_TYPE) {
+export class CT_WGS84 {
+    private position: IWGS84;
+    constructor(position: IWGS84, type: WGS84_ACTION) {
         /**
          * Cesium 에서 제공되는 좌표 위치 값은 threejs 에서의 XY 값이 반대이기 때문에
          * 위도 경도의 위치가 서로 뒤바뀌어야합니다.
          */
-        if (type === WGS84_TYPE.CESIUM) {
+        if (type === WGS84_ACTION.SWAP) {
             const latitude = position.latitude;
             position.latitude = position.longitude;
             position.longitude = latitude;
         }
-        super(position.latitude, position.longitude, position.height);
-    }
-
-    get latitude() {
-        return this.x;
-    }
-
-    set latitude(value: number) {
-        this.setX(value);
-    }
-
-    get longitude() {
-        return this.y;
-    }
-
-    set longitude(value: number) {
-        this.setY(value);
-    }
-
-    get height() {
-        return this.z;
-    }
-
-    set height(value: number) {
-        this.setZ(value);
+        this.position = position;
     }
 
     getMatrix4(result: Matrix4 = new Matrix4()) {
         const matrix = Transforms.matrix4ToFixedFrame(
-            Cartesian3.fromDegree(this.longitude, this.latitude, this.height),
+            Cartesian3.fromDegree(
+                this.position.longitude,
+                this.position.latitude,
+                this.position.height
+            ),
             new Matrix4()
         ).elements;
 
@@ -66,21 +47,17 @@ export class CT_WGS84 extends Vector3 {
     }
 
     toString() {
-        const atl = this.height / 1000;
+        const atl = this.position.height / 1000;
         let str = '';
         if (atl > 1) {
             str = `${Number(atl.toFixed(1)).toLocaleString()}km`;
         } else {
-            str = `${Number(this.height.toFixed(1)).toLocaleString()}m`;
+            str = `${Number(this.position.height.toFixed(1)).toLocaleString()}m`;
         }
-        return `Lat: ${this.latitude}\nLon: ${this.longitude}\nAlt: ${str}`;
+        return `Lat: ${this.position.latitude}\nLon: ${this.position.longitude}\nAlt: ${str}`;
     }
 
     toIWGS84(): IWGS84 {
-        return {
-            latitude: this.latitude,
-            longitude: this.longitude,
-            height: this.height,
-        };
+        return this.position;
     }
 }

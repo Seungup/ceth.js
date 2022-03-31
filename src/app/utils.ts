@@ -1,5 +1,5 @@
 import { Cartesian2, Cartographic, Math, Viewer, Cartesian3, BoundingSphere } from 'cesium';
-import { IWGS84 } from '../math';
+import { CT_WGS84, IWGS84, WGS84_ACTION } from '../math';
 import { ObjectAPI } from './factory/object.api';
 
 export namespace Utils {
@@ -24,8 +24,8 @@ export namespace Utils {
         if (selectedLocation) {
             return {
                 height: 0,
-                latitude: selectedLocation.longitude,
-                longitude: selectedLocation.latitude,
+                latitude: selectedLocation.latitude,
+                longitude: selectedLocation.longitude,
             } as IWGS84;
         }
     };
@@ -62,15 +62,10 @@ export namespace Utils {
             if (isNaN(position.height)) {
                 position.height = 0;
             }
-            return flyByWGS84(
-                viewer,
-                {
-                    height: position.height,
-                    latitude: position.latitude,
-                    longitude: position.longitude,
-                },
-                radius
-            );
+
+            console.log(position, new CT_WGS84(position, WGS84_ACTION.SWAP).toIWGS84());
+
+            return flyByWGS84(viewer, new CT_WGS84(position, WGS84_ACTION.SWAP).toIWGS84(), radius);
         }
     };
 

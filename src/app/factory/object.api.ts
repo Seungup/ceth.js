@@ -1,5 +1,5 @@
 import { Vector3 } from 'three';
-import { IWGS84 } from '../../math';
+import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../math';
 import { CoreAPI } from './core-api';
 
 export class ObjectAPI {
@@ -37,11 +37,12 @@ export class ObjectAPI {
         return this;
     }
 
-    async setPosition(position: IWGS84) {
-        this._cachedPosition = position;
+    async setPosition(wgs84: IWGS84, action: WGS84_ACTION) {
+        this._cachedPosition = new CT_WGS84(wgs84, action).toIWGS84();
+
         return await CoreAPI.excuteAPI('SceneComponentAPI', 'setObjectPosition', [
             this.id,
-            position,
+            { wgs84: wgs84, action: action },
         ]);
     }
 

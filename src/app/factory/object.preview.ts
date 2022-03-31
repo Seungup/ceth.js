@@ -4,8 +4,8 @@ import { IMetaObject } from '../..';
 import { ObjectAPI } from './object.api';
 import { CoreAPI } from './core-api';
 import { isMetaObject } from '../../meta';
-import { IWGS84 } from '../../math';
 import { Utils } from '../utils';
+import { WGS84_ACTION } from '../../math';
 
 export class ObjectPreview {
     private _attachedObjectAPI: ObjectAPI | undefined;
@@ -14,9 +14,7 @@ export class ObjectPreview {
         canvas.addEventListener('pointermove', this._onMouseEvent.bind(this));
     }
 
-    private _attachedType: 'ObjectAPI' | 'Object3D' | undefined;
-
-    private _onDetached?: { (lastPosition?: IWGS84): void };
+    private _onBeforeDetach?: { (api: ObjectAPI): Promise<void> };
 
     /**
      * attached 된 오브젝트는 clone되어 원본을 유지합니다.
@@ -24,14 +22,13 @@ export class ObjectPreview {
      * @param object
      */
     async attach(
-        object: IMetaObject | Object3D | ObjectAPI,
-        onDetached?: { (lastPosition?: IWGS84): void }
+        object: IMetaObject | Object3D,
+        onBeforeDetach?: { (api: ObjectAPI): Promise<void> }
     ) {
         this.detach();
-        this._onDetached = onDetached;
+        this._onBeforeDetach = onBeforeDetach;
 
         if (object instanceof Object3D || isMetaObject(object)) {
-            this._attachedType = 'Object3D';
             const clone = object.clone();
 
             const id = await CoreAPI.excuteAPI('SceneComponentAPI', 'add', [
@@ -41,8 +38,6 @@ export class ObjectPreview {
             this._attachedObjectAPI = await new ObjectAPI(id).updateAll();
             return;
         }
-        this._attachedObjectAPI = object;
-        this._attachedType = 'ObjectAPI';
     }
 
     /**
@@ -65,17 +60,13 @@ export class ObjectPreview {
      */
     async detach() {
         if (this._attachedObjectAPI) {
-            switch (this._attachedType) {
-                case 'Object3D':
-                    this._attachedObjectAPI.remove();
-                    break;
-                default:
-                    break;
+            if (this._onBeforeDetach) {
+                await this._onBeforeDetach(this._attachedObjectAPI);
             }
-            const position = await this._attachedObjectAPI.getPosition();
-            this._onDetached?.(position);
+            this._attachedObjectAPI.remove();
+
             this._attachedObjectAPI = undefined;
-            this._attachedType = undefined;
+
             return true;
         }
         return false;
@@ -88,7 +79,7 @@ export class ObjectPreview {
         const position = Utils.mousePositionToWGS84(this.viewer, event);
 
         if (position) {
-            this._attachedObjectAPI.setPosition(position);
+            this._attachedObjectAPI.setPosition(position, WGS84_ACTION.NONE);
         }
     }
 }

@@ -2,6 +2,7 @@ import { ObjectAPI } from './object.api';
 import { Object3D } from 'three';
 import { IMetaObject, isMetaObject, IWGS84 } from '../..';
 import { CoreAPI } from './core-api';
+import { WGS84_ACTION } from '../../math';
 
 export class ObjectManager {
     /**
@@ -13,8 +14,10 @@ export class ObjectManager {
      * @param position
      * @returns
      */
-    async add<T extends IMetaObject | Object3D>(object: T, position?: IWGS84): Promise<ObjectAPI> {
-        debugger;
+    async add<T extends IMetaObject | Object3D>(
+        object: T,
+        position: { wgs84: IWGS84; action: WGS84_ACTION }
+    ): Promise<ObjectAPI> {
         const id = await CoreAPI.excuteAPI('SceneComponentAPI', 'add', [object.toJSON(), position]);
 
         if (isMetaObject(object) && object.dispose) {

@@ -1,5 +1,5 @@
 import { Box3, Object3D, ObjectLoader, Scene } from 'three';
-import { IWGS84, WGS84_TYPE } from '../../../math';
+import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../../math';
 import { isMetaObject } from '../../../meta';
 import { ObjectData } from '../object-data';
 import { Cesium3Synchronization } from '../synchronization';
@@ -29,7 +29,10 @@ export namespace SceneComponent {
          * @param id
          * @param position
          */
-        export const setObjectPosition = (id: number | Object3D, position: IWGS84) => {
+        export const setObjectPosition = (
+            id: number | Object3D,
+            postiion: { wgs84: IWGS84; action: WGS84_ACTION }
+        ) => {
             let object: Object3D | undefined;
 
             if (typeof id === 'number') {
@@ -46,7 +49,7 @@ export namespace SceneComponent {
                 const rps = ObjectData.API.getPositionRotationScale(object.id);
 
                 if (rps) {
-                    if (position.height === 0) {
+                    if (postiion.wgs84.height === 0) {
                         let max = ObjectData.API.getBox3Max(object.id);
                         if (!max) {
                             const box3 = new Box3().setFromObject(object);
@@ -54,7 +57,7 @@ export namespace SceneComponent {
                             ObjectData.setBox3(object.id, box3);
                             max = box3.max;
                         }
-                        position.height = max.z;
+                        postiion.wgs84.height = max.z;
                     }
 
                     object.position.copy(rps.position);
@@ -63,8 +66,8 @@ export namespace SceneComponent {
 
                     const wgs84 = Cesium3Synchronization.syncObject3DPosition(
                         object,
-                        position,
-                        WGS84_TYPE.CESIUM
+                        postiion.wgs84,
+                        postiion.action
                     );
 
                     ObjectData.setWGS84(object.id, wgs84);
@@ -78,20 +81,17 @@ export namespace SceneComponent {
          * @param position
          * @returns
          */
-        export const add = (json: any, position?: IWGS84) => {
-            debugger;
+        export const add = (json: any, position?: { wgs84: IWGS84; action: WGS84_ACTION }) => {
             const object = new ObjectLoader().parse(json);
-
+            debugger;
             ObjectData.setBox3ByObject3D(object);
             ObjectData.setPositionRotationScaleByObject3D(object);
 
             if (position) {
-                ObjectData.setWGS84(object.id, position);
-                setObjectPosition(object, {
-                    height: position.height,
-                    latitude: position.longitude,
-                    longitude: position.latitude,
-                });
+                debugger;
+                const wgs84 = new CT_WGS84(position.wgs84, position.action);
+                ObjectData.setWGS84(object.id, wgs84.toIWGS84());
+                setObjectPosition(object, { ...position });
             }
 
             scene.add(object);

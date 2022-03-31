@@ -1,6 +1,6 @@
 import { Viewer } from 'cesium';
-import { SphereGeometry, AxesHelper, DoubleSide, Material, PointsMaterial } from 'three';
-import { Cesium3, CT_WGS84, MetaMesh, MetaPoints, WGS84_TYPE } from '../../src';
+import { SphereGeometry, DoubleSide, PointsMaterial } from 'three';
+import { Cesium3, CT_WGS84, MetaPoints, WGS84_ACTION } from '../../src';
 
 import './css/main.css';
 
@@ -47,20 +47,26 @@ const object = new MetaPoints(
 
 event.onContextMenu.subscribe(() => {
     if (!preview.isAttached()) {
-        preview.attach(object, (position) => {
-            const wgs84 = new CT_WGS84(position, WGS84_TYPE.CESIUM);
-            wgs84.height = 100000;
-            factory.renderers.CSS2DRenderer.add(`${wgs84.toString()}`, wgs84, WGS84_TYPE.THREEJS);
+        preview.attach(object, async (api) => {
+            debugger;
+            const wgs84 = await api.getPosition();
+            const box3 = await api.getBox3();
+
+            wgs84.height = box3.z;
+
+            const position = {
+                wgs84: wgs84,
+                action: WGS84_ACTION.NONE,
+            };
+
+            factory.renderers.CSS2DRenderer.add(
+                new CT_WGS84(position.wgs84, position.action).toString(),
+                position
+            );
+
             wgs84.height = 0;
 
-            const axes = new AxesHelper(10000);
-            if (axes.material instanceof Material) {
-                axes.material.depthTest = false;
-            }
-            axes.renderOrder = 1;
-            object.add(axes);
-
-            factory.manager.add(object, wgs84.toIWGS84()).then((api) => {
+            factory.manager.add(object, position).then((api) => {
                 Cesium3.Utils.flyByObjectAPI(viewer, api);
             });
         });

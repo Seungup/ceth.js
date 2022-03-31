@@ -1,5 +1,5 @@
 import { Object3D, PerspectiveCamera } from 'three';
-import { CT_WGS84, IWGS84, WGS84_TYPE } from '../../math';
+import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../math';
 
 export namespace Cesium3Synchronization {
     export interface ISyncPerspectiveCameraParam {
@@ -41,18 +41,14 @@ export namespace Cesium3Synchronization {
      * threejs 의 오브젝트의 위치를 cesium 지구 표면의 위치와 동기화합니다.
      * @param object threejs object3d
      * @param position wgs84
-     * @param positionType
+     * @param positionAction
      * @returns
      */
-    export const syncObject3DPosition = (
-        object: Object3D,
-        position: IWGS84,
-        positionType: WGS84_TYPE
-    ) => {
-        const wgs84 = new CT_WGS84(position, positionType);
+    export const syncObject3DPosition = (object: Object3D, wgs84: IWGS84, action: WGS84_ACTION) => {
+        const location = new CT_WGS84(wgs84, action);
 
-        object.applyMatrix4(wgs84.getMatrix4());
+        object.applyMatrix4(location.getMatrix4());
 
-        return wgs84.toIWGS84();
+        return location.toIWGS84();
     };
 }

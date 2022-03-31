@@ -4,7 +4,7 @@ import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRe
 import { CameraComponent } from '../../../core/API/components';
 import { ObjectData } from '../../../core/API/object-data';
 import { Cesium3Synchronization } from '../../../core/API/synchronization';
-import { CT_WGS84, IWGS84, WGS84_TYPE } from '../../../math';
+import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../../math';
 import { IBaseRenderer } from './BaseRenderer';
 
 export class Object3DCSS2DRenderer implements IBaseRenderer {
@@ -22,7 +22,7 @@ export class Object3DCSS2DRenderer implements IBaseRenderer {
         container.appendChild(this.labelRenderer.domElement);
     }
 
-    add(text: string, position: IWGS84, positionType: WGS84_TYPE) {
+    add(text: string, position: { wgs84: IWGS84; action: WGS84_ACTION }) {
         const div = document.createElement('div');
 
         div.className = 'label';
@@ -42,14 +42,14 @@ export class Object3DCSS2DRenderer implements IBaseRenderer {
 
         ObjectData.setPositionRotationScaleByObject3D(object);
 
-        object.applyMatrix4(new CT_WGS84(position, positionType).getMatrix4());
+        object.applyMatrix4(new CT_WGS84(position.wgs84, position.action).getMatrix4());
 
         this.scene.add(object);
 
         return object;
     }
 
-    updatePosition(id: number | Object3D, position: IWGS84, positionType: WGS84_TYPE) {
+    updatePosition(id: number | Object3D, position: IWGS84, positionAction: WGS84_ACTION) {
         let object: Object3D | undefined;
         if (typeof id === 'number') {
             object = this.scene.getObjectById(id);
@@ -66,7 +66,7 @@ export class Object3DCSS2DRenderer implements IBaseRenderer {
                 object.scale.copy(prs.scale);
             }
 
-            object.applyMatrix4(new CT_WGS84(position, positionType).getMatrix4());
+            object.applyMatrix4(new CT_WGS84(position, positionAction).getMatrix4());
         }
     }
 

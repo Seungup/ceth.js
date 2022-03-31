@@ -18,7 +18,6 @@ export namespace ObjectData {
         };
 
         export const getBox3Max = (id: number) => {
-            debugger;
             return box3Map.get(id)?.max;
         };
 
