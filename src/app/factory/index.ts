@@ -39,7 +39,6 @@ export class InterfcaeFactory {
             );
         }
 
-        // @ts-ignore
         const offscreen = canvas.transferControlToOffscreen();
         offscreen.width = this.viewer.canvas.width;
         offscreen.height = this.viewer.canvas.height;

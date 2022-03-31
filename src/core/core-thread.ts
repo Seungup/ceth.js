@@ -63,11 +63,7 @@ export default class CoreThread {
         apiMethod: API_METHOD,
         args: API_ARGS
     ): API_MAP_APIFuntionReturnType<API_NAME, API_METHOD> {
-        return (
-            API_MAP[apiName][apiMethod] as unknown as {
-                (...args: any): API_MAP_APIFuntionReturnType<API_NAME, API_METHOD>;
-            }
-        )(...args);
+        return Object.call(API_MAP[apiName][apiMethod], args);
     }
 }
 
