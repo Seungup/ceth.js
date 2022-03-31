@@ -1,2 +1,2 @@
 export * from './factory';
-export * from './cesium.utils';
+export * from './utils';

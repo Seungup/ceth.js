@@ -2,7 +2,7 @@ import { Cartesian2, Cartographic, Math, Viewer, Cartesian3, BoundingSphere } fr
 import { IWGS84 } from '../math';
 import { ObjectAPI } from './factory/object.api';
 
-export namespace CesiumUtils {
+export namespace Utils {
     export const getCameraPosition = (viewer: Viewer) => {
         const result = new Cartographic();
         viewer.scene.globe.ellipsoid.cartesianToCartographic(viewer.camera.positionWC, result);

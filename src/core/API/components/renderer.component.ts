@@ -23,6 +23,7 @@ export namespace RendererComponent {
             depth: false,
             preserveDrawingBuffer: false,
             stencil: false,
+            premultipliedAlpha: false,
         };
 
         const context = param.canvas.getContext('webgl2');
@@ -43,7 +44,7 @@ export namespace RendererComponent {
          * @param width
          * @param height
          */
-        export const setRendererSize = (width: number, height: number) => {
+        export const setSize = (width: number, height: number) => {
             if (renderer) {
                 renderer.setSize(width, height, false);
             } else {

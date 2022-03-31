@@ -5,7 +5,7 @@ export * from './interface';
 export * from './MetaMesh';
 export * from './MetaObject3D';
 export * from './MetaSVG';
-
+export * from './MetaPoints';
 /**
  * 오브젝트의 형이 MetaObject 인터페이스의 형태를 가지고 있는지 확인합니다.
  * @param object

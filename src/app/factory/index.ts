@@ -1,17 +1,12 @@
 import { Viewer } from 'cesium';
-import { ObjectRenderer } from './object.renderer';
 import { ObjectManager } from './object.manager';
 import { ObjectEvent } from './object.event';
 import { ObjectPreview } from './object.preview';
-import { CoreAPI } from './core-api';
-import { CoreThreadCommand } from '../../core/core-thread';
-import { ObjectCSS2DRenderer } from './object.css2d-renderer';
+import { Renderers } from './renderers';
 
 export class InterfcaeFactory {
     readonly container: HTMLDivElement;
     constructor(private readonly viewer: Viewer) {
-        const root = viewer.container.parentElement;
-
         this.container = document.createElement('div');
         this.container.id = 'ThreeContainer';
         this.container.style.position = 'absolute';
@@ -23,26 +18,6 @@ export class InterfcaeFactory {
         this.container.style.overflow = 'hidden';
         this.container.style.padding = '0';
         this.container.style.pointerEvents = 'none';
-
-        const canvas = document.createElement('canvas');
-        this.container.appendChild(canvas);
-
-        if (!root) {
-            throw new Error('cannot fond parent element');
-        } else {
-            root.appendChild(this.container);
-        }
-
-        if (viewer.useDefaultRenderLoop) {
-            console.warn(
-                'Please set Cesium viewer.useDefaultRenderLoop = false for syncronize animation frame to this plug-in'
-            );
-        }
-
-        const offscreen = canvas.transferControlToOffscreen();
-        offscreen.width = this.viewer.canvas.width;
-        offscreen.height = this.viewer.canvas.height;
-        CoreAPI.excuteCommand(CoreThreadCommand.INIT, { canvas: offscreen }, [offscreen]);
     }
 
     private _manager: ObjectManager | undefined;
@@ -61,29 +36,9 @@ export class InterfcaeFactory {
         return this._event || (this._event = new ObjectEvent(this.viewer));
     }
 
-    private _renderer: ObjectRenderer | undefined;
-    /**
-     * 오브젝트를 렌더링하기 위한 렌더러 클래스를 가져옵니다.
-     *
-     * @example
-     * const renderer = factory.renderer;
-     * (function animation() {
-     * 	requestAnimationFrame(animation);
-     * 	viewer.render();
-     * 	renderer.render();
-     * })();
-     *
-     */
-    get WebGLRenderer() {
-        return this._renderer || (this._renderer = new ObjectRenderer(this.viewer));
-    }
-
-    private _CSS2DRenderer: ObjectCSS2DRenderer | undefined;
-    get CSS2DRenderer() {
-        return (
-            this._CSS2DRenderer ||
-            (this._CSS2DRenderer = new ObjectCSS2DRenderer(this.viewer, this.container))
-        );
+    private _renderers: Renderers | undefined;
+    get renderers() {
+        return this._renderers || (this._renderers = new Renderers(this.viewer, this.container));
     }
 
     private _preview: ObjectPreview | undefined;

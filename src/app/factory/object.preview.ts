@@ -2,10 +2,10 @@ import { Viewer } from 'cesium';
 import { Object3D } from 'three';
 import { IMetaObject } from '../..';
 import { ObjectAPI } from './object.api';
-import { CesiumUtils } from '..';
 import { CoreAPI } from './core-api';
 import { isMetaObject } from '../../meta';
 import { IWGS84 } from '../../math';
+import { Utils } from '../utils';
 
 export class ObjectPreview {
     private _attachedObjectAPI: ObjectAPI | undefined;
@@ -85,7 +85,7 @@ export class ObjectPreview {
         if (!this._attachedObjectAPI) return;
         if (!this.autoPositionUpdate) return;
 
-        const position = CesiumUtils.mousePositionToWGS84(this.viewer, event);
+        const position = Utils.mousePositionToWGS84(this.viewer, event);
 
         if (position) {
             this._attachedObjectAPI.setPosition(position);

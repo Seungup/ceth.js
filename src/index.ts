@@ -1,4 +1,4 @@
-import { InterfcaeFactory as Factory } from './app';
+import { Utils as Cesium3Utils, InterfcaeFactory as Factory } from './app';
 
 /**
  * CesiumGS 와 Three.js 동기화 라이브러리입니다.
@@ -13,6 +13,7 @@ export namespace Cesium3 {
      *
      */
     export const InterfcaeFactory = Factory;
+    export const Utils = Cesium3Utils;
 
     /**
      * Version

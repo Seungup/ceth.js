@@ -69,10 +69,7 @@ export class CT_WGS84 extends Vector3 {
         } else {
             str = `${Number(this.height.toFixed(1)).toLocaleString()}m`;
         }
-        return `
-        Lat: ${this.latitude}
-        Lon: ${this.longitude} 
-        Alt: ${str}`;
+        return `Lat: ${this.latitude}\nLon: ${this.longitude}\nAlt: ${str}`;
     }
 
     toIWGS84(): IWGS84 {

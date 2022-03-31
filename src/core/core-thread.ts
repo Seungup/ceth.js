@@ -63,6 +63,10 @@ export default class CoreThread {
         apiMethod: API_METHOD,
         args: API_ARGS
     ): API_MAP_APIFuntionReturnType<API_NAME, API_METHOD> {
+        const func = API_MAP[apiName][apiMethod];
+
+        func;
+
         // @ts-ignore
         return API_MAP[apiName][apiMethod](...args);
     }
