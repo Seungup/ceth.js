@@ -54,9 +54,7 @@ export namespace Utils {
                 position.height = 0;
             }
 
-            console.log(position, new CT_WGS84(position, WGS84_ACTION.SWAP).toIWGS84());
-
-            return flyByWGS84(viewer, new CT_WGS84(position, WGS84_ACTION.SWAP).toIWGS84(), radius);
+            return flyByWGS84(viewer, new CT_WGS84(position, WGS84_ACTION.NONE).toIWGS84(), radius);
         }
     };
 
