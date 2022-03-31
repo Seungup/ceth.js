@@ -15,7 +15,7 @@ export namespace Utils {
 
     const _scratchCartesian2 = new Cartesian2();
 
-    export const mousePositionToWGS84 = (viewer: Viewer, event: MouseEvent) => {
+    export const mouseEventToWGS84 = (viewer: Viewer, event: MouseEvent) => {
         _scratchCartesian2.x = event.clientX;
         _scratchCartesian2.y = event.clientY;
 
