@@ -3,7 +3,7 @@ export namespace RendererComponent {
     export let renderer: WebGLRenderer | undefined;
 
     export interface InitializationParameter {
-        canvas: HTMLCanvasElement | OffscreenCanvas;
+        canvas: OffscreenCanvas;
     }
 
     /**
