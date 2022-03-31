@@ -1,6 +1,7 @@
 import { Viewer } from 'cesium';
 import { BoxBufferGeometry, DoubleSide, MeshNormalMaterial } from 'three';
 import { Cesium3, CT_WGS84, MetaMesh, WGS84_TYPE } from '../../src';
+import { CesiumUtils } from '../../src/app';
 
 import './css/main.css';
 
@@ -38,11 +39,12 @@ const CSS2DRenderer = factory.CSS2DRenderer;
 })();
 
 const object = new MetaMesh(
-    new BoxBufferGeometry(100, 100, 100),
+    new BoxBufferGeometry(1000, 1000, 1000),
     new MeshNormalMaterial({
         side: DoubleSide,
     })
 );
+
 event.onContextMenu.subscribe(() => {
     if (!preview.isAttached()) {
         preview.attach(object, (position) => {
@@ -50,7 +52,9 @@ event.onContextMenu.subscribe(() => {
             wgs84.height = 100;
             CSS2DRenderer.add(`${wgs84.toString()}`, wgs84, WGS84_TYPE.THREEJS);
             wgs84.height = 0;
-            factory.manager.add(object, wgs84.toIWGS84());
+            factory.manager.add(object, position).then((api) => {
+                CesiumUtils.flyByObjectAPI(viewer, api);
+            });
         });
     }
 });
