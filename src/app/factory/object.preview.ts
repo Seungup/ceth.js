@@ -76,7 +76,7 @@ export class ObjectPreview {
         if (!this._attachedObjectAPI) return;
         if (!this.autoPositionUpdate) return;
 
-        const position = Utils.mouseEventToWGS84(this.viewer, event);
+        const position = Utils.getLongitudeLatitudeByMouseEvent(this.viewer, event);
 
         if (position) {
             this._attachedObjectAPI.setPosition({ ...position, height: 0 }, WGS84_ACTION.NONE);
