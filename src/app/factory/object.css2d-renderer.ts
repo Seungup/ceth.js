@@ -13,10 +13,7 @@ export class ObjectCSS2DRenderer {
 
     constructor(private readonly viewer: Cesium.Viewer, container: HTMLDivElement) {
         this.labelRenderer = new CSS2DRenderer();
-        this.labelRenderer.setSize(
-            this.viewer.container.clientWidth,
-            this.viewer.container.clientHeight
-        );
+        this.labelRenderer.setSize(this.viewer.canvas.width, this.viewer.canvas.height);
         this.labelRenderer.domElement.style.position = 'absolute';
         this.labelRenderer.domElement.style.top = '0px';
         this.camera.layers.enableAll();
