@@ -1,6 +1,7 @@
 import { Viewer } from 'cesium';
 import { SphereGeometry, DoubleSide, PointsMaterial } from 'three';
 import { Cesium3, CT_WGS84, MetaPoints, WGS84_ACTION } from '../../src';
+import { Object3DCSS2DRenderer } from '../../src/app/factory/renderers/Object3DCSS2DRenderer';
 
 import './css/main.css';
 
@@ -30,8 +31,7 @@ const event = factory.event;
 
 (function animation() {
     requestAnimationFrame(animation);
-    factory.renderers.updateAll();
-    factory.renderers.renderAll();
+    factory.renderers.render();
     viewer.render();
 })();
 
@@ -58,10 +58,9 @@ event.onContextMenu.subscribe(() => {
                 action: WGS84_ACTION.NONE,
             };
 
-            factory.renderers.CSS2DRenderer.add(
-                new CT_WGS84(position.wgs84, position.action).toString(),
-                position
-            );
+            const renderer = factory.renderers.getRenderer('CSS2DRenderer');
+
+            renderer.add(new CT_WGS84(position.wgs84, position.action).toString(), position);
 
             wgs84.height = 0;
 

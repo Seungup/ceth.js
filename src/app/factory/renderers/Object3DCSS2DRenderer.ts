@@ -5,20 +5,21 @@ import { CameraComponent } from '../../../core/API/components';
 import { ObjectData } from '../../../core/API/object-data';
 import { Cesium3Synchronization } from '../../../core/API/synchronization';
 import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../../math';
-import { IBaseRenderer } from './BaseRenderer';
+import { BaseRenderer } from './BaseRenderer';
 
-export class Object3DCSS2DRenderer implements IBaseRenderer {
+export class Object3DCSS2DRenderer extends BaseRenderer {
     private readonly labelRenderer = new CSS2DRenderer();
     private readonly camera = new PerspectiveCamera();
     private readonly scene = new Scene();
 
-    constructor(private readonly viewer: Cesium.Viewer, container: HTMLDivElement) {
+    constructor(viewer: Cesium.Viewer, container: HTMLDivElement) {
+        super(viewer, container);
+        this.name = 'CSS2DRenderer';
         this.labelRenderer = new CSS2DRenderer();
         this.labelRenderer.setSize(this.viewer.canvas.width, this.viewer.canvas.height);
         this.labelRenderer.domElement.style.position = 'absolute';
         this.labelRenderer.domElement.style.top = '0px';
-        this.camera.layers.enableAll();
-        this.camera.layers.toggle(1);
+
         container.appendChild(this.labelRenderer.domElement);
     }
 

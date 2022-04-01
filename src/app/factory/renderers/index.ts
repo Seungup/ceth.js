@@ -1,70 +1,106 @@
 import * as Cesium from 'cesium';
 import PerspectiveFrustum from 'cesium/Source/Core/PerspectiveFrustum';
 import { CameraComponent } from '../../../core/API/components';
+import { BaseRenderer } from './BaseRenderer';
 import { Object3DCSS2DRenderer } from './Object3DCSS2DRenderer';
 import { Object3DWebGLRenderer } from './Object3DWebGLRenderer';
 
-export class Renderers {
-    private _CSS2DRenderer: Object3DCSS2DRenderer;
-    private _WebGLRenderer: Object3DWebGLRenderer;
-
-    constructor(
-        private readonly viewer: Cesium.Viewer,
-        private readonly container: HTMLDivElement
-    ) {
-        this._CSS2DRenderer = new Object3DCSS2DRenderer(this.viewer, this.container);
-        this._WebGLRenderer = new Object3DWebGLRenderer(this.viewer, this.container);
-    }
-
-    get CSS2DRenderer() {
-        return this._CSS2DRenderer;
-    }
-
-    get WebGLRenderer() {
-        return this._WebGLRenderer;
-    }
-
-    private getCesiumCameraMatrix(
-        width: number,
-        height: number
-    ): CameraComponent.API.PerspectiveCameraInitParam {
-        return {
-            fov: Cesium.Math.toDegrees((this.viewer.camera.frustum as PerspectiveFrustum).fovy),
-            near: this.viewer.camera.frustum.near,
-            far: this.viewer.camera.frustum.far,
-            aspect: width / height,
-        };
-    }
-
-    private _oldWidth: number | undefined;
-    private _oldHeight: number | undefined;
+/**
+ * 이곳에서 사용할 렌더러들을 선언합니다.
+ */
+namespace RendererDefiner {
     /**
-     * 필요한 경우, 렌더러와 카메라의 행렬을 업데이트합니다.
+     * 이곳에서 사용할 렌더러의 클래스를 정의합니다.
      */
-    updateAll() {
-        const width = this.viewer.canvas.clientWidth;
-        const height = this.viewer.canvas.clientHeight;
+    export interface IBaseRendererClassMap {
+        CSS2DRenderer: Object3DCSS2DRenderer;
+        WebGLRenderer: Object3DWebGLRenderer;
+    }
 
-        if (this._oldHeight !== height || this._oldWidth !== width) {
-            this.CSS2DRenderer.setSize(width, height);
-            this.WebGLRenderer.setSize(width, height);
+    /**
+     * 렌더러의 클래스 커넥션을 담당하는 맵입니다.
+     * KEY & VALUE 는 IBaseRendererClassMap 과 동일해야합니다.
+     */
+    export const BaseRendererClassMap: { [key: string]: typeof BaseRenderer } = {
+        CSS2DRenderer: Object3DCSS2DRenderer,
+        WebGLRenderer: Object3DWebGLRenderer,
+    } as const;
 
-            // 렌더러의 크기가 변경된 경우, 렌더링하기 위한 카메라의 행렬 또한 업데이트해야합니다.
-            const param = this.getCesiumCameraMatrix(width, height);
+    export type BaseRenderMap = typeof BaseRendererClassMap[keyof typeof BaseRendererClassMap];
+}
 
-            this.CSS2DRenderer.setCamera(param);
-            this.WebGLRenderer.setCamera(param);
+namespace RendererManager {
+    export const rendererMap = new Map<string, BaseRenderer>();
+
+    export const setRenderer = (renderer: BaseRenderer) => {
+        rendererMap.set(renderer.name, renderer);
+    };
+
+    export const getRenderer = (name: string) => {
+        return rendererMap.get(name);
+    };
+
+    const getCesiumCameraMatrix = (
+        viewer: Cesium.Viewer
+    ): CameraComponent.API.PerspectiveCameraInitParam => {
+        return {
+            fov: Cesium.Math.toDegrees((viewer.camera.frustum as PerspectiveFrustum).fovy),
+            near: viewer.camera.frustum.near,
+            far: viewer.camera.frustum.far,
+            aspect: viewer.canvas.clientWidth / viewer.canvas.clientHeight,
+        };
+    };
+
+    let _oldWidth: number | undefined;
+    let _oldHeight: number | undefined;
+    export const updateAll = (viewer: Cesium.Viewer) => {
+        const width = viewer.canvas.clientWidth;
+        const height = viewer.canvas.clientHeight;
+
+        if (_oldHeight !== height || _oldWidth !== width) {
+            const param = getCesiumCameraMatrix(viewer);
+            for (const [_, renderer] of rendererMap) {
+                renderer.setSize(width, height);
+                renderer.setCamera(param);
+            }
         }
 
-        this._oldWidth = width;
-        this._oldHeight = height;
+        _oldWidth = width;
+        _oldHeight = height;
+    };
+
+    export const renderAll = () => {
+        for (const [_, renderer] of rendererMap) {
+            renderer.render();
+        }
+    };
+}
+
+export class Renderers {
+    constructor(private readonly viewer: Cesium.Viewer, container: HTMLDivElement) {
+        const classKeys = Object.keys(RendererDefiner.BaseRendererClassMap);
+        for (const key of classKeys) {
+            const RendererClass = RendererDefiner.BaseRendererClassMap[key];
+            RendererManager.setRenderer(new RendererClass(viewer, container));
+        }
     }
 
     /**
      * 모든 렌더러에게 다음 장면을 요청합니다.
      */
-    renderAll() {
-        this._WebGLRenderer.render();
-        this._CSS2DRenderer.render();
+    render() {
+        RendererManager.updateAll(this.viewer);
+        RendererManager.renderAll();
+    }
+
+    /**
+     * 렌더러를 가져옵니다.
+     * @param key
+     * @returns
+     */
+    getRenderer<T extends keyof RendererDefiner.IBaseRendererClassMap>(
+        key: T
+    ): RendererDefiner.IBaseRendererClassMap[T] {
+        return <RendererDefiner.IBaseRendererClassMap[T]>RendererManager.getRenderer(key)!;
     }
 }

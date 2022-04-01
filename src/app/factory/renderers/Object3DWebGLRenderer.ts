@@ -3,14 +3,12 @@ import { CoreThreadCommand } from '../../../core/core-thread';
 import { CoreAPI } from '../core-api';
 import { CameraComponent } from '../../../core/API/components';
 import { Utils } from '../../utils';
-import { IBaseRenderer } from './BaseRenderer';
+import { BaseRenderer } from './BaseRenderer';
 
-export class Object3DWebGLRenderer implements IBaseRenderer {
-    constructor(private readonly viewer: Viewer, private readonly container: HTMLDivElement) {
-        /**
-         * Object3D 를 렌더링하는 곳은 워커 스레드에서 진행되므로,
-         * 이곳에서는 워커 스레드를 초기화하는 작업이 진행되어야합니다.
-         */
+export class Object3DWebGLRenderer extends BaseRenderer {
+    constructor(viewer: Viewer, container: HTMLDivElement) {
+        super(viewer, container);
+        this.name = 'WebGLRenderer';
         const canvas = document.createElement('canvas');
         this.container.appendChild(canvas);
 
