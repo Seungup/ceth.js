@@ -1,7 +1,8 @@
 import { Viewer } from 'cesium';
 import { SphereGeometry, DoubleSide, PointsMaterial } from 'three';
-import { Cesium3, CT_WGS84, MetaPoints, WGS84_ACTION } from '../../src';
-import { Object3DCSS2DRenderer } from '../../src/app/factory/renderers/Object3DCSS2DRenderer';
+import { Cesium3, CT_WGS84, MetaPoints, WGS84_ACTION, OffscreenRenderer } from '../../src';
+import { ObjectEvent, ObjectPreview } from '../../src/app';
+import { DOMRenderer } from '../../src/app/core/renderer/template/dom.renderer';
 
 import './css/main.css';
 
@@ -24,14 +25,20 @@ const constructorOptions: Viewer.ConstructorOptions = {
 
 const viewer = new Viewer('cesiumContainer', constructorOptions);
 
-const factory = new Cesium3.InterfcaeFactory(viewer);
+const app = new Cesium3(viewer);
+{
+    const rendererContext = app.context.RendererContext;
 
-const preview = factory.preview;
-const event = factory.event;
+    rendererContext.addRenderer(OffscreenRenderer);
+    rendererContext.addRenderer(DOMRenderer);
+}
+
+const event = new ObjectEvent();
+const preview = new ObjectPreview();
 
 (function animation() {
     requestAnimationFrame(animation);
-    factory.renderers.render();
+    app.context.RendererContext.doRender();
     viewer.render();
 })();
 
@@ -58,13 +65,17 @@ event.onContextMenu.subscribe(() => {
                 action: WGS84_ACTION.NONE,
             };
 
-            const renderer = factory.renderers.getRenderer('CSS2DRenderer');
-
-            renderer.add(new CT_WGS84(position.wgs84, position.action).toString(), position);
+            const renderer = app.context.RendererContext.getRenderer(DOMRenderer);
+            if (renderer) {
+                (<DOMRenderer>renderer).add(
+                    new CT_WGS84(position.wgs84, position.action).toString(),
+                    position
+                );
+            }
 
             wgs84.height = 0;
 
-            factory.manager.add(object, position).then((api) => {
+            app.manger.add(object, position).then((api) => {
                 Cesium3.Utils.flyByObjectAPI(viewer, api);
             });
         });

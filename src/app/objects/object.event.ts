@@ -1,5 +1,5 @@
-import { Viewer } from 'cesium';
 import { Subject } from 'rxjs';
+import { Context } from '../context';
 
 export class ObjectEvent {
     private readonly onKeyDownSubject = new Subject<KeyboardEvent>();
@@ -11,8 +11,8 @@ export class ObjectEvent {
     readonly onPointerMove = this.onPointerMoveSubject.pipe();
     readonly onContextMenu = this.onContextMenuSubject.pipe();
 
-    constructor(private readonly viewer: Viewer) {
-        const root = this.viewer.container.parentElement;
+    constructor() {
+        const root = Context.viewer?.container.parentElement;
         root?.addEventListener('keydown', (event) => {
             this.onKeyDownSubject.next(event);
         });

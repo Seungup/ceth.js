@@ -1,6 +1,6 @@
 import { Vector3 } from 'three';
 import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../math';
-import { CoreAPI } from './core-api';
+import { CoreThreadCommand } from '../../core-thread.command';
 
 export class ObjectAPI {
     readonly id: number;
@@ -18,7 +18,7 @@ export class ObjectAPI {
     }
 
     async updateWGS84() {
-        const wgs84 = await CoreAPI.excuteAPI('ObjectDataAPI', 'getWGS84', [this.id]);
+        const wgs84 = await CoreThreadCommand.excuteAPI('ObjectDataAPI', 'getWGS84', [this.id]);
 
         if (wgs84) {
             this._cachedPosition = wgs84;
@@ -28,7 +28,7 @@ export class ObjectAPI {
     }
 
     async updateBox3() {
-        const max = await CoreAPI.excuteAPI('ObjectDataAPI', 'getBox3Max', [this.id]);
+        const max = await CoreThreadCommand.excuteAPI('ObjectDataAPI', 'getBox3Max', [this.id]);
 
         if (max) {
             this._cachedBox3Max = max;
@@ -40,7 +40,7 @@ export class ObjectAPI {
     async setPosition(wgs84: IWGS84, action: WGS84_ACTION) {
         this._cachedPosition = new CT_WGS84(wgs84, action).toIWGS84();
 
-        return await CoreAPI.excuteAPI('SceneComponentAPI', 'setObjectPosition', [
+        return await CoreThreadCommand.excuteAPI('SceneComponentAPI', 'setObjectPosition', [
             this.id,
             { wgs84: wgs84, action: action },
         ]);
@@ -61,10 +61,10 @@ export class ObjectAPI {
     }
 
     async remove() {
-        return await CoreAPI.excuteAPI('SceneComponentAPI', 'remove', [this.id]);
+        return await CoreThreadCommand.excuteAPI('SceneComponentAPI', 'remove', [this.id]);
     }
 
     async isExistObject() {
-        return await CoreAPI.excuteAPI('SceneComponentAPI', 'isExistObject', [this.id]);
+        return await CoreThreadCommand.excuteAPI('SceneComponentAPI', 'isExistObject', [this.id]);
     }
 }

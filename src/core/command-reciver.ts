@@ -10,7 +10,7 @@ import { CameraComponent, RendererComponent } from './API/components';
 import { Cesium3Synchronization } from './API/synchronization';
 import { RenderQueue } from './API/utils';
 
-export enum CoreThreadCommand {
+export enum CoreThreadCommands {
     RENDER,
     INIT,
     SYNC,
@@ -21,12 +21,13 @@ function isCoreThreadCommand(object: any): object is ICoreThreadCommand {
 }
 
 export interface ICoreThreadCommand {
-    runCommand: CoreThreadCommand;
+    runCommand: CoreThreadCommands;
     param: any;
 }
 
-export default class CoreThread {
+export class CommandReciver {
     constructor() {
+        debugger;
         self.onmessage = (e: MessageEvent) => {
             const message = e.data;
             if (isCoreThreadCommand(message)) {
@@ -38,13 +39,13 @@ export default class CoreThread {
     excuteCommand(data: ICoreThreadCommand) {
         const param = data.param;
         switch (data.runCommand) {
-            case CoreThreadCommand.RENDER:
+            case CoreThreadCommands.RENDER:
                 RenderQueue.requestRender();
                 break;
-            case CoreThreadCommand.INIT:
+            case CoreThreadCommands.INIT:
                 RendererComponent.initializationWebGLRenderer(param);
                 break;
-            case CoreThreadCommand.SYNC:
+            case CoreThreadCommands.SYNC:
                 Cesium3Synchronization.syncPerspectiveCamera(
                     CameraComponent.perspectiveCamera,
                     param
@@ -76,4 +77,4 @@ export default class CoreThread {
     }
 }
 
-expose(new CoreThread());
+expose(new CommandReciver());

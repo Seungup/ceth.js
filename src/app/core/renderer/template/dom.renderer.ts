@@ -1,26 +1,31 @@
-import * as Cesium from 'cesium';
 import { Object3D, PerspectiveCamera, Scene } from 'three';
 import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
-import { CameraComponent } from '../../../core/API/components';
-import { ObjectData } from '../../../core/API/object-data';
-import { Cesium3Synchronization } from '../../../core/API/synchronization';
-import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../../math';
-import { BaseRenderer } from './BaseRenderer';
+import { CameraComponent } from '../../../../core/API/components';
+import { ObjectData } from '../../../../core/API/object-data';
+import { Cesium3Synchronization } from '../../../../core/API/synchronization';
+import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../../../math';
+import { Context } from '../../../context';
+import { RendererTemplate } from './renderer.template';
 
-export class Object3DCSS2DRenderer extends BaseRenderer {
+// TODO : 단일책임의 원칙에 따라 렌더러에서는 렌더링 관련된 기능만을 수행할 수 있도록, 적절하지 않은 함수는 따로 뺄 수 있도록 변경한다,
+// TODO : 렌더러 클래스의 맴버 변수 scene, camera는 약한 관계를 갖도록 변경한다. 다자인 패턴중에서 전략 패턴을 쓰면 괜찮을 것 같다.
+
+export class DOMRenderer extends RendererTemplate {
     private readonly labelRenderer = new CSS2DRenderer();
     private readonly camera = new PerspectiveCamera();
     private readonly scene = new Scene();
 
-    constructor(viewer: Cesium.Viewer, container: HTMLDivElement) {
-        super(viewer, container);
+    constructor() {
+        super();
         this.name = 'CSS2DRenderer';
         this.labelRenderer = new CSS2DRenderer();
-        this.labelRenderer.setSize(this.viewer.canvas.width, this.viewer.canvas.height);
+        if (Context.viewer) {
+            this.labelRenderer.setSize(Context.viewer.canvas.width, Context.viewer.canvas.height);
+        }
         this.labelRenderer.domElement.style.position = 'absolute';
         this.labelRenderer.domElement.style.top = '0px';
 
-        container.appendChild(this.labelRenderer.domElement);
+        Context.container.appendChild(this.labelRenderer.domElement);
     }
 
     add(text: string, position: { wgs84: IWGS84; action: WGS84_ACTION }) {
@@ -91,8 +96,9 @@ export class Object3DCSS2DRenderer extends BaseRenderer {
     }
 
     render() {
-        const cvm = new Float64Array(this.viewer.camera.viewMatrix);
-        const civm = new Float64Array(this.viewer.camera.inverseViewMatrix);
+        if (!Context.viewer) return;
+        const cvm = new Float64Array(Context.viewer.camera.viewMatrix);
+        const civm = new Float64Array(Context.viewer.camera.inverseViewMatrix);
         Cesium3Synchronization.syncPerspectiveCamera(this.camera, { civm: civm, cvm: cvm });
         this.labelRenderer.render(this.scene, this.camera);
     }

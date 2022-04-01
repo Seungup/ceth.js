@@ -1,16 +1,16 @@
 import { wrap, Remote } from 'comlink';
-import CoreThread from './core/core-thread';
+import type { CommandReciver } from './core/command-reciver';
 
 interface WorkerMap {
-    CoreThread: CoreThread;
+    CommandReciver: CommandReciver;
 }
 const WorkerURL = {
-    CoreThread: new URL('./core/core-thread', import.meta.url),
+    CommandReciver: new URL('./core/command-reciver', import.meta.url),
 } as const;
 
 type WorkerURL = typeof WorkerURL[keyof typeof WorkerURL];
 
-export class SingletonWorkerFactory {
+export class WorkerFlyweight {
     private static readonly workerMap = new Map<URL, Worker>();
     /**
      * 웹 워커를 가져옵니다.
@@ -36,7 +36,7 @@ export class SingletonWorkerFactory {
      * @returns
      */
     static getWrapper<T extends keyof WorkerMap>(workerClassName: T): Remote<WorkerMap[T]> {
-        const worker = SingletonWorkerFactory.getWorker(workerClassName);
+        const worker = this.getWorker(workerClassName);
         const workerURL = WorkerURL[workerClassName];
 
         let wrapper: Remote<WorkerMap[T]>;

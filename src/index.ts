@@ -1,25 +1,27 @@
-import { Utils as Cesium3Utils, InterfcaeFactory as Factory } from './app';
+import { ObjectManager, Utils as Cesium3Utils } from './app';
+import { Viewer } from 'cesium';
 
 /**
  * CesiumGS 와 Three.js 동기화 라이브러리입니다.
  */
-export namespace Cesium3 {
-    /**
-     * Interface Factory
-     *
-     * @example
-     * const viewer = new Cesium.Viewer('cesium-container');
-     * const factory = new Cesium3.InterfcaeFactory(viewer);
-     *
-     */
-    export const InterfcaeFactory = Factory;
-    export const Utils = Cesium3Utils;
+export * from './meta';
+export * from './math';
+export * from './app';
+
+import { Context } from './app/context';
+
+export class Cesium3 {
+    static Utils = Cesium3Utils;
+
+    context = Context;
+    constructor(viewer: Viewer) {
+        this.context.viewer = viewer;
+    }
+
+    manger = new ObjectManager();
 
     /**
      * Version
      */
-    export const VERSION = '0dev';
+    VERSION = '0dev';
 }
-
-export * from './meta';
-export * from './math';

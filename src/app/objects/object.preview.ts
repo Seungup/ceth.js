@@ -1,17 +1,19 @@
-import { Viewer } from 'cesium';
 import { Object3D } from 'three';
 import { IMetaObject } from '../..';
 import { ObjectAPI } from './object.api';
-import { CoreAPI } from './core-api';
+import { CoreThreadCommand } from '../../core-thread.command';
 import { isMetaObject } from '../../meta';
 import { Utils } from '../utils';
 import { WGS84_ACTION } from '../../math';
+import { Context } from '../context';
 
 export class ObjectPreview {
     private _attachedObjectAPI: ObjectAPI | undefined;
-    constructor(private readonly viewer: Viewer) {
-        const canvas = this.viewer.canvas;
-        canvas.addEventListener('pointermove', this._onMouseEvent.bind(this));
+    constructor() {
+        if (!Context.viewer) {
+            console.log(`cannot set event listener `);
+        }
+        Context.viewer?.canvas.addEventListener('pointermove', this._onMouseEvent.bind(this));
     }
 
     private _onBeforeDetach?: { (api: ObjectAPI): Promise<void> };
@@ -31,7 +33,7 @@ export class ObjectPreview {
         if (object instanceof Object3D || isMetaObject(object)) {
             const clone = object.clone();
 
-            const id = await CoreAPI.excuteAPI('SceneComponentAPI', 'add', [
+            const id = await CoreThreadCommand.excuteAPI('SceneComponentAPI', 'add', [
                 clone.toJSON(),
                 undefined,
             ]);
@@ -75,8 +77,9 @@ export class ObjectPreview {
     private _onMouseEvent(event: MouseEvent) {
         if (!this._attachedObjectAPI) return;
         if (!this.autoPositionUpdate) return;
+        if (!Context.viewer) return;
 
-        const position = Utils.getLongitudeLatitudeByMouseEvent(this.viewer, event);
+        const position = Utils.getLongitudeLatitudeByMouseEvent(Context.viewer, event);
 
         if (position) {
             this._attachedObjectAPI.setPosition({ ...position, height: 0 }, WGS84_ACTION.NONE);

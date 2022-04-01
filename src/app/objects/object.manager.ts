@@ -1,7 +1,7 @@
 import { ObjectAPI } from './object.api';
 import { Object3D } from 'three';
 import { IMetaObject, isMetaObject, IWGS84 } from '../..';
-import { CoreAPI } from './core-api';
+import { CoreThreadCommand } from '../../core-thread.command';
 import { WGS84_ACTION } from '../../math';
 
 export class ObjectManager {
@@ -18,7 +18,10 @@ export class ObjectManager {
         object: T,
         position: { wgs84: IWGS84; action: WGS84_ACTION }
     ): Promise<ObjectAPI> {
-        const id = await CoreAPI.excuteAPI('SceneComponentAPI', 'add', [object.toJSON(), position]);
+        const id = await CoreThreadCommand.excuteAPI('SceneComponentAPI', 'add', [
+            object.toJSON(),
+            position,
+        ]);
 
         if (isMetaObject(object) && object.dispose) {
             object.dispose();
@@ -28,7 +31,9 @@ export class ObjectManager {
     }
 
     async get(id: number) {
-        const isExist = await CoreAPI.excuteAPI('SceneComponentAPI', 'isExistObject', [id]);
+        const isExist = await CoreThreadCommand.excuteAPI('SceneComponentAPI', 'isExistObject', [
+            id,
+        ]);
         if (isExist) {
             return await new ObjectAPI(id).updateAll();
         }
