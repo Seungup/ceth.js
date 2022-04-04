@@ -33,7 +33,7 @@ export class BaseRenderer implements IRendererTemplate {
      * @param width
      * @param height
      */
-    setSize(width: number, height: number): void {
+    async setSize(width: number, height: number) {
         this.renderer?.setSize(width, height);
     }
 
@@ -41,7 +41,7 @@ export class BaseRenderer implements IRendererTemplate {
      * 카메라의 설정값을 변경합니다.
      * @param param
      */
-    setCamera(param: PerspectiveCameraInitParam): void {
+    async setCamera(param: PerspectiveCameraInitParam) {
         if (this.camera instanceof THREE.PerspectiveCamera) {
             this.camera.aspect = param.aspect;
             this.camera.far = param.far;
@@ -54,7 +54,7 @@ export class BaseRenderer implements IRendererTemplate {
     /**
      * 장면을 렌더링합니다.
      */
-    render(): void {
+    async render() {
         if (!Context.viewer) return;
         if (!this.renderer) return;
 
@@ -72,7 +72,8 @@ export class BaseRenderer implements IRendererTemplate {
      * 장면에 오브젝트를 추가합니다.
      * @param object
      */
-    add(...object: THREE.Object3D[]): void {
-        this.scene.add(...object);
+    async add(object: THREE.Object3D): Promise<number> {
+        this.scene.add(object);
+        return object.id;
     }
 }

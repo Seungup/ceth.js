@@ -37,10 +37,8 @@ export class OffscreenRenderer extends BaseRenderer {
         }
     }
 
-    add(...object: Object3D[]): void {
-        object.forEach((obj) => {
-            CoreThreadCommand.excuteAPI('SceneComponentAPI', 'add', [obj.toJSON()]);
-        });
+    async add(object: Object3D) {
+        return await CoreThreadCommand.excuteAPI('SceneComponentAPI', 'add', [object.toJSON()]);
     }
 
     private createCanvaslement() {
@@ -71,15 +69,15 @@ export class OffscreenRenderer extends BaseRenderer {
         return canvas;
     }
 
-    setSize(width: number, height: number): void {
-        CoreThreadCommand.excuteAPI('RendererComponentAPI', 'setSize', [width, height]);
+    async setSize(width: number, height: number) {
+        await CoreThreadCommand.excuteAPI('RendererComponentAPI', 'setSize', [width, height]);
     }
 
-    setCamera(param: PerspectiveCameraInitParam): void {
-        CoreThreadCommand.excuteAPI('CameraComponentAPI', 'initCamera', [param]);
+    async setCamera(param: PerspectiveCameraInitParam) {
+        await CoreThreadCommand.excuteAPI('CameraComponentAPI', 'initCamera', [param]);
     }
 
-    render() {
+    async render() {
         if (!Context.viewer) return;
 
         // Update Object3D Visibles
@@ -88,7 +86,7 @@ export class OffscreenRenderer extends BaseRenderer {
 
             // 카메라의 높이가 50km 보다 낮을 경우,
             // 내부 오브젝트 포지션 계산을 중지하여, 가까운 물체의 가시성이 삭제되는 현상 보완
-            CoreThreadCommand.excuteAPI('GraphicAPI', 'setRenderBehindEarthOfObjects', [
+            await CoreThreadCommand.excuteAPI('GraphicAPI', 'setRenderBehindEarthOfObjects', [
                 threadhold,
             ]);
         }
@@ -101,10 +99,10 @@ export class OffscreenRenderer extends BaseRenderer {
             const args = { cvm: cvm, civm: civm };
             const transfer = [cvm.buffer, civm.buffer];
 
-            CoreThreadCommand.excuteCommand(CoreThreadCommands.SYNC, args, transfer);
+            await CoreThreadCommand.excuteCommand(CoreThreadCommands.SYNC, args, transfer);
         }
 
         // Render Request
-        CoreThreadCommand.excuteCommand(CoreThreadCommands.RENDER);
+        await CoreThreadCommand.excuteCommand(CoreThreadCommands.RENDER);
     }
 }

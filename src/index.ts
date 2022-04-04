@@ -1,4 +1,4 @@
-import { ObjectManager, Utils as Cesium3Utils } from './app';
+import { Utils as Cesium3Utils } from './app';
 import { Viewer } from 'cesium';
 
 /**
@@ -17,8 +17,6 @@ export class Cesium3 {
     constructor(viewer: Viewer) {
         this.context.viewer = viewer;
     }
-
-    manger = new ObjectManager();
 
     /**
      * Version

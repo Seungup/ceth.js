@@ -16,7 +16,7 @@ export class RendererContext {
         return this;
     }
 
-    getRenderer(renderer: typeof RendererTemplate) {
+    getRenderer(renderer: typeof RendererTemplate): RendererTemplate | undefined {
         return this.rendererMap.get(renderer);
     }
 
@@ -26,7 +26,7 @@ export class RendererContext {
 
     private _oldWidth: number | undefined;
     private _oldHeight: number | undefined;
-    private update() {
+    private async syncScreenRect() {
         if (!Context.viewer) return;
 
         const width = Context.viewer.canvas.clientWidth;
@@ -43,8 +43,8 @@ export class RendererContext {
             };
 
             for (const [_, renderer] of this.rendererMap) {
-                renderer.setCamera(param);
-                renderer.setSize(width, height);
+                await renderer.setCamera(param);
+                await renderer.setSize(width, height);
             }
         }
 
@@ -53,9 +53,10 @@ export class RendererContext {
     }
 
     doRender(): void {
-        this.update();
-        for (const [_, renderer] of this.rendererMap) {
-            renderer.render();
-        }
+        this.syncScreenRect().then(() => {
+            for (const [_, renderer] of this.rendererMap) {
+                renderer.render();
+            }
+        });
     }
 }

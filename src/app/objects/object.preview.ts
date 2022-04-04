@@ -32,12 +32,12 @@ export class ObjectPreview {
         this._onBeforeDetach = onBeforeDetach;
 
         if (object instanceof Object3D || isMetaObject(object)) {
-            const clone = object.clone();
+            const renderer = Context.RendererContext.getRenderer(target);
 
-            Context.RendererContext.getRenderer(target)?.add(clone);
-
-            this._attachedObjectAPI = await new ObjectAPI(clone.id, target).updateAll();
-            return;
+            if (renderer) {
+                const id = await renderer.add(object.clone());
+                this._attachedObjectAPI = await new ObjectAPI(id, target).updateAll();
+            }
         }
     }
 
