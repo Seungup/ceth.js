@@ -1,13 +1,14 @@
-import { CoreThreadCommand } from '../../../../core-thread.command';
-import { CameraComponent } from '../../../../core/API/components';
-import { CoreThreadCommands } from '../../../../core/command-reciver';
-import { Context } from '../../../context';
-import { Utils } from '../../../utils';
-import { RendererTemplate } from './renderer.template';
+import { Object3D } from 'three';
+import { CoreThreadCommand } from './core-thread.command';
+import { Context } from '../../../../context';
+import { Utils } from '../../../../utils';
+import { PerspectiveCameraInitParam, BaseRenderer } from '../renderer.template';
+import { CoreThreadCommands } from './core/command-reciver';
 
-export class OffscreenRenderer extends RendererTemplate {
+export class OffscreenRenderer extends BaseRenderer {
     constructor() {
         super();
+        this.name = 'OffscreenRenderer';
         const canvas = this.createCanvaslement();
         if (canvas) this.setCanvasToOffscreenCanvas(canvas);
     }
@@ -16,11 +17,16 @@ export class OffscreenRenderer extends RendererTemplate {
         if (Context.viewer) {
             try {
                 const offscreen = canvas.transferControlToOffscreen();
+
                 offscreen.width = Context.viewer.canvas.width;
                 offscreen.height = Context.viewer.canvas.height;
-                CoreThreadCommand.excuteCommand(CoreThreadCommands.INIT, { canvas: offscreen }, [
-                    offscreen,
-                ]);
+
+                // prettier-ignore
+                CoreThreadCommand.excuteCommand(
+                    CoreThreadCommands.INIT,
+                    { canvas: offscreen },
+                    [offscreen]
+                );
             } catch (error) {
                 console.error(error);
             }
@@ -29,6 +35,12 @@ export class OffscreenRenderer extends RendererTemplate {
                 `Failed to initialize Offscreen Render because the Context does not have a viewer configured.`
             );
         }
+    }
+
+    add(...object: Object3D[]): void {
+        object.forEach((obj) => {
+            CoreThreadCommand.excuteAPI('SceneComponentAPI', 'add', [obj.toJSON()]);
+        });
     }
 
     private createCanvaslement() {
@@ -63,7 +75,7 @@ export class OffscreenRenderer extends RendererTemplate {
         CoreThreadCommand.excuteAPI('RendererComponentAPI', 'setSize', [width, height]);
     }
 
-    setCamera(param: CameraComponent.API.PerspectiveCameraInitParam): void {
+    setCamera(param: PerspectiveCameraInitParam): void {
         CoreThreadCommand.excuteAPI('CameraComponentAPI', 'initCamera', [param]);
     }
 

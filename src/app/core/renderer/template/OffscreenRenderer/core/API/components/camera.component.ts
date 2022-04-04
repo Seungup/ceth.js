@@ -1,15 +1,10 @@
 import { PerspectiveCamera } from 'three';
+import { PerspectiveCameraInitParam } from '../../../../renderer.template';
 
 export namespace CameraComponent {
     export const perspectiveCamera = new PerspectiveCamera();
 
     export namespace API {
-        export interface PerspectiveCameraInitParam {
-            aspect: number;
-            far: number;
-            near: number;
-            fov: number;
-        }
         /**
          * 렌더러의 카메라를 초기화합니다.
          * @param param

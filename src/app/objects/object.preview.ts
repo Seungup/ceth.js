@@ -1,11 +1,11 @@
 import { Object3D } from 'three';
 import { IMetaObject } from '../..';
 import { ObjectAPI } from './object.api';
-import { CoreThreadCommand } from '../../core-thread.command';
 import { isMetaObject } from '../../meta';
 import { Utils } from '../utils';
 import { WGS84_ACTION } from '../../math';
 import { Context } from '../context';
+import { RendererTemplate } from '../core';
 
 export class ObjectPreview {
     private _attachedObjectAPI: ObjectAPI | undefined;
@@ -25,6 +25,7 @@ export class ObjectPreview {
      */
     async attach(
         object: IMetaObject | Object3D,
+        target: typeof RendererTemplate,
         onBeforeDetach?: { (api: ObjectAPI): Promise<void> }
     ) {
         this.detach();
@@ -33,11 +34,9 @@ export class ObjectPreview {
         if (object instanceof Object3D || isMetaObject(object)) {
             const clone = object.clone();
 
-            const id = await CoreThreadCommand.excuteAPI('SceneComponentAPI', 'add', [
-                clone.toJSON(),
-                undefined,
-            ]);
-            this._attachedObjectAPI = await new ObjectAPI(id).updateAll();
+            Context.RendererContext.getRenderer(target)?.add(clone);
+
+            this._attachedObjectAPI = await new ObjectAPI(clone.id, target).updateAll();
             return;
         }
     }

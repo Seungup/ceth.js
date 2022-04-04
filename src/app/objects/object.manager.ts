@@ -1,7 +1,7 @@
 import { ObjectAPI } from './object.api';
 import { Object3D } from 'three';
 import { IMetaObject, isMetaObject, IWGS84 } from '../..';
-import { CoreThreadCommand } from '../../core-thread.command';
+import { CoreThreadCommand } from '../core/renderer/template/OffscreenRenderer/core-thread.command';
 import { WGS84_ACTION } from '../../math';
 
 export class ObjectManager {

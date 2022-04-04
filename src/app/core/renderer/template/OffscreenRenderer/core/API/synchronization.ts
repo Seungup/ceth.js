@@ -1,5 +1,5 @@
 import { Object3D, PerspectiveCamera } from 'three';
-import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../math';
+import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../../../../../../math';
 
 export namespace Cesium3Synchronization {
     export interface ISyncPerspectiveCameraParam {

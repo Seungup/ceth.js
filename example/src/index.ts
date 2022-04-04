@@ -1,10 +1,10 @@
 import { Viewer } from 'cesium';
-import { SphereGeometry, DoubleSide, PointsMaterial } from 'three';
-import { Cesium3, CT_WGS84, MetaPoints, WGS84_ACTION, OffscreenRenderer } from '../../src';
+import { Cesium3, CT_WGS84, WGS84_ACTION, Renderers } from '../../src';
 import { ObjectEvent, ObjectPreview } from '../../src/app';
-import { DOMRenderer } from '../../src/app/core/renderer/template/dom.renderer';
 
 import './css/main.css';
+
+import * as THREE from 'three';
 
 const constructorOptions: Viewer.ConstructorOptions = {
     useDefaultRenderLoop: false,
@@ -29,8 +29,7 @@ const app = new Cesium3(viewer);
 {
     const rendererContext = app.context.RendererContext;
 
-    rendererContext.addRenderer(OffscreenRenderer);
-    rendererContext.addRenderer(DOMRenderer);
+    rendererContext.addRenderer(Renderers.LocalRenderer, Renderers.OffscreenRenderer);
 }
 
 const event = new ObjectEvent();
@@ -42,42 +41,36 @@ const preview = new ObjectPreview();
     viewer.render();
 })();
 
-const object = new MetaPoints(
-    new SphereGeometry(70, 120, 80),
-    new PointsMaterial({
-        color: 'red',
-        side: DoubleSide,
-        sizeAttenuation: false,
-        size: 3,
-    })
+// const object: TextLine = new TextLine('three.js', { font: Fonts.helvetiker_regular });
+const object = new THREE.Mesh(
+    new THREE.BoxGeometry(100, 100, 100),
+    new THREE.MeshBasicMaterial({ side: THREE.DoubleSide })
 );
 
 event.onContextMenu.subscribe(() => {
     if (!preview.isAttached()) {
-        preview.attach(object, async (api) => {
+        preview.attach(object, Renderers.LocalRenderer, async (api) => {
             const wgs84 = await api.getPosition();
             const box3 = await api.getBox3();
-
-            wgs84.height = box3.z;
+            if (box3) {
+                wgs84.height = box3.z;
+            }
 
             const position = {
                 wgs84: wgs84,
                 action: WGS84_ACTION.NONE,
             };
 
-            const renderer = app.context.RendererContext.getRenderer(DOMRenderer);
-            if (renderer) {
-                (<DOMRenderer>renderer).add(
-                    new CT_WGS84(position.wgs84, position.action).toString(),
-                    position
-                );
-            }
+            const cloned = object.clone();
 
+            const matrix = new CT_WGS84(position.wgs84, position.action).getMatrix4();
+
+            cloned.applyMatrix4(matrix);
+
+            app.context.RendererContext.getRenderer(Renderers.LocalRenderer).add(cloned);
+
+            Cesium3.Utils.flyByObjectAPI(viewer, api);
             wgs84.height = 0;
-
-            app.manger.add(object, position).then((api) => {
-                Cesium3.Utils.flyByObjectAPI(viewer, api);
-            });
         });
     }
 });

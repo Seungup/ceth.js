@@ -1,16 +1,18 @@
 import { Context } from '../../context';
-import { RendererTemplate } from './template';
+import type { RendererTemplate } from './template';
 import * as Cesium from 'cesium';
 
 export class RendererContext {
     private rendererMap = new Map<typeof RendererTemplate, RendererTemplate>();
 
-    addRenderer(renderer: typeof RendererTemplate) {
-        if (this.rendererMap.has(renderer)) {
-            console.error(`${renderer.name} is already exist.`);
-        } else {
-            this.rendererMap.set(renderer, new renderer());
-        }
+    addRenderer(...renderers: typeof RendererTemplate[]) {
+        renderers.forEach((renderer) => {
+            if (this.rendererMap.has(renderer)) {
+                console.error(`${renderer.name} is already exist.`);
+            } else {
+                this.rendererMap.set(renderer, new renderer());
+            }
+        });
         return this;
     }
 

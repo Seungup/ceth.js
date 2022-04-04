@@ -1,6 +1,6 @@
 import { Box3, Object3D, ObjectLoader, Scene } from 'three';
-import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../../math';
-import { isMetaObject } from '../../../meta';
+import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../../../../../../../math';
+import { isMetaObject } from '../../../../../../../../meta';
 import { ObjectData } from '../object-data';
 import { Cesium3Synchronization } from '../synchronization';
 

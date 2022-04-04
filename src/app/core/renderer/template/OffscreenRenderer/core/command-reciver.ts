@@ -27,7 +27,6 @@ export interface ICoreThreadCommand {
 
 export class CommandReciver {
     constructor() {
-        debugger;
         self.onmessage = (e: MessageEvent) => {
             const message = e.data;
             if (isCoreThreadCommand(message)) {
