@@ -2,7 +2,6 @@ import { Matrix4 } from 'cesium';
 import { Remote, wrap } from 'comlink';
 import { Object3D } from 'three';
 import { randInt } from 'three/src/math/MathUtils';
-import { Cesium3 } from '../../..';
 import { ApplicationContext } from '../../../context';
 import { ObjectAPI } from '../../../objects';
 import { WorkerDataAccessStaytagy } from '../../data/WorkerDataAccessStrategy';
@@ -20,7 +19,7 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
 
     private _workerArray = new Array<{ worker: Worker; wrapper: Remote<CommandReciver> }>();
     private isInitialization = false;
-    async makeCanvases(count: number) {
+    makeCanvases(count: number) {
         if (0 > count) {
             throw new Error('count must be higher than zero.');
         }
@@ -48,7 +47,7 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
             offscreen.width = width;
             offscreen.height = height;
 
-            await CoreThreadCommand.excuteCommand(
+            CoreThreadCommand.excuteCommand(
                 worker,
                 CoreThreadCommands.INIT,
                 { canvas: offscreen },
