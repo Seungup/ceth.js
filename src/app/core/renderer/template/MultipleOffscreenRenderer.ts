@@ -90,7 +90,7 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         }
 
         for (let i = 0; i < this._workerArray.length; i++) {
-            await CoreThreadCommand.excuteAPI(
+            CoreThreadCommand.excuteAPI(
                 this._workerArray[i].wrapper,
                 'CameraComponentAPI',
                 'initCamera',
