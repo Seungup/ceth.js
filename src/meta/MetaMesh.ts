@@ -1,4 +1,4 @@
-import { BufferGeometry, Material, Mesh } from 'three';
+import { BufferGeometry, Material, Mesh, MeshBasicMaterial } from 'three';
 import { IMetaObject } from '..';
 
 export class MetaMesh<
@@ -25,6 +25,14 @@ export class MetaMesh<
                 }
             } else {
                 this.material.dispose();
+            }
+        }
+
+        for (const key of Object.keys(this.material)) {
+            // @ts-ignore
+            const value = this.material[key];
+            if (value && typeof value === 'object' && 'minFilter' in value) {
+                value.dispose();
             }
         }
     }
