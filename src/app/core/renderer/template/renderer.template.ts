@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { Context } from '../../../context';
-import { Cesium3Synchronization } from './OffscreenRenderer/core/API/synchronization';
+import { ApplicationContext } from '../../../context';
+import { Cesium3Synchronization } from '../../utils/synchronization';
 
 export interface PerspectiveCameraInitParam {
     aspect: number;
@@ -55,11 +55,12 @@ export class BaseRenderer implements IRendererTemplate {
      * 장면을 렌더링합니다.
      */
     async render() {
-        if (!Context.viewer) return;
+        const conetext = ApplicationContext.getInstance();
+        if (!conetext.viewer) return;
         if (!this.renderer) return;
 
-        const cvm = new Float64Array(Context.viewer.camera.viewMatrix);
-        const civm = new Float64Array(Context.viewer.camera.inverseViewMatrix);
+        const cvm = new Float64Array(conetext.viewer.camera.viewMatrix);
+        const civm = new Float64Array(conetext.viewer.camera.inverseViewMatrix);
 
         if (this.camera instanceof THREE.PerspectiveCamera) {
             Cesium3Synchronization.syncPerspectiveCamera(this.camera, { civm: civm, cvm: cvm });

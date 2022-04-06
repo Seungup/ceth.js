@@ -3,17 +3,18 @@ import { IMetaObject } from '../..';
 import { ObjectAPI } from './object.api';
 import { isMetaObject } from '../../meta';
 import { Utils } from '../utils';
-import { WGS84_ACTION } from '../../math';
-import { Context } from '../context';
-import { RendererTemplate } from '../core';
+import { WGS84_ACTION } from '../core/utils/math';
+import { RendererMap } from '../core';
+import { ApplicationContext, RendererContext } from '../context';
 
 export class ObjectPreview {
     private _attachedObjectAPI: ObjectAPI | undefined;
     constructor() {
-        if (!Context.viewer) {
-            console.log(`cannot set event listener `);
+        const context = ApplicationContext.getInstance();
+
+        if (context.viewer) {
+            context.viewer.canvas.addEventListener('pointermove', this._onMouseEvent.bind(this));
         }
-        Context.viewer?.canvas.addEventListener('pointermove', this._onMouseEvent.bind(this));
     }
 
     private _onBeforeDetach?: { (api: ObjectAPI): Promise<void> };
@@ -25,18 +26,18 @@ export class ObjectPreview {
      */
     async attach(
         object: IMetaObject | Object3D,
-        target: typeof RendererTemplate,
+        target: keyof RendererMap,
         onBeforeDetach?: { (api: ObjectAPI): Promise<void> }
     ) {
         this.detach();
         this._onBeforeDetach = onBeforeDetach;
 
+        const context = RendererContext.getInstance();
         if (object instanceof Object3D || isMetaObject(object)) {
-            const renderer = Context.RendererContext.getRenderer(target);
-
+            const renderer = context.getRenderer(target);
             if (renderer) {
                 const id = await renderer.add(object.clone());
-                this._attachedObjectAPI = await new ObjectAPI(id, target).updateAll();
+                this._attachedObjectAPI = await new ObjectAPI(id, renderer).updateAll();
             }
         }
     }
@@ -76,9 +77,10 @@ export class ObjectPreview {
     private _onMouseEvent(event: MouseEvent) {
         if (!this._attachedObjectAPI) return;
         if (!this.autoPositionUpdate) return;
-        if (!Context.viewer) return;
+        const viewer = ApplicationContext.getInstance().viewer;
+        if (!viewer) return;
 
-        const position = Utils.getLongitudeLatitudeByMouseEvent(Context.viewer, event);
+        const position = Utils.getLongitudeLatitudeByMouseEvent(viewer, event);
 
         if (position) {
             this._attachedObjectAPI.setPosition({ ...position, height: 0 }, WGS84_ACTION.NONE);

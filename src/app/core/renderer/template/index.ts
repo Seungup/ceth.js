@@ -1,8 +1,11 @@
-import { DOMRenderer as CT_CSS2DRenderer } from './CSS2DRenderer';
-import { OffscreenRenderer as CT_OffscreenRenderer } from './OffscreenRenderer';
-export type { BaseRenderer as RendererTemplate } from './renderer.template';
+import { DOMRenderer } from './DOMRenderer';
+import { OffscreenRenderer } from './OffscreenRenderer';
 
-export namespace Renderers {
-    export const CSS2DRenderer = CT_CSS2DRenderer;
-    export const OffscreenRenderer = CT_OffscreenRenderer;
+export * from './DOMRenderer';
+export * from './OffscreenRenderer';
+export interface RendererMap {
+    DOMRenderer: DOMRenderer;
+    OffscreenRenderer: OffscreenRenderer;
 }
+
+export type { BaseRenderer as RendererTemplate } from './renderer.template';

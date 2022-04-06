@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs';
-import { Context } from '../context';
+import { ApplicationContext } from '../context';
 
 export class ObjectEvent {
     private readonly onKeyDownSubject = new Subject<KeyboardEvent>();
@@ -12,7 +12,7 @@ export class ObjectEvent {
     readonly onContextMenu = this.onContextMenuSubject.pipe();
 
     constructor() {
-        const root = Context.viewer?.container.parentElement;
+        const root = ApplicationContext.getInstance().viewer?.container.parentElement;
         root?.addEventListener('keydown', (event) => {
             this.onKeyDownSubject.next(event);
         });

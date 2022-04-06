@@ -13,7 +13,7 @@
 
 import { CameraComponent, RendererComponent, SceneComponent } from './components';
 import { Graphic } from './graphic';
-import { ObjectData } from './object-data';
+import { ObjectData } from '../../../../../utils/object-data';
 /**
  * API MAP
  */

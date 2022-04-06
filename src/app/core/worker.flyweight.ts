@@ -1,11 +1,14 @@
 import { wrap, Remote } from 'comlink';
-import type { CommandReciver } from './core/command-reciver';
+import type { CommandReciver } from './renderer/template/OffscreenRenderer/core/command-reciver';
 
 interface WorkerMap {
     CommandReciver: CommandReciver;
 }
 const WorkerURL = {
-    CommandReciver: new URL('./core/command-reciver', import.meta.url),
+    CommandReciver: new URL(
+        './renderer/template/OffscreenRenderer/core/command-reciver',
+        import.meta.url
+    ),
 } as const;
 
 type WorkerURL = typeof WorkerURL[keyof typeof WorkerURL];
@@ -35,7 +38,7 @@ export class WorkerFlyweight {
      * @param workerClassName
      * @returns
      */
-    static getWrapper<T extends keyof WorkerMap>(workerClassName: T): Remote<WorkerMap[T]> {
+    static getWorkerWrapper<T extends keyof WorkerMap>(workerClassName: T): Remote<WorkerMap[T]> {
         const worker = this.getWorker(workerClassName);
         const workerURL = WorkerURL[workerClassName];
 

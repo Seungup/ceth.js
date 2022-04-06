@@ -1,6 +1,10 @@
 import { MathUtils, Vector3 } from 'three';
 import { EPSILON_14, equalsEpsilon, magnitude } from '.';
-import { EARTH_RADIUS_X_SQURAE, EARTH_RADIUS_Y_SQURAE, EARTH_RADIUS_Z_SQURAE } from '../constants';
+import {
+    EARTH_RADIUS_X_SQURAE,
+    EARTH_RADIUS_Y_SQURAE,
+    EARTH_RADIUS_Z_SQURAE,
+} from '../../../../constants';
 
 export class Cartesian3 extends Vector3 {
     static get WGS84_RADII_SQUARED() {

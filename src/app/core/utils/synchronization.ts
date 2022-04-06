@@ -1,5 +1,7 @@
 import { Object3D, PerspectiveCamera } from 'three';
-import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../../../../../../math';
+import { Computational } from './computational';
+import { CT_WGS84, IWGS84, WGS84_ACTION } from './math';
+import { WorkerFlyweight } from '../worker.flyweight';
 
 export namespace Cesium3Synchronization {
     export interface ISyncPerspectiveCameraParam {
@@ -44,11 +46,15 @@ export namespace Cesium3Synchronization {
      * @param positionAction
      * @returns
      */
-    export const syncObject3DPosition = (object: Object3D, wgs84: IWGS84, action: WGS84_ACTION) => {
-        const location = new CT_WGS84(wgs84, action);
+    export const syncObject3DPosition = async (
+        object: Object3D,
+        wgs84: IWGS84,
+        action: WGS84_ACTION = WGS84_ACTION.NONE
+    ) => {
+        const matrix = await Computational.computePositionByWGS84(wgs84, action);
 
-        object.applyMatrix4(location.getMatrix4());
+        object.applyMatrix4(matrix);
 
-        return location.toIWGS84();
+        return { object: object, wgs84: wgs84 };
     };
 }

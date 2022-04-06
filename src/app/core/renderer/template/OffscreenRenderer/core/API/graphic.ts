@@ -1,6 +1,6 @@
 import { Matrix3, Object3D, Vector3 } from 'three';
 import { RendererComponent, CameraComponent, SceneComponent } from './components';
-import { ObjectData } from './object-data';
+import { ObjectData } from '../../../../../utils/object-data';
 export namespace Graphic {
     // 지구 뒷편 오브젝트 렌더링 여부
     let renderBehindEarthOfObjects: boolean = false;

@@ -7,7 +7,7 @@ import {
     API_MAP_APIKeys,
 } from './API';
 import { CameraComponent, RendererComponent } from './API/components';
-import { Cesium3Synchronization } from './API/synchronization';
+import { Cesium3Synchronization } from '../../../../utils/synchronization';
 import { RenderQueue } from './API/utils';
 
 export enum CoreThreadCommands {

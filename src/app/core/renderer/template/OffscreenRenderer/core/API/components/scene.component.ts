@@ -1,8 +1,8 @@
 import { Box3, Object3D, ObjectLoader, Scene } from 'three';
-import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../../../../../../../math';
+import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../../../../../utils/math';
 import { isMetaObject } from '../../../../../../../../meta';
-import { ObjectData } from '../object-data';
-import { Cesium3Synchronization } from '../synchronization';
+import { Cesium3Synchronization } from '../../../../../../utils/synchronization';
+import { ObjectData } from '../../../../../../utils/object-data';
 
 interface IObjectCallbackFunction<T> {
     onSuccess(object: Object3D): T;
@@ -64,13 +64,13 @@ export namespace SceneComponent {
                     object.rotation.copy(rps.rotation);
                     object.scale.copy(rps.scale);
 
-                    const wgs84 = Cesium3Synchronization.syncObject3DPosition(
+                    Cesium3Synchronization.syncObject3DPosition(
                         object,
                         postiion.wgs84,
                         postiion.action
-                    );
-
-                    ObjectData.setWGS84(object.id, wgs84);
+                    ).then((result) => {
+                        ObjectData.setWGS84(result.object.id, result.wgs84);
+                    });
                 }
             }
         };
@@ -81,7 +81,10 @@ export namespace SceneComponent {
          * @param position
          * @returns
          */
-        export const add = (json: any, position?: { wgs84: IWGS84; action: WGS84_ACTION }) => {
+        export const add = async (
+            json: any,
+            position?: { wgs84: IWGS84; action: WGS84_ACTION }
+        ) => {
             const object = new ObjectLoader().parse(json);
 
             ObjectData.setBox3ByObject3D(object);

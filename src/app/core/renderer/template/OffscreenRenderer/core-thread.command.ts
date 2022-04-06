@@ -5,7 +5,7 @@ import {
     API_MAP_APIKeys,
 } from './core/API';
 import { CoreThreadCommands, ICoreThreadCommand } from './core/command-reciver';
-import { WorkerFlyweight } from './worker.flyweight';
+import { WorkerFlyweight } from '../../../worker.flyweight';
 
 export namespace CoreThreadCommand {
     /**
@@ -26,7 +26,7 @@ export namespace CoreThreadCommand {
     ): Promise<API_MAP_APIFuntionReturnType<API_NAME, API_METHOD>> => {
         // @ts-ignore
         // prettier-ignore
-        return WorkerFlyweight.getWrapper('CommandReciver').excuteAPI(apiName, apiMethod, args);
+        return WorkerFlyweight.getWorkerWrapper('CommandReciver').excuteAPI(apiName, apiMethod, args);
     };
 
     /**

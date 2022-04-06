@@ -1,6 +1,5 @@
 import { Vector3 } from 'three';
-import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../math';
-import { Context } from '../context';
+import { CT_WGS84, IWGS84, WGS84_ACTION } from '../core/utils/math';
 import { RendererTemplate } from '../core';
 import { CoreThreadCommand } from '../core/renderer/template/OffscreenRenderer/core-thread.command';
 
@@ -11,7 +10,7 @@ export class ObjectAPI {
     private _cachedPosition: IWGS84 | undefined;
     private _cachedBox3Max: Vector3 | undefined;
 
-    constructor(id: number, private readonly targetRenderer: typeof RendererTemplate) {
+    constructor(id: number, private readonly targetRenderer: RendererTemplate) {
         this.id = id;
     }
 
@@ -22,7 +21,6 @@ export class ObjectAPI {
     }
 
     async updateWGS84() {
-        Context.RendererContext.getRenderer(this.targetRenderer);
         const wgs84 = await CoreThreadCommand.excuteAPI('ObjectDataAPI', 'getWGS84', [this.id]);
 
         if (wgs84) {
