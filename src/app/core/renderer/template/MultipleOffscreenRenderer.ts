@@ -2,6 +2,7 @@ import { Matrix4 } from 'cesium';
 import { Remote, wrap } from 'comlink';
 import { Object3D } from 'three';
 import { randInt } from 'three/src/math/MathUtils';
+import { isMetaObject } from '../../../../meta';
 import { ApplicationContext } from '../../../context';
 import { ObjectAPI } from '../../../objects';
 import { WorkerDataAccessStaytagy } from '../../data/WorkerDataAccessStrategy';
@@ -116,6 +117,10 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
             position,
             action,
         ]);
+
+        if (isMetaObject(object) && object.dispose) {
+            object.dispose();
+        }
 
         return await new ObjectAPI(id, new WorkerDataAccessStaytagy(target.worker, id)).updateAll();
     }
