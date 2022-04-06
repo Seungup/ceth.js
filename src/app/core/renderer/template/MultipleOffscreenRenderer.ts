@@ -1,11 +1,12 @@
 import { Matrix4 } from 'cesium';
-import { wrap } from 'comlink';
+import { Remote, wrap } from 'comlink';
 import { Object3D } from 'three';
 import { randInt } from 'three/src/math/MathUtils';
 import { Cesium3 } from '../../..';
 import { ApplicationContext } from '../../../context';
 import { ObjectAPI } from '../../../objects';
 import { WorkerDataAccessStaytagy } from '../../data/WorkerDataAccessStrategy';
+import { IWGS84, WGS84_ACTION } from '../../utils';
 import { WorkerFactory } from '../../worker.factory';
 import { CoreThreadCommand } from './OffscreenRenderer/core-thread.command';
 import { CommandReciver, CoreThreadCommands } from './OffscreenRenderer/core/command-reciver';
@@ -17,9 +18,9 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         this.name = 'MultipleOffscreenRenderer';
     }
 
-    private _workerArray = new Array<Worker>();
+    private _workerArray = new Array<{ worker: Worker; wrapper: Remote<CommandReciver> }>();
     private isInitialization = false;
-    makeCanvases(count: number) {
+    async makeCanvases(count: number) {
         if (0 > count) {
             throw new Error('count must be higher than zero.');
         }
@@ -47,14 +48,14 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
             offscreen.width = width;
             offscreen.height = height;
 
-            CoreThreadCommand.excuteCommand(
+            await CoreThreadCommand.excuteCommand(
                 worker,
                 CoreThreadCommands.INIT,
                 { canvas: offscreen },
                 [offscreen]
             );
 
-            this._workerArray.push(worker);
+            this._workerArray.push({ worker: worker, wrapper: wrap<CommandReciver>(worker) });
         }
 
         this.isInitialization = true;
@@ -71,7 +72,7 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
 
         for (let i = 0; i < this._workerArray.length; i++) {
             await CoreThreadCommand.excuteAPI(
-                wrap<CommandReciver>(this._workerArray[i]),
+                this._workerArray[i].wrapper,
                 'RendererComponentAPI',
                 'setSize',
                 [width, height]
@@ -90,7 +91,7 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
 
         for (let i = 0; i < this._workerArray.length; i++) {
             await CoreThreadCommand.excuteAPI(
-                wrap<CommandReciver>(this._workerArray[i]),
+                this._workerArray[i].wrapper,
                 'CameraComponentAPI',
                 'initCamera',
                 [param]
@@ -104,21 +105,20 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         return this.addAt(object, randInt(0, this._workerArray.length - 1));
     }
 
-    async addAt(object: Object3D, at: number) {
+    async addAt(object: Object3D, at: number, position?: IWGS84, action?: WGS84_ACTION) {
         if (this._workerArray.length <= at || at < 0) {
             throw new Error(`BufferFlowError : cannot access at ${at} `);
         }
 
-        const targetWorker = this._workerArray[at];
+        const target = this._workerArray[at];
 
-        const id = await CoreThreadCommand.excuteAPI(
-            wrap<CommandReciver>(targetWorker),
-            'SceneComponentAPI',
-            'add',
-            [object.toJSON()]
-        );
+        const id = await CoreThreadCommand.excuteAPI(target.wrapper, 'SceneComponentAPI', 'add', [
+            object.toJSON(),
+            position,
+            action,
+        ]);
 
-        return await new ObjectAPI(id, new WorkerDataAccessStaytagy(targetWorker, id)).updateAll();
+        return await new ObjectAPI(id, new WorkerDataAccessStaytagy(target.worker, id)).updateAll();
     }
 
     async render() {
@@ -127,39 +127,28 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
 
         const viewMatrix = viewer.camera.viewMatrix;
         const inverseViewMatrix = viewer.camera.inverseViewMatrix;
-        const threadhold = Cesium3.CesiumUtils.getCameraPosition(viewer).height < 50 * 1000;
-
         for (let i = 0; i < this._workerArray.length; i++) {
-            await this.renderRequestTo(
-                this._workerArray[i],
-                viewMatrix,
-                inverseViewMatrix,
-                threadhold
-            );
+            this.sendRenderRequest(this._workerArray[i], viewMatrix, inverseViewMatrix);
         }
     }
 
-    private async renderRequestTo(
-        worker: Worker,
+    private sendRenderRequest(
+        target: { worker: Worker; wrapper: Remote<CommandReciver> },
         viewMatrix: Matrix4,
-        inverseViewMatrix: Matrix4,
-        threadhold: boolean
+        inverseViewMatrix: Matrix4
     ) {
-        const cvm = new Float64Array(viewMatrix);
-        const civm = new Float64Array(inverseViewMatrix);
+        {
+            const cvm = new Float64Array(viewMatrix);
+            const civm = new Float64Array(inverseViewMatrix);
 
-        await CoreThreadCommand.excuteAPI(
-            wrap(worker),
-            'GraphicAPI',
-            'setRenderBehindEarthOfObjects',
-            [threadhold]
-        );
-        await CoreThreadCommand.excuteCommand(
-            worker,
-            CoreThreadCommands.SYNC,
-            { cvm: cvm, civm: civm },
-            [cvm.buffer, civm.buffer]
-        );
-        await CoreThreadCommand.excuteCommand(worker, CoreThreadCommands.RENDER);
+            CoreThreadCommand.excuteCommand(
+                target.worker,
+                CoreThreadCommands.SYNC,
+                { cvm: cvm, civm: civm },
+                [cvm.buffer, civm.buffer]
+            );
+        }
+
+        CoreThreadCommand.excuteCommand(target.worker, CoreThreadCommands.RENDER);
     }
 }

@@ -89,7 +89,7 @@ export class RendererContext {
     async doRender() {
         await this.syncScreenRect();
         for (const [_, renderer] of this.rendererMap) {
-            await renderer.render();
+            renderer.render();
         }
     }
 }

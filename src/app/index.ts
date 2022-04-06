@@ -26,8 +26,10 @@ export namespace Cesium3 {
         ...Utils,
     } as const;
 
-    export const render = async () => {
-        await RendererContext.getInstance().doRender();
+    export const render = () => {
+        console.time('render');
+        RendererContext.getInstance().doRender();
+        console.timeEnd('render');
         ApplicationContext.getInstance().viewer?.render();
     };
 }
