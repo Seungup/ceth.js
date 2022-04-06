@@ -63,9 +63,9 @@ const API = {
     help: () => {
         alert('원하는 위치에 마우스를 우클릭하여 테스트합니다.');
     },
-    width: 5000,
-    height: 5000,
-    depth: 5000,
+    width: 500,
+    height: 500,
+    depth: 500,
 };
 
 const gui = new GUI({ autoPlace: false });
@@ -74,19 +74,19 @@ gui.domElement.style.top = '2px';
 gui.domElement.style.left = '2px';
 document.body.appendChild(gui.domElement);
 gui.add(API, 'count', 1, 50000, 1);
-gui.add(API, 'latGap', 0.05, 1, 0.001);
-gui.add(API, 'lonGap', 0.05, 1, 0.001);
+gui.add(API, 'latGap', 0.0001, 0.01, 0.0001);
+gui.add(API, 'lonGap', 0.0001, 0.01, 0.0001);
 gui.add(API, 'clear');
 gui.add(API, 'help');
-gui.add(API, 'width', 1, 100000).onFinishChange(() => {
+gui.add(API, 'width', 1, 1000).onFinishChange(() => {
     object.geometry.dispose();
     object.geometry = new THREE.BoxGeometry(API.width, API.height, API.depth);
 });
-gui.add(API, 'height', 1, 100000).onFinishChange(() => {
+gui.add(API, 'height', 1, 1000).onFinishChange(() => {
     object.geometry.dispose();
     object.geometry = new THREE.BoxGeometry(API.width, API.height, API.depth);
 });
-gui.add(API, 'depth', 1, 100000).onFinishChange(() => {
+gui.add(API, 'depth', 1, 1000).onFinishChange(() => {
     object.geometry.dispose();
     object.geometry = new THREE.BoxGeometry(API.width, API.height, API.depth);
 });
@@ -121,5 +121,6 @@ event.onContextMenu.subscribe((event) => {
                 longitude: posiiton.longitude,
             });
         }
+        alert('DONE.');
     })();
 });
