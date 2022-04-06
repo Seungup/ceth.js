@@ -127,27 +127,23 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         const viewMatrix = viewer.camera.viewMatrix;
         const inverseViewMatrix = viewer.camera.inverseViewMatrix;
         for (let i = 0; i < this._workerArray.length; i++) {
-            this.sendRenderRequest(this._workerArray[i], viewMatrix, inverseViewMatrix);
+            this.sendRenderRequest(this._workerArray[i].worker, viewMatrix, inverseViewMatrix);
         }
     }
 
-    private sendRenderRequest(
-        target: { worker: Worker; wrapper: Remote<CommandReciver> },
-        viewMatrix: Matrix4,
-        inverseViewMatrix: Matrix4
-    ) {
+    private sendRenderRequest(target: Worker, viewMatrix: Matrix4, inverseViewMatrix: Matrix4) {
         {
             const cvm = new Float64Array(viewMatrix);
             const civm = new Float64Array(inverseViewMatrix);
 
             CoreThreadCommand.excuteCommand(
-                target.worker,
+                target,
                 CoreThreadCommands.SYNC,
                 { cvm: cvm, civm: civm },
                 [cvm.buffer, civm.buffer]
             );
         }
 
-        CoreThreadCommand.excuteCommand(target.worker, CoreThreadCommands.RENDER);
+        CoreThreadCommand.excuteCommand(target, CoreThreadCommands.RENDER);
     }
 }
