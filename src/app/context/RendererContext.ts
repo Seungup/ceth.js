@@ -86,11 +86,10 @@ export class RendererContext {
     /**
      * 화면을 갱신합니다.
      */
-    doRender(): void {
-        this.syncScreenRect().then(() => {
-            for (const [_, renderer] of this.rendererMap) {
-                renderer.render();
-            }
-        });
+    async doRender() {
+        await this.syncScreenRect();
+        for (const [_, renderer] of this.rendererMap) {
+            await renderer.render();
+        }
     }
 }

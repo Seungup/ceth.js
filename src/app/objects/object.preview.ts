@@ -6,6 +6,7 @@ import { Utils } from '../utils';
 import { WGS84_ACTION } from '../core/utils/math';
 import { RendererMap } from '../core';
 import { ApplicationContext, RendererContext } from '../context';
+import { DataAccessStrategy } from '../core/data/AccessStrategy';
 
 export class ObjectPreview {
     private _attachedObjectAPI: ObjectAPI | undefined;
@@ -36,8 +37,7 @@ export class ObjectPreview {
         if (object instanceof Object3D || isMetaObject(object)) {
             const renderer = context.getRenderer(target);
             if (renderer) {
-                const id = await renderer.add(object.clone());
-                this._attachedObjectAPI = await new ObjectAPI(id, renderer).updateAll();
+                this._attachedObjectAPI = await renderer.add(object.clone());
             }
         }
     }

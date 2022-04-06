@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { ApplicationContext } from '../../../context';
+import { ObjectAPI } from '../../../objects';
+import { LocalDataAccessStrategy } from '../../data/LocalDataAccessStrategy';
 import { Cesium3Synchronization } from '../../utils/synchronization';
 
 export interface PerspectiveCameraInitParam {
@@ -16,10 +18,10 @@ export interface IRenderer {
 }
 
 export interface IRendererTemplate {
-    setSize(width: number, height: number, updateStyle: boolean): void;
-    setCamera(param: PerspectiveCameraInitParam): void;
-    render(): void;
-    add(...object: THREE.Object3D[]): void;
+    setSize(width: number, height: number, updateStyle: boolean): Promise<this>;
+    setCamera(param: PerspectiveCameraInitParam): Promise<this>;
+    render(): Promise<void>;
+    add(...object: THREE.Object3D[]): Promise<ObjectAPI>;
 }
 
 export class BaseRenderer implements IRendererTemplate {
@@ -35,6 +37,7 @@ export class BaseRenderer implements IRendererTemplate {
      */
     async setSize(width: number, height: number) {
         this.renderer?.setSize(width, height);
+        return this;
     }
 
     /**
@@ -49,6 +52,7 @@ export class BaseRenderer implements IRendererTemplate {
             this.camera.near = param.near;
             this.camera.updateProjectionMatrix();
         }
+        return this;
     }
 
     /**
@@ -73,8 +77,11 @@ export class BaseRenderer implements IRendererTemplate {
      * 장면에 오브젝트를 추가합니다.
      * @param object
      */
-    async add(object: THREE.Object3D): Promise<number> {
+    async add(object: THREE.Object3D) {
         this.scene.add(object);
-        return object.id;
+        return await new ObjectAPI(
+            object.id,
+            new LocalDataAccessStrategy(this.scene, object.id)
+        ).updateAll();
     }
 }

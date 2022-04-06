@@ -1,7 +1,6 @@
 import { Vector3 } from 'three';
 import { CT_WGS84, IWGS84, WGS84_ACTION } from '../core/utils/math';
-import { RendererTemplate } from '../core';
-import { CoreThreadCommand } from '../core/renderer/template/OffscreenRenderer/core-thread.command';
+import { DataAccessStrategy } from '../core/data/AccessStrategy';
 
 // TODO : Context에 맞게 수정될 수 있도록 변경해야함.
 export class ObjectAPI {
@@ -9,9 +8,10 @@ export class ObjectAPI {
 
     private _cachedPosition: IWGS84 | undefined;
     private _cachedBox3Max: Vector3 | undefined;
-
-    constructor(id: number, private readonly targetRenderer: RendererTemplate) {
+    private readonly dataAccessStrategy: DataAccessStrategy;
+    constructor(id: number, dataAccessStrategy: DataAccessStrategy) {
         this.id = id;
+        this.dataAccessStrategy = dataAccessStrategy;
     }
 
     async updateAll() {
@@ -21,7 +21,7 @@ export class ObjectAPI {
     }
 
     async updateWGS84() {
-        const wgs84 = await CoreThreadCommand.excuteAPI('ObjectDataAPI', 'getWGS84', [this.id]);
+        const wgs84 = await this.dataAccessStrategy.getWGS84();
 
         if (wgs84) {
             this._cachedPosition = wgs84;
@@ -31,7 +31,7 @@ export class ObjectAPI {
     }
 
     async updateBox3() {
-        const max = await CoreThreadCommand.excuteAPI('ObjectDataAPI', 'getBox3Max', [this.id]);
+        const max = await this.dataAccessStrategy.getBox3Max();
 
         if (max) {
             this._cachedBox3Max = max;
@@ -42,11 +42,7 @@ export class ObjectAPI {
 
     async setPosition(wgs84: IWGS84, action: WGS84_ACTION) {
         this._cachedPosition = new CT_WGS84(wgs84, action).toIWGS84();
-
-        return await CoreThreadCommand.excuteAPI('SceneComponentAPI', 'setObjectPosition', [
-            this.id,
-            { wgs84: wgs84, action: action },
-        ]);
+        return await this.dataAccessStrategy.setWGS84(wgs84, action);
     }
 
     async getBox3() {
@@ -64,10 +60,10 @@ export class ObjectAPI {
     }
 
     async remove() {
-        return await CoreThreadCommand.excuteAPI('SceneComponentAPI', 'remove', [this.id]);
+        return await this.dataAccessStrategy.remove();
     }
 
     async isExistObject() {
-        return await CoreThreadCommand.excuteAPI('SceneComponentAPI', 'isExistObject', [this.id]);
+        return await this.dataAccessStrategy.isExise();
     }
 }

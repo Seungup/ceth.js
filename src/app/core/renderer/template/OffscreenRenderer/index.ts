@@ -1,11 +1,17 @@
 import { Object3D } from 'three';
 import { CoreThreadCommand } from './core-thread.command';
 import { Utils } from '../../../../utils';
+import { wrap } from 'comlink';
 import { PerspectiveCameraInitParam, BaseRenderer } from '../renderer.template';
-import { CoreThreadCommands } from './core/command-reciver';
+import { CommandReciver, CoreThreadCommands } from './core/command-reciver';
 import { ApplicationContext } from '../../../../context/ApplicationContext';
+import { WorkerFactory } from '../../../worker.factory';
+import { ObjectAPI } from '../../../../objects';
+import { WorkerDataAccessStaytagy } from '../../../data/WorkerDataAccessStrategy';
 
 export class OffscreenRenderer extends BaseRenderer {
+    private worker = WorkerFactory.createWorker('CommandReciver');
+    private wrapper = wrap<CommandReciver>(this.worker);
     constructor() {
         super();
         this.name = 'OffscreenRendererProxy';
@@ -24,6 +30,7 @@ export class OffscreenRenderer extends BaseRenderer {
 
                 // prettier-ignore
                 CoreThreadCommand.excuteCommand(
+                    this.worker,
                     CoreThreadCommands.INIT,
                     { canvas: offscreen },
                     [offscreen]
@@ -39,7 +46,11 @@ export class OffscreenRenderer extends BaseRenderer {
     }
 
     async add(object: Object3D) {
-        return await CoreThreadCommand.excuteAPI('SceneComponentAPI', 'add', [object.toJSON()]);
+        const id = await CoreThreadCommand.excuteAPI(this.wrapper, 'SceneComponentAPI', 'add', [
+            object.toJSON(),
+        ]);
+
+        return new ObjectAPI(id, new WorkerDataAccessStaytagy(this.worker, id));
     }
 
     private createCanvasElement() {
@@ -72,11 +83,18 @@ export class OffscreenRenderer extends BaseRenderer {
     }
 
     async setSize(width: number, height: number) {
-        await CoreThreadCommand.excuteAPI('RendererComponentAPI', 'setSize', [width, height]);
+        await CoreThreadCommand.excuteAPI(this.wrapper, 'RendererComponentAPI', 'setSize', [
+            width,
+            height,
+        ]);
+        return this;
     }
 
     async setCamera(param: PerspectiveCameraInitParam) {
-        await CoreThreadCommand.excuteAPI('CameraComponentAPI', 'initCamera', [param]);
+        await CoreThreadCommand.excuteAPI(this.wrapper, 'CameraComponentAPI', 'initCamera', [
+            param,
+        ]);
+        return this;
     }
 
     async render() {
@@ -89,9 +107,12 @@ export class OffscreenRenderer extends BaseRenderer {
 
             // 카메라의 높이가 50km 보다 낮을 경우,
             // 내부 오브젝트 포지션 계산을 중지하여, 가까운 물체의 가시성이 삭제되는 현상 보완
-            await CoreThreadCommand.excuteAPI('GraphicAPI', 'setRenderBehindEarthOfObjects', [
-                threadhold,
-            ]);
+            await CoreThreadCommand.excuteAPI(
+                this.wrapper,
+                'GraphicAPI',
+                'setRenderBehindEarthOfObjects',
+                [threadhold]
+            );
         }
 
         // SYNC Camera
@@ -102,10 +123,15 @@ export class OffscreenRenderer extends BaseRenderer {
             const args = { cvm: cvm, civm: civm };
             const transfer = [cvm.buffer, civm.buffer];
 
-            await CoreThreadCommand.excuteCommand(CoreThreadCommands.SYNC, args, transfer);
+            await CoreThreadCommand.excuteCommand(
+                this.worker,
+                CoreThreadCommands.SYNC,
+                args,
+                transfer
+            );
         }
 
         // Render Request
-        await CoreThreadCommand.excuteCommand(CoreThreadCommands.RENDER);
+        await CoreThreadCommand.excuteCommand(this.worker, CoreThreadCommands.RENDER);
     }
 }
