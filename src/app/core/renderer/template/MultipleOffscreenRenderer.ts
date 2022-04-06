@@ -20,6 +20,10 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
     private _workerArray = new Array<Worker>();
     private isInitialization = false;
     makeCanvases(count: number) {
+        if (0 > count) {
+            throw new Error('count must be higher than zero.');
+        }
+
         if (count < this._workerArray.length) {
             throw new Error('Unable to reduce the number in the runtime environment.');
         }
@@ -97,18 +101,7 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
     }
 
     async add(object: Object3D) {
-        console.warn(`Please use the addAt function instead of the add function.`);
         return this.addAt(object, randInt(0, this._workerArray.length - 1));
-    }
-
-    getWorkerAt(index: number) {
-        try {
-            if (this._workerArray[index]) {
-                return this._workerArray[index];
-            }
-        } catch (error) {
-            return;
-        }
     }
 
     async addAt(object: Object3D, at: number) {

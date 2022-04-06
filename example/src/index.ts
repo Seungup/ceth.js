@@ -31,16 +31,17 @@ Cesium3.init(viewer);
 // const CANVAS_COUNT = navigator.hardwareConcurrency;
 const CANVAS_COUNT = 6;
 {
-    const context = Cesium3.Context.RendererContext.getInstance();
-    context.addRenderer(Cesium3.Renderers.MultipleOffscreenRenderer);
-    context.getRenderer('MultipleOffscreenRenderer').makeCanvases(CANVAS_COUNT);
+    Cesium3.Context.RendererContext.getInstance()
+        .addRenderer(Cesium3.Renderers.MultipleOffscreenRenderer)
+        .getRenderer('MultipleOffscreenRenderer')
+        .makeCanvases(CANVAS_COUNT);
 }
 
 const event = new ObjectEvent();
 
-(function animation() {
+(async function animation() {
     requestAnimationFrame(animation);
-    Cesium3.render();
+    await Cesium3.render();
 })();
 
 const object = new THREE.Mesh(
@@ -52,8 +53,7 @@ async function addObjectOnScene(object: THREE.Object3D, wgs84: IWGS84) {
     const worldPosition = new CT_WGS84(wgs84);
     object.applyMatrix4(worldPosition.getMatrix4());
     try {
-        const context = Cesium3.Context.RendererContext.getInstance();
-        await context
+        await Cesium3.Context.RendererContext.getInstance()
             .getRenderer('MultipleOffscreenRenderer')
             .addAt(object, randInt(0, CANVAS_COUNT - 1));
     } catch (error) {
