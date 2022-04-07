@@ -1,10 +1,10 @@
 import { Object3D } from 'three';
 import { ObjectAPI } from './ObjectAPI';
-import { Utils } from '../Utils';
-import { WGS84_ACTION } from '../Core/utils/Math';
+import { CesiumUtils } from '../Utils/CesiumUtils';
+import { WGS84_ACTION } from '../Math';
 import { ApplicationContext } from '../Context/ApplicationContext';
 import { RendererContext } from '../Context/RendererContext';
-import { RendererMap } from '../Core/Renderer/Template';
+import { RendererMap } from '../Components/Renderer';
 
 export class ObjectPreview {
     private _attachedObjectAPI: ObjectAPI | undefined;
@@ -76,7 +76,7 @@ export class ObjectPreview {
         const viewer = ApplicationContext.getInstance().viewer;
         if (!viewer) return;
 
-        const position = Utils.getLongitudeLatitudeByMouseEvent(viewer, event);
+        const position = CesiumUtils.getLongitudeLatitudeByMouseEvent(event);
 
         if (position) {
             this._attachedObjectAPI.setPosition({ ...position, height: 0 }, WGS84_ACTION.NONE);

@@ -1,12 +1,15 @@
 import { Viewer } from 'cesium';
 import * as THREE from 'three';
-import { Cesium3, MultipleOffscreenRenderer } from '../../src';
-import { IWGS84, ObjectEvent } from '../../src/app';
+import { Cesium3 } from '../../src/App/Cesium3';
 import './css/main.css';
 import { randInt } from 'three/src/math/MathUtils';
 import { initGUI } from './initGUI';
 import { MeshLambertMaterial } from 'three';
-import { RendererContext } from '../../src/app/context';
+import { MultipleOffscreenRenderer } from '../../src/App/Components/Renderer';
+import { IWGS84 } from '../../src/App/Math';
+import { ObjectEvent } from '../../src/App/Objects/ObjectEvent';
+import { CesiumUtils } from '../../src/App/Utils/CesiumUtils';
+import { RendererContext } from '../../src/App/Context/RendererContext';
 
 const constructorOptions: Viewer.ConstructorOptions = {
     useDefaultRenderLoop: false,
@@ -65,7 +68,7 @@ async function addObjectOnScene(
 
 new ObjectEvent().onContextMenu.subscribe((event) => {
     (async () => {
-        const posiiton = Cesium3.CesiumUtils.getLongitudeLatitudeByMouseEvent(viewer, event);
+        const posiiton = CesiumUtils.getLongitudeLatitudeByMouseEvent(event);
         const count = API.count;
         const renderer = RendererContext.getInstance().getRenderer('MultipleOffscreenRenderer');
         for (let i = 0; i < count; i++) {

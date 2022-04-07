@@ -1,7 +1,7 @@
 import { Remote, wrap } from 'comlink';
-import { CommandReciver } from '../../../Core/Renderer/Template/OffscreenRenderer/Core/CommandReciver';
-import { CoreThreadCommand } from '../../../Core/renderer/template/OffscreenRenderer/CoreThreadCommand';
-import { IWGS84, WGS84_ACTION } from '../../../core/utils/Math';
+import { CommandReciver } from '../../../Components/Renderer/Template/OffscreenRenderer/Core/CommandReciver';
+import { CoreThreadCommand } from '../../../Components/Renderer/Template/OffscreenRenderer/CoreThreadCommand';
+import { IWGS84, WGS84_ACTION } from '../../../Math';
 import { DataAccessor } from '../DataAccessor';
 
 export class WorkerDataAccessStaytagy implements DataAccessor {

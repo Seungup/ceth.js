@@ -1,6 +1,6 @@
 import { ApplicationContext } from './ApplicationContext';
 import * as Cesium from 'cesium';
-import { RendererMap, RendererTemplate } from '../Core/Renderer/Template';
+import { RendererMap, RendererTemplate } from '../Components/Renderer';
 
 export class RendererContext {
     private static instance: RendererContext;
