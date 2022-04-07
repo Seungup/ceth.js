@@ -32,7 +32,7 @@ const viewer = new Viewer('cesiumContainer', constructorOptions);
 
 Cesium3.init(viewer);
 
-const CANVAS_COUNT = navigator.hardwareConcurrency;
+const CANVAS_COUNT = navigator.hardwareConcurrency - 1; // without main thread
 
 {
     const renderer = RendererContext.addRenderer(MultipleOffscreenRenderer)
@@ -52,8 +52,6 @@ const CANVAS_COUNT = navigator.hardwareConcurrency;
 })();
 
 const { API, object, objectAPIArray, CSS2DObjectArray } = initGUI();
-
-(<MeshLambertMaterial>object.material).onBeforeCompile;
 
 async function addObjectOnScene(
     object: THREE.Object3D,
@@ -77,14 +75,12 @@ async function addObjectOnScene(
 
 async function addObject(posiiton: { latitude: number; longitude: number }) {
     const count = API.count;
-
     for (let i = 0; i < count; i++) {
         await addObjectOnScene(
             object.clone(),
             {
                 height: 0,
-                latitude: posiiton.latitude,
-                longitude: posiiton.longitude,
+                ...posiiton,
             },
             RendererContext.getRenderer('MultipleOffscreenRenderer'),
             RendererContext.getRenderer('DOMRenderer')
@@ -95,5 +91,7 @@ async function addObject(posiiton: { latitude: number; longitude: number }) {
 }
 
 new ObjectEvent().onContextMenu.subscribe(async (event) => {
+    console.time('ADD');
     await addObject(CesiumUtils.getLongitudeLatitudeByMouseEvent(event));
+    console.timeEnd('ADD');
 });

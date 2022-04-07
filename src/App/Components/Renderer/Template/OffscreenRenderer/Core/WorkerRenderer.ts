@@ -4,25 +4,40 @@ import { WebGLRendererComponent } from '../../WebGLRenderer';
 import { SceneComponent } from '../../../../Scene/SceneComponent';
 export namespace WorkerRenderer {
     // 지구 뒷편 오브젝트 렌더링 여부
-    let renderBehindEarthOfObjects: boolean = false;
+    let renderBehindEarthOfObjects: boolean = true;
 
     const normalMatrix = new Matrix3();
     const tempVector = new Vector3();
     const cameraToPoint = new Vector3();
+
+    /**
+     * 최대 스킵 가능한 프레임 개수입니다.
+     */
+    let MAXIUM_SKIBBLE_FRAME_COUNT = 60;
+
+    let skipedFrame = 0;
     /**
      * 장면을 렌더링합니다.
      */
     export const render = () => {
         if (WebGLRendererComponent.renderer) {
+            const camera = CameraComponent.perspectiveCamera;
             if (!renderBehindEarthOfObjects) {
-                normalMatrix.getNormalMatrix(CameraComponent.perspectiveCamera.matrixWorldInverse);
+                normalMatrix.getNormalMatrix(camera.matrixWorldInverse);
                 SceneComponent.scene.traverse(_setObjectVisible);
             }
 
-            WebGLRendererComponent.renderer.render(
-                SceneComponent.scene,
-                CameraComponent.perspectiveCamera
-            );
+            const updated = camera.userData.updated;
+            if (
+                skipedFrame >= MAXIUM_SKIBBLE_FRAME_COUNT ||
+                (typeof updated === 'boolean' && updated === true)
+            ) {
+                WebGLRendererComponent.renderer.render(SceneComponent.scene, camera);
+                skipedFrame = 0;
+            } else {
+                skipedFrame++;
+            }
+            camera.userData.updated = false;
         }
     };
 
@@ -34,6 +49,16 @@ export namespace WorkerRenderer {
          */
         export const setRenderBehindEarthOfObjects = (visible: boolean) => {
             renderBehindEarthOfObjects = visible;
+        };
+
+        /**
+         * 최대 스킵 가능한 프레임의 개수를 설정합니다.
+         *
+         * @default 60
+         * @param count
+         */
+        export const setMaxiumSkibbleFrameCount = (count: number) => {
+            MAXIUM_SKIBBLE_FRAME_COUNT = -1 > count ? 0 : count;
         };
     }
 

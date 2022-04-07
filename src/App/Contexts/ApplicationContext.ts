@@ -1,4 +1,5 @@
 import { Viewer } from 'cesium';
+import { RendererContext } from './RendererContext';
 
 export class ApplicationContext {
     private static instance: ApplicationContext;

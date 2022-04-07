@@ -74,7 +74,9 @@ export class BaseRenderer implements IRendererTemplate {
             cvm: cvm,
         });
 
-        this.renderer.render(scene, camera);
+        if (camera.userData.updated) {
+            this.renderer.render(scene, camera);
+        }
     }
 
     /**

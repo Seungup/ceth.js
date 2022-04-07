@@ -22,7 +22,19 @@ export namespace Cesium3Synchronization {
     ) => {
         camera.matrixAutoUpdate = false;
         let needUpdate = false;
-        if (_oldCIVM !== param.civm) {
+
+        let isSameCIVM = true;
+        if (_oldCIVM && param.civm) {
+            for (let i = 0; i < 16; i++) {
+                const gap = _oldCIVM[i] - param.civm[i];
+                if (gap !== 0) {
+                    isSameCIVM = false;
+                    break;
+                }
+            }
+        }
+
+        if (_oldCIVM === undefined || !isSameCIVM) {
             // prettier-ignore
             camera.matrixWorld.set(
                 param.civm[ 0], param.civm[ 4], param.civm[ 8], param.civm[12],
@@ -34,7 +46,18 @@ export namespace Cesium3Synchronization {
             needUpdate = true;
         }
 
-        if (_oldCVM !== param.cvm) {
+        let isSameCVM = true;
+        if (_oldCVM && param.cvm) {
+            for (let i = 0; i < 16; i++) {
+                const gap = _oldCVM[i] - param.cvm[i];
+                if (gap !== 0) {
+                    isSameCVM = false;
+                    break;
+                }
+            }
+        }
+
+        if (_oldCVM === undefined || !isSameCVM) {
             // prettier-ignore
             camera.matrixWorldInverse.set(
                 param.cvm[ 0], param.cvm[ 4], param.cvm[ 8], param.cvm[12],
@@ -48,6 +71,8 @@ export namespace Cesium3Synchronization {
         if (needUpdate) {
             camera.updateProjectionMatrix();
         }
+
+        camera.userData.updated = needUpdate;
     };
 
     /**
