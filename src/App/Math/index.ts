@@ -1,4 +1,4 @@
-import { EARTH_RADIUS_METER } from '../../Constants';
+import { EARTH_RADIUS_METER } from '../../Constant';
 
 export * from './Cartesian3';
 export * from './Ellipsoid';

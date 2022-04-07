@@ -1,5 +1,5 @@
 import { Vector3 } from 'three';
-import { EARTH_RADIUS_X, EARTH_RADIUS_Y, EARTH_RADIUS_Z } from '../../Constants';
+import { EARTH_RADIUS_X, EARTH_RADIUS_Y, EARTH_RADIUS_Z } from '../../Constant';
 import { Cartesian3 } from './Cartesian3';
 
 export class Ellipsoid extends Vector3 {
