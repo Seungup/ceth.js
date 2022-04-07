@@ -1,20 +1,16 @@
 {
-  "exclude": [
-    "example",
-    "node_modules",
-    "dist"
-  ],
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "module": "ESNext",
-    "target": "ES2021",
-    "strict": true,
-    "isolatedModules": false,
-    "moduleResolution": "Node",
-    "outDir": "./dist",
-    "pretty": true,
-    "removeComments": true,
-    "sourceMap": true,
-    "declaration": true
-  }
+    "exclude": ["example", "node_modules", "dist"],
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "module": "ESNext",
+        "target": "ES2021",
+        "strict": true,
+        "isolatedModules": false,
+        "moduleResolution": "Node",
+        "outDir": "./dist",
+        "pretty": true,
+        "removeComments": true,
+        "sourceMap": true,
+        "declaration": true
+    }
 }

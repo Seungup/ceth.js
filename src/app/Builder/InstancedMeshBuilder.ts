@@ -7,7 +7,9 @@ interface InstancedMeshDataType {
 
 export class InstancedMeshBuilder<
     TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
-    TMaterial extends THREE.Material | THREE.Material[] = THREE.Material | THREE.Material[]
+    TMaterial extends THREE.Material | THREE.Material[] =
+        | THREE.Material
+        | THREE.Material[]
 > {
     private dataArray = new Array<InstancedMeshDataType>();
 

@@ -1,15 +1,43 @@
 import { expose } from 'comlink';
-import {
-    API_MAP,
-    API_MAP_APIFunctionArgs,
-    API_MAP_APIFunctions,
-    API_MAP_APIFuntionReturnType,
-    API_MAP_APIKeys,
-} from '.';
 import { Cesium3Synchronization } from '../../../../../Utils/Synchronization';
+import { WorkerRenderSyncer } from './WorkerRenderSyncer';
+import { ObjectData } from '../../../../../Data/ObjectData';
 import { CameraComponent } from '../../../../Camera/CameraComponent';
+import { SceneComponent } from '../../../../Scene/SceneComponent';
 import { WebGLRendererComponent } from '../../WebGLRenderer';
-import { RenderSyncer } from './RenderSyncer';
+import { WorkerRenderer } from './WorkerRenderer';
+
+export const API_MAP = {
+    CameraComponentAPI: CameraComponent.API,
+    RendererComponentAPI: WebGLRendererComponent.API,
+    SceneComponentAPI: SceneComponent.API,
+    WorkerRenderer: WorkerRenderer.API,
+    ObjectDataAPI: ObjectData.API,
+} as const;
+
+export type API_MAP_Spec = typeof API_MAP;
+export type API_MAP_APIKeys = keyof API_MAP_Spec;
+export type API_MAP_APIFunctions<K extends API_MAP_APIKeys> =
+    keyof API_MAP_Spec[K];
+
+export type API_MAP_APIFuntion<
+    K extends API_MAP_APIKeys,
+    V extends API_MAP_APIFunctions<K>
+> = API_MAP_Spec[K][V];
+
+export type API_MAP_APIFunctionArgs<
+    K extends API_MAP_APIKeys,
+    V extends API_MAP_APIFunctions<K>
+> = API_MAP_APIFuntion<K, V> extends (...args: infer argsType) => any
+    ? argsType
+    : never;
+
+export type API_MAP_APIFuntionReturnType<
+    K extends API_MAP_APIKeys,
+    V extends API_MAP_APIFunctions<K>
+> = API_MAP_APIFuntion<K, V> extends (...args: any) => infer returnType
+    ? returnType
+    : any;
 
 export enum CoreThreadCommands {
     RENDER,
@@ -40,7 +68,7 @@ export class CommandReciver {
         const param = data.param;
         switch (data.runCommand) {
             case CoreThreadCommands.RENDER:
-                RenderSyncer.requestRender();
+                WorkerRenderSyncer.requestRender();
                 break;
             case CoreThreadCommands.INIT:
                 WebGLRendererComponent.initRenderer(param);

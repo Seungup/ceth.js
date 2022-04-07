@@ -8,7 +8,11 @@ import {
 
 export class Cartesian3 extends Vector3 {
     static get WGS84_RADII_SQUARED() {
-        return new Cartesian3(EARTH_RADIUS_X_SQURAE, EARTH_RADIUS_Y_SQURAE, EARTH_RADIUS_Z_SQURAE);
+        return new Cartesian3(
+            EARTH_RADIUS_X_SQURAE,
+            EARTH_RADIUS_Y_SQURAE,
+            EARTH_RADIUS_Z_SQURAE
+        );
     }
 
     static get UINT_X() {
@@ -36,7 +40,8 @@ export class Cartesian3 extends Vector3 {
             Math.sin(latitude)
         ).normalizeByMagnitude();
 
-        const WGS84_RADII_SQUARED = Cartesian3.WGS84_RADII_SQUARED.multiply(cartesian);
+        const WGS84_RADII_SQUARED =
+            Cartesian3.WGS84_RADII_SQUARED.multiply(cartesian);
 
         const gamma = Math.sqrt(WGS84_RADII_SQUARED.dot(cartesian));
 
@@ -80,6 +85,10 @@ export class Cartesian3 extends Vector3 {
         startIndex: number = 0,
         result: Cartesian3 = new Cartesian3()
     ) {
-        return result.set(array[startIndex++], array[startIndex++], array[startIndex]);
+        return result.set(
+            array[startIndex++],
+            array[startIndex++],
+            array[startIndex]
+        );
     }
 }

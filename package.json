@@ -1,41 +1,43 @@
 {
-	"name": "cesium-three",
-	"version": "1.0.0",
-	"description": "cesium with threejs on offscreencanvas",
-	"source": "src/index.ts",
-	"module": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"files": [
-		"dist"
-	],
-	"scripts": {
-		"build": "tsc"
-	},
-	"keywords": [
-		"cesium",
-		"threejs",
-		"webworker",
-		"comlink",
-		"offscreencanvas"
-	],
-	"author": "Seungup Noh",
-	"license": "MIT",
-	"dependencies": {
-		"comlink": "^4.3.1",
-		"lil-gui": "^0.16.1",
-		"milsymbol": "^2.0.0",
-		"rxjs": "^7.5.3",
-		"three": "0.138.3"
-	},
-	"peerDependencies": {
-		"cesium": "1.90.0",
-		"three": "0.138.3"
-	},
-	"devDependencies": {
-		"@types/offscreencanvas": "^2019.6.4",
-		"@types/three": "0.138.0",
-		"cesium": "1.90.0",
-		"three": "0.138.3",
-		"typescript": "^4.5.5"
-	}
+    "name": "cesium-three",
+    "version": "1.0.0",
+    "description": "cesium with threejs on offscreencanvas",
+    "source": "src/index.ts",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "lint": "prettier --write ./src"
+    },
+    "keywords": [
+        "cesium",
+        "threejs",
+        "webworker",
+        "comlink",
+        "offscreencanvas"
+    ],
+    "author": "Seungup Noh",
+    "license": "MIT",
+    "dependencies": {
+        "comlink": "^4.3.1",
+        "lil-gui": "^0.16.1",
+        "milsymbol": "^2.0.0",
+        "rxjs": "^7.5.3",
+        "three": "0.138.3"
+    },
+    "peerDependencies": {
+        "cesium": "1.90.0",
+        "three": "0.138.3"
+    },
+    "devDependencies": {
+        "@types/offscreencanvas": "^2019.6.4",
+        "@types/three": "0.138.0",
+        "cesium": "1.90.0",
+        "prettier": "^2.6.2",
+        "three": "0.138.3",
+        "typescript": "^4.5.5"
+    }
 }

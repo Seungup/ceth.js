@@ -1,4 +1,4 @@
-import { Box3, Mesh, Object3D, ObjectLoader, Scene } from 'three';
+import { Box3, Object3D, ObjectLoader, Scene } from 'three';
 import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../Math';
 import { Cesium3Synchronization } from '../../Utils/Synchronization';
 import { ObjectData } from '../../data/ObjectData';
@@ -67,11 +67,13 @@ export namespace SceneComponent {
                     object.rotation.copy(rps.rotation);
                     object.scale.copy(rps.scale);
 
-                    Cesium3Synchronization.syncObject3DPosition(object, wgs84, action).then(
-                        (result) => {
-                            ObjectData.setWGS84(result.object.id, result.wgs84);
-                        }
-                    );
+                    Cesium3Synchronization.syncObject3DPosition(
+                        object,
+                        wgs84,
+                        action
+                    ).then((result) => {
+                        ObjectData.setWGS84(result.object.id, result.wgs84);
+                    });
                 }
             }
         };
@@ -88,9 +90,6 @@ export namespace SceneComponent {
             action: WGS84_ACTION = WGS84_ACTION.NONE
         ) => {
             const object = objectLoader.parse(json);
-            if (Object.prototype.hasOwnProperty.call(object, 'isMesh')) {
-                console.log((<Mesh>object).geometry.name);
-            }
 
             ObjectData.setBox3ByObject3D(object);
             ObjectData.setPositionRotationScaleByObject3D(object);

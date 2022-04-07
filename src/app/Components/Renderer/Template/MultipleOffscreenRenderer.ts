@@ -5,7 +5,10 @@ import { randInt } from 'three/src/math/MathUtils';
 import { disposeObject3D } from '../../../Utils/Cleaner';
 import { WorkerFactory } from '../../../WorkerFactory';
 import { CoreThreadCommand } from './OffscreenRenderer/CoreThreadCommand';
-import { CommandReciver, CoreThreadCommands } from './OffscreenRenderer/Core/CommandReciver';
+import {
+    CommandReciver,
+    CoreThreadCommands,
+} from './OffscreenRenderer/Core/CommandReciver';
 import { BaseRenderer, PerspectiveCameraInitParam } from '../BaseRenderer';
 import { ApplicationContext } from '../../../Context/ApplicationContext';
 import { IWGS84, WGS84_ACTION } from '../../../Math';
@@ -18,7 +21,10 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         this.name = 'MultipleOffscreenRenderer';
     }
 
-    private _workerArray = new Array<{ worker: Worker; wrapper: Remote<CommandReciver> }>();
+    private _workerArray = new Array<{
+        worker: Worker;
+        wrapper: Remote<CommandReciver>;
+    }>();
     private isInitialization = false;
     makeCanvases(count: number) {
         if (0 > count) {
@@ -26,7 +32,9 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         }
 
         if (count < this._workerArray.length) {
-            throw new Error('Unable to reduce the number in the runtime environment.');
+            throw new Error(
+                'Unable to reduce the number in the runtime environment.'
+            );
         }
 
         const context = ApplicationContext.getInstance();
@@ -55,7 +63,10 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
                 [offscreen]
             );
 
-            this._workerArray.push({ worker: worker, wrapper: wrap<CommandReciver>(worker) });
+            this._workerArray.push({
+                worker: worker,
+                wrapper: wrap<CommandReciver>(worker),
+            });
         }
 
         this.isInitialization = true;
@@ -105,20 +116,31 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         return this.addAt(object, randInt(0, this._workerArray.length - 1));
     }
 
-    async addAt(object: Object3D, at: number, position?: IWGS84, action?: WGS84_ACTION) {
+    async addAt(
+        object: Object3D,
+        at: number,
+        position?: IWGS84,
+        action?: WGS84_ACTION
+    ) {
         if (this._workerArray.length <= at || at < 0) {
             throw new Error(`BufferFlowError : cannot access at ${at} `);
         }
 
         const target = this._workerArray[at];
 
-        const id = await CoreThreadCommand.excuteAPI(target.wrapper, 'SceneComponentAPI', 'add', [
-            object.toJSON(),
-            position,
-            action,
-        ]);
+        const id = await CoreThreadCommand.excuteAPI(
+            target.wrapper,
+            'SceneComponentAPI',
+            'add',
+            [object.toJSON(), position, action]
+        );
+
         disposeObject3D(object);
-        return await new ObjectAPI(id, new WorkerDataAccessStaytagy(target.worker, id)).updateAll();
+
+        return await new ObjectAPI(
+            id,
+            new WorkerDataAccessStaytagy(target.worker, id)
+        ).updateAll();
     }
 
     async render() {
@@ -127,12 +149,21 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
 
         const viewMatrix = viewer.camera.viewMatrix;
         const inverseViewMatrix = viewer.camera.inverseViewMatrix;
+
         for (let i = 0; i < this._workerArray.length; i++) {
-            this.sendRenderRequest(this._workerArray[i].worker, viewMatrix, inverseViewMatrix);
+            this.sendRenderRequest(
+                this._workerArray[i].worker,
+                viewMatrix,
+                inverseViewMatrix
+            );
         }
     }
 
-    private sendRenderRequest(target: Worker, viewMatrix: Matrix4, inverseViewMatrix: Matrix4) {
+    private sendRenderRequest(
+        target: Worker,
+        viewMatrix: Matrix4,
+        inverseViewMatrix: Matrix4
+    ) {
         {
             const cvm = new Float64Array(viewMatrix);
             const civm = new Float64Array(inverseViewMatrix);

@@ -22,6 +22,5 @@ export namespace Cesium3 {
 
     export const render = async () => {
         await RendererContext.getInstance().render();
-        ApplicationContext.getInstance().viewer?.render();
     };
 }

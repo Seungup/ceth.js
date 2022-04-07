@@ -1,25 +1,25 @@
 import GUI from 'lil-gui';
 import { BoxGeometry, DoubleSide, Mesh, MeshLambertMaterial } from 'three';
-import { ObjectAPI } from '../../src';
+import { ObjectAPI } from '../../src/App/Objects/ObjectAPI';
 
 export function initGUI() {
-    const objectArray = new Array<ObjectAPI>();
+    const apiArray = new Array<ObjectAPI>();
 
     const API = {
         count: 2500,
         latGap: 0.05,
-        clear: async () => {
-            while (objectArray.length) {
-                await objectArray.pop().remove();
+        removeAll: async () => {
+            while (apiArray.length) {
+                await apiArray.pop().remove();
             }
         },
-        lonGap: 0.05,
+        lonGap: 0.025,
         help: () => {
             alert('원하는 위치에 마우스를 우클릭하여 테스트합니다.');
         },
-        width: 1500,
-        height: 1500,
-        depth: 1500,
+        width: 10000,
+        height: 10000,
+        depth: 10000,
     };
 
     const object = new Mesh(
@@ -33,10 +33,8 @@ export function initGUI() {
     gui.domElement.style.left = '2px';
     document.body.appendChild(gui.domElement);
     gui.add(API, 'count', 1, 50000, 1);
-    gui.add(API, 'latGap', 0.001, 0.01, 0.001);
-    gui.add(API, 'lonGap', 0.001, 0.01, 0.001);
-    gui.add(API, 'clear');
-    gui.add(API, 'help');
+    gui.add(API, 'latGap', 0.001, 0.1, 0.001);
+    gui.add(API, 'lonGap', 0.001, 0.1, 0.001);
     gui.add(API, 'width', 1000, 10000).onFinishChange(() => {
         object.geometry.dispose();
         object.geometry = new BoxGeometry(API.width, API.height, API.depth);
@@ -49,6 +47,8 @@ export function initGUI() {
         object.geometry.dispose();
         object.geometry = new BoxGeometry(API.width, API.height, API.depth);
     });
+    gui.add(API, 'removeAll');
+    gui.add(API, 'help');
 
-    return { API: API, object: object, objectArray: objectArray };
+    return { API: API, object: object, apiArray: apiArray };
 }

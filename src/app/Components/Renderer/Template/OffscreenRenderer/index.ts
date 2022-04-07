@@ -46,9 +46,12 @@ export class OffscreenRenderer extends BaseRenderer {
     }
 
     async add(object: Object3D) {
-        const id = await CoreThreadCommand.excuteAPI(this.wrapper, 'SceneComponentAPI', 'add', [
-            object.toJSON(),
-        ]);
+        const id = await CoreThreadCommand.excuteAPI(
+            this.wrapper,
+            'SceneComponentAPI',
+            'add',
+            [object.toJSON()]
+        );
 
         return new ObjectAPI(id, new WorkerDataAccessStaytagy(this.worker, id));
     }
@@ -83,17 +86,22 @@ export class OffscreenRenderer extends BaseRenderer {
     }
 
     async setSize(width: number, height: number) {
-        await CoreThreadCommand.excuteAPI(this.wrapper, 'RendererComponentAPI', 'setSize', [
-            width,
-            height,
-        ]);
+        await CoreThreadCommand.excuteAPI(
+            this.wrapper,
+            'RendererComponentAPI',
+            'setSize',
+            [width, height]
+        );
         return this;
     }
 
     async setCamera(param: PerspectiveCameraInitParam) {
-        await CoreThreadCommand.excuteAPI(this.wrapper, 'CameraComponentAPI', 'initCamera', [
-            param,
-        ]);
+        await CoreThreadCommand.excuteAPI(
+            this.wrapper,
+            'CameraComponentAPI',
+            'initCamera',
+            [param]
+        );
         return this;
     }
 
@@ -105,12 +113,12 @@ export class OffscreenRenderer extends BaseRenderer {
         {
             const position = CesiumUtils.getCameraPosition();
             if (position) {
-                const threadhold = position.height < 50 * 1000;
+                const threadhold = position.height < 50000;
                 // 카메라의 높이가 50km 보다 낮을 경우,
                 // 내부 오브젝트 포지션 계산을 중지하여, 가까운 물체의 가시성이 삭제되는 현상 보완
                 await CoreThreadCommand.excuteAPI(
                     this.wrapper,
-                    'GraphicAPI',
+                    'WorkerRenderer',
                     'setRenderBehindEarthOfObjects',
                     [threadhold]
                 );
@@ -120,7 +128,9 @@ export class OffscreenRenderer extends BaseRenderer {
         // SYNC Camera
         {
             const cvm = new Float64Array(context.viewer.camera.viewMatrix);
-            const civm = new Float64Array(context.viewer.camera.inverseViewMatrix);
+            const civm = new Float64Array(
+                context.viewer.camera.inverseViewMatrix
+            );
 
             const args = { cvm: cvm, civm: civm };
             const transfer = [cvm.buffer, civm.buffer];
@@ -134,6 +144,9 @@ export class OffscreenRenderer extends BaseRenderer {
         }
 
         // Render Request
-        await CoreThreadCommand.excuteCommand(this.worker, CoreThreadCommands.RENDER);
+        await CoreThreadCommand.excuteCommand(
+            this.worker,
+            CoreThreadCommands.RENDER
+        );
     }
 }

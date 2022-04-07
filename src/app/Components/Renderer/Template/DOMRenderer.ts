@@ -1,5 +1,8 @@
 import * as THREE from 'three';
-import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
+import {
+    CSS2DObject,
+    CSS2DRenderer,
+} from 'three/examples/jsm/renderers/CSS2DRenderer';
 import { ApplicationContext } from '../../../Context/ApplicationContext';
 import { IWGS84, WGS84_ACTION } from '../../../Math';
 import { Cesium3Synchronization } from '../../../Utils/Synchronization';
@@ -17,7 +20,10 @@ export class DOMRenderer extends BaseRenderer {
         this.renderer = new CSS2DRenderer();
         const context = ApplicationContext.getInstance();
         if (context.viewer) {
-            this.renderer.setSize(context.viewer.canvas.width, context.viewer.canvas.height);
+            this.renderer.setSize(
+                context.viewer.canvas.width,
+                context.viewer.canvas.height
+            );
         }
         this.renderer.domElement.style.position = 'absolute';
         this.renderer.domElement.style.top = '0px';
@@ -25,7 +31,11 @@ export class DOMRenderer extends BaseRenderer {
         context.container.appendChild(this.renderer.domElement);
     }
 
-    async addText(text: string, wgs84: IWGS84, action: WGS84_ACTION = WGS84_ACTION.NONE) {
+    async addText(
+        text: string,
+        wgs84: IWGS84,
+        action: WGS84_ACTION = WGS84_ACTION.NONE
+    ) {
         const div = document.createElement('div');
 
         div.className = 'label';
@@ -45,9 +55,11 @@ export class DOMRenderer extends BaseRenderer {
 
         ObjectData.setPositionRotationScaleByObject3D(object);
         const scene = SceneComponent.scene;
-        Cesium3Synchronization.syncObject3DPosition(object, wgs84, action).then((result) => {
-            scene.add(result.object);
-        });
+        Cesium3Synchronization.syncObject3DPosition(object, wgs84, action).then(
+            (result) => {
+                scene.add(result.object);
+            }
+        );
 
         return object;
     }
@@ -72,7 +84,11 @@ export class DOMRenderer extends BaseRenderer {
                 object.rotation.copy(prs.rotation);
                 object.scale.copy(prs.scale);
             }
-            await Cesium3Synchronization.syncObject3DPosition(object, position, positionAction);
+            await Cesium3Synchronization.syncObject3DPosition(
+                object,
+                position,
+                positionAction
+            );
         }
     }
 

@@ -46,11 +46,12 @@ const CANVAS_COUNT = navigator.hardwareConcurrency;
 }
 
 (async function animation() {
-    Cesium3.render();
+    RendererContext.render();
+    viewer.render();
     requestAnimationFrame(animation);
 })();
 
-const { API, object, objectArray } = initGUI();
+const { API, object, apiArray } = initGUI();
 
 (<MeshLambertMaterial>object.material).onBeforeCompile;
 
@@ -60,7 +61,12 @@ async function addObjectOnScene(
     wgs84: IWGS84
 ) {
     try {
-        objectArray.push(await renderer.addAt(object, randInt(0, CANVAS_COUNT - 1), wgs84));
+        const api = await renderer.addAt(
+            object,
+            randInt(0, CANVAS_COUNT - 1),
+            wgs84
+        );
+        apiArray.push(api);
     } catch (error) {
         console.error(error);
     }
@@ -70,7 +76,9 @@ new ObjectEvent().onContextMenu.subscribe((event) => {
     (async () => {
         const posiiton = CesiumUtils.getLongitudeLatitudeByMouseEvent(event);
         const count = API.count;
-        const renderer = RendererContext.getInstance().getRenderer('MultipleOffscreenRenderer');
+        const renderer = RendererContext.getInstance().getRenderer(
+            'MultipleOffscreenRenderer'
+        );
         for (let i = 0; i < count; i++) {
             await addObjectOnScene(renderer, object.clone(), {
                 height: 0,

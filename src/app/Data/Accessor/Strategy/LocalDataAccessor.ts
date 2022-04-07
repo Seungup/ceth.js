@@ -30,12 +30,19 @@ export class LocalDataAccessStrategy implements DataAccessor {
         });
     }
 
-    setWGS84(wgs84: IWGS84, action: WGS84_ACTION = WGS84_ACTION.NONE): Promise<void> {
+    setWGS84(
+        wgs84: IWGS84,
+        action: WGS84_ACTION = WGS84_ACTION.NONE
+    ): Promise<void> {
         return new Promise((resolve, reject) => {
             const object = this.scene.getObjectById(this.id);
             if (object) {
                 ObjectData.setPositionRotationScaleByObject3D(object);
-                Cesium3Synchronization.syncObject3DPosition(object, wgs84, action);
+                Cesium3Synchronization.syncObject3DPosition(
+                    object,
+                    wgs84,
+                    action
+                );
                 resolve();
             } else {
                 reject();

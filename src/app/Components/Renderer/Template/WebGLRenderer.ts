@@ -49,7 +49,9 @@ export namespace WebGLRendererComponent {
             if (renderer) {
                 renderer.setSize(width, height, false);
             } else {
-                console.warn('setRenderSize was called without Render initialization.');
+                console.warn(
+                    'setRenderSize was called without Render initialization.'
+                );
             }
         };
     }

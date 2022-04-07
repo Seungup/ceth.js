@@ -1,7 +1,11 @@
 import { CT_WGS84, IWGS84, WGS84_ACTION } from '../Math';
 
 export class Computational {
-    static async computePosition(longitude: number, latitude: number, height: number) {
+    static async computePosition(
+        longitude: number,
+        latitude: number,
+        height: number
+    ) {
         return this.computePositionByWGS84(
             {
                 height: height,

@@ -1,9 +1,8 @@
 import { Matrix3, Object3D, Vector3 } from 'three';
-import { ObjectData } from '../../../../../Data/ObjectData';
 import { CameraComponent } from '../../../../Camera/CameraComponent';
 import { WebGLRendererComponent } from '../../WebGLRenderer';
 import { SceneComponent } from '../../../../Scene/SceneComponent';
-export namespace Graphic {
+export namespace WorkerRenderer {
     // 지구 뒷편 오브젝트 렌더링 여부
     let renderBehindEarthOfObjects: boolean = false;
 
@@ -16,7 +15,9 @@ export namespace Graphic {
     export const render = () => {
         if (WebGLRendererComponent.renderer) {
             if (!renderBehindEarthOfObjects) {
-                normalMatrix.getNormalMatrix(CameraComponent.perspectiveCamera.matrixWorldInverse);
+                normalMatrix.getNormalMatrix(
+                    CameraComponent.perspectiveCamera.matrixWorldInverse
+                );
                 SceneComponent.scene.traverse(_setObjectVisible);
             }
 
@@ -38,6 +39,8 @@ export namespace Graphic {
         };
     }
 
+    const zeroVector = new Vector3(0, 0, 0);
+    let dot: number | undefined;
     /**
      * 오브젝트의 지구 뒷면 렌더링을 제어합니다.
      *
@@ -46,17 +49,18 @@ export namespace Graphic {
      */
     const _setObjectVisible = (object: Object3D) => {
         // 위치를 가지는 오브젝트만 선정
-        if (!ObjectData.API.getWGS84(object.id)) return;
+        if (object.position.equals(zeroVector)) return;
 
-        object.visible =
-            tempVector
-                .copy(object.position)
-                .applyMatrix3(normalMatrix)
-                .dot(
-                    cameraToPoint
-                        .copy(object.position)
-                        .applyMatrix4(CameraComponent.perspectiveCamera.matrixWorldInverse)
-                        .normalize()
-                ) < 0;
+        cameraToPoint
+            .copy(object.position)
+            .applyMatrix4(CameraComponent.perspectiveCamera.matrixWorldInverse)
+            .normalize();
+
+        dot = tempVector
+            .copy(object.position)
+            .applyMatrix3(normalMatrix)
+            .dot(cameraToPoint);
+
+        object.visible = dot < 0;
     };
 }

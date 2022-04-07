@@ -7,6 +7,10 @@ export class RendererContext {
 
     private constructor() {}
 
+    static render() {
+        RendererContext.getInstance().render();
+    }
+
     private rendererMap = new Map<string, RendererTemplate>();
     static getInstance(): RendererContext {
         if (!RendererContext.instance) {
@@ -83,7 +87,7 @@ export class RendererContext {
         this._oldHeight = height;
     }
 
-    async render() {
+    render() {
         this.syncScreenRect().then(async () => {
             for (const [_, renderer] of this.rendererMap) {
                 await renderer.render();
