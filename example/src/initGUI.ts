@@ -62,7 +62,7 @@ export function initGUI() {
         lonGap: 0.05,
         latGap: 0.02,
         help: () => {
-            alert('원하는 위치에 마우스를 우클릭하여 테스트합니다.');
+            alert('mouse right click somewhere in earth.');
         },
         width: 10000,
         height: 10000,
