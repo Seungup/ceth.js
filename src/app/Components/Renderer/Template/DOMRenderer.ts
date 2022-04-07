@@ -1,8 +1,5 @@
 import * as THREE from 'three';
-import {
-    CSS2DObject,
-    CSS2DRenderer,
-} from 'three/examples/jsm/renderers/CSS2DRenderer';
+import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
 import { ApplicationContext } from '../../../Context/ApplicationContext';
 import { IWGS84, WGS84_ACTION } from '../../../Math';
 import { Cesium3Synchronization } from '../../../Utils/Synchronization';
@@ -31,11 +28,7 @@ export class DOMRenderer extends BaseRenderer {
         context.container.appendChild(this.renderer.domElement);
     }
 
-    async addText(
-        text: string,
-        wgs84: IWGS84,
-        action: WGS84_ACTION = WGS84_ACTION.NONE
-    ) {
+    async addText(text: string, wgs84: IWGS84, action: WGS84_ACTION = WGS84_ACTION.NONE) {
         const div = document.createElement('div');
 
         div.className = 'label';

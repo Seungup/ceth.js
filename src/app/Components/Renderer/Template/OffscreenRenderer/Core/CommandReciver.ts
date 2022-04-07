@@ -17,8 +17,7 @@ export const API_MAP = {
 
 export type API_MAP_Spec = typeof API_MAP;
 export type API_MAP_APIKeys = keyof API_MAP_Spec;
-export type API_MAP_APIFunctions<K extends API_MAP_APIKeys> =
-    keyof API_MAP_Spec[K];
+export type API_MAP_APIFunctions<K extends API_MAP_APIKeys> = keyof API_MAP_Spec[K];
 
 export type API_MAP_APIFuntion<
     K extends API_MAP_APIKeys,
@@ -28,9 +27,7 @@ export type API_MAP_APIFuntion<
 export type API_MAP_APIFunctionArgs<
     K extends API_MAP_APIKeys,
     V extends API_MAP_APIFunctions<K>
-> = API_MAP_APIFuntion<K, V> extends (...args: infer argsType) => any
-    ? argsType
-    : never;
+> = API_MAP_APIFuntion<K, V> extends (...args: infer argsType) => any ? argsType : never;
 
 export type API_MAP_APIFuntionReturnType<
     K extends API_MAP_APIKeys,

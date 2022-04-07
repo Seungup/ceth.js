@@ -12,10 +12,7 @@ export class Transforms {
         up: new Cartesian3(),
     };
 
-    static eastNorthUpToFixedFrame(
-        origin: Cartesian3,
-        result: Matrix4 = new Matrix4()
-    ) {
+    static eastNorthUpToFixedFrame(origin: Cartesian3, result: Matrix4 = new Matrix4()) {
         Ellipsoid.getDefaultWGS84RadiiSquaredGeodticSurfaceNormal(
             origin,
             this.scratchCalculateCartesian.up
@@ -47,8 +44,6 @@ export class Transforms {
         matrix: Matrix4 = new Matrix4(),
         result: Matrix4 = new Matrix4()
     ) {
-        return result
-            .copy(this.eastNorthUpToFixedFrame(origin))
-            .multiply(matrix);
+        return result.copy(this.eastNorthUpToFixedFrame(origin)).multiply(matrix);
     }
 }

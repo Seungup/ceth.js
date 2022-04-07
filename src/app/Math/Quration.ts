@@ -55,9 +55,7 @@ export class Quaternion extends Vector4 {
         );
 
         return result.copy(
-            new Quaternion()
-                .copy(this._scratchHeadingQuaternion)
-                .multiply(result)
+            new Quaternion().copy(this._scratchHeadingQuaternion).multiply(result)
         );
     }
 }

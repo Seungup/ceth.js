@@ -128,9 +128,7 @@ export class OffscreenRenderer extends BaseRenderer {
         // SYNC Camera
         {
             const cvm = new Float64Array(context.viewer.camera.viewMatrix);
-            const civm = new Float64Array(
-                context.viewer.camera.inverseViewMatrix
-            );
+            const civm = new Float64Array(context.viewer.camera.inverseViewMatrix);
 
             const args = { cvm: cvm, civm: civm };
             const transfer = [cvm.buffer, civm.buffer];
@@ -144,9 +142,6 @@ export class OffscreenRenderer extends BaseRenderer {
         }
 
         // Render Request
-        await CoreThreadCommand.excuteCommand(
-            this.worker,
-            CoreThreadCommands.RENDER
-        );
+        await CoreThreadCommand.excuteCommand(this.worker, CoreThreadCommands.RENDER);
     }
 }

@@ -50,12 +50,7 @@ export function randomOffset(epsilon: number = EPSILON_06) {
  * @param lon2
  * @returns
  */
-export function haversine(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-) {
+export function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
     const R = EARTH_RADIUS_METER; // metres
     const DEG2RAD = Math.PI / 180;
     const φ1 = lat1 * DEG2RAD; // φ, λ in radians
@@ -111,9 +106,7 @@ export function equalsEpsilon(
 ) {
     const absDiff = Math.abs(left - right);
     if (absDiff <= absoluteEpsilon) return true;
-    return (
-        absDiff <= relativeEpsilon * Math.max(Math.abs(left), Math.abs(right))
-    );
+    return absDiff <= relativeEpsilon * Math.max(Math.abs(left), Math.abs(right));
 }
 
 /**

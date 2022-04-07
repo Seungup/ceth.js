@@ -62,10 +62,7 @@ export namespace Cesium3Synchronization {
         wgs84: IWGS84,
         action: WGS84_ACTION = WGS84_ACTION.NONE
     ) => {
-        const matrix = await Computational.computePositionByWGS84(
-            wgs84,
-            action
-        );
+        const matrix = await Computational.computePositionByWGS84(wgs84, action);
 
         object.applyMatrix4(matrix);
 

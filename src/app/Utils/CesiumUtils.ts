@@ -25,9 +25,7 @@ export class CesiumUtils {
     static getLongitudeLatitudeByMouseEvent(event: MouseEvent) {
         this._scratchCartesian2.x = event.clientX;
         this._scratchCartesian2.y = event.clientY;
-        return CesiumUtils.getLongitudeLatitudeByLocation(
-            this._scratchCartesian2
-        );
+        return CesiumUtils.getLongitudeLatitudeByLocation(this._scratchCartesian2);
     }
 
     static getLongitudeLatitudeByLocation(position: Cesium.Cartesian2) {
@@ -37,8 +35,7 @@ export class CesiumUtils {
             const cartesian = viewer.camera.pickEllipsoid(position, ellipsoid);
 
             if (cartesian) {
-                const cartographic =
-                    ellipsoid.cartesianToCartographic(cartesian);
+                const cartographic = ellipsoid.cartesianToCartographic(cartesian);
                 return {
                     latitude: Cesium.Math.toDegrees(cartographic.latitude),
                     longitude: Cesium.Math.toDegrees(cartographic.longitude),
@@ -67,17 +64,11 @@ export class CesiumUtils {
                 position.height = 0;
             }
 
-            return CesiumUtils.flyByWGS84(
-                new CT_WGS84(position).toIWGS84(),
-                radius
-            );
+            return CesiumUtils.flyByWGS84(new CT_WGS84(position).toIWGS84(), radius);
         }
     }
 
-    static flyByWGS84(
-        position: IWGS84,
-        radius: number | undefined = undefined
-    ) {
+    static flyByWGS84(position: IWGS84, radius: number | undefined = undefined) {
         const viewer = ApplicationContext.getInstance().viewer;
         if (viewer) {
             const wgs84Position = Cesium.Cartesian3.fromDegrees(

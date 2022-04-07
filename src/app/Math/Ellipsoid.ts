@@ -1,9 +1,5 @@
 import { Vector3 } from 'three';
-import {
-    EARTH_RADIUS_X,
-    EARTH_RADIUS_Y,
-    EARTH_RADIUS_Z,
-} from '../../Constants';
+import { EARTH_RADIUS_X, EARTH_RADIUS_Y, EARTH_RADIUS_Z } from '../../Constants';
 import { Cartesian3 } from './Cartesian3';
 
 export class Ellipsoid extends Vector3 {
@@ -36,10 +32,7 @@ export class Ellipsoid extends Vector3 {
             .normalizeByMagnitude();
     }
 
-    geodeticSurfaceNormal(
-        cartesian: Cartesian3,
-        result: Cartesian3 = new Cartesian3()
-    ) {
+    geodeticSurfaceNormal(cartesian: Cartesian3, result: Cartesian3 = new Cartesian3()) {
         if (cartesian.isZero()) return;
         return result
             .copy(cartesian)

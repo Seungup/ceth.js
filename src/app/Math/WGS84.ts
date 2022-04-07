@@ -52,9 +52,7 @@ export class CT_WGS84 {
         if (atl > 1) {
             str = `${Number(atl.toFixed(1)).toLocaleString()}km`;
         } else {
-            str = `${Number(
-                this.position.height.toFixed(1)
-            ).toLocaleString()}m`;
+            str = `${Number(this.position.height.toFixed(1)).toLocaleString()}m`;
         }
         return `Lat: ${this.position.latitude}\nLon: ${this.position.longitude}\nAlt: ${str}`;
     }

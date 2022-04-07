@@ -18,12 +18,9 @@ export class WorkerDataAccessStaytagy implements DataAccessor {
         );
     }
     remove(): Promise<void> {
-        return CoreThreadCommand.excuteAPI(
-            this.wrapper,
-            'SceneComponentAPI',
-            'remove',
-            [this.id]
-        );
+        return CoreThreadCommand.excuteAPI(this.wrapper, 'SceneComponentAPI', 'remove', [
+            this.id,
+        ]);
     }
 
     setWGS84(wgs84: IWGS84, action: WGS84_ACTION = WGS84_ACTION.NONE) {
@@ -36,20 +33,14 @@ export class WorkerDataAccessStaytagy implements DataAccessor {
     }
 
     getBox3Max(): Promise<any> {
-        return CoreThreadCommand.excuteAPI(
-            this.wrapper,
-            'ObjectDataAPI',
-            'getBox3Max',
-            [this.id]
-        );
+        return CoreThreadCommand.excuteAPI(this.wrapper, 'ObjectDataAPI', 'getBox3Max', [
+            this.id,
+        ]);
     }
 
     getWGS84(): Promise<IWGS84 | undefined> {
-        return CoreThreadCommand.excuteAPI(
-            this.wrapper,
-            'ObjectDataAPI',
-            'getWGS84',
-            [this.id]
-        );
+        return CoreThreadCommand.excuteAPI(this.wrapper, 'ObjectDataAPI', 'getWGS84', [
+            this.id,
+        ]);
     }
 }

@@ -11,10 +11,7 @@ export class RendererContext {
         RendererContext.getInstance().render();
     }
 
-    private rendererMap = new Map<
-        string,
-        { renderer: RendererTemplate; use: boolean }
-    >();
+    private rendererMap = new Map<string, { renderer: RendererTemplate; use: boolean }>();
     static getInstance(): RendererContext {
         if (!RendererContext.instance) {
             RendererContext.instance = new RendererContext();

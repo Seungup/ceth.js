@@ -32,9 +32,7 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         }
 
         if (count < this._workerArray.length) {
-            throw new Error(
-                'Unable to reduce the number in the runtime environment.'
-            );
+            throw new Error('Unable to reduce the number in the runtime environment.');
         }
 
         const context = ApplicationContext.getInstance();
@@ -116,12 +114,7 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         return this.addAt(object, randInt(0, this._workerArray.length - 1));
     }
 
-    async addAt(
-        object: Object3D,
-        at: number,
-        position?: IWGS84,
-        action?: WGS84_ACTION
-    ) {
+    async addAt(object: Object3D, at: number, position?: IWGS84, action?: WGS84_ACTION) {
         if (this._workerArray.length <= at || at < 0) {
             throw new Error(`BufferFlowError : cannot access at ${at} `);
         }
