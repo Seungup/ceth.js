@@ -200,46 +200,15 @@ export namespace RendererContext {
     };
 
     /**
-     * 스킵할 프레임 개수
-     */
-    let targetSkipAnimationRequest = 0;
-    /**
-     * 스킵된 애니메이션 리퀘스트 개수
-     */
-    let currentSkipedAnimationRequest = 0;
-
-    /**
-     * 렌더 요청을 n번 받을 경우, n번째에 프레임을 렌더합니다.
-     *
-     * 0인 경우 매 프레임을 렌더하며, 1인 경우 1회 렌더 요청을 무시합니다.
-     *
-     * 프레임을 고의적으로 낮춰 렌더를 지연시킴으로,
-     * 빠른 시간안에 다량의 오브젝트를 추가하거나, 삭제, 업데이트 할 경우
-     * 성능적인 이득을 볼 수 있습니다.
-     *
-     *
-     * @param skip
-     * @default 0
-     */
-    export const setSkipFrameRequestSize = (skip: number) => {
-        targetSkipAnimationRequest = -1 > skip ? 0 : skip;
-    };
-
-    /**
      * 장면을 렌더합니다.
      *
      * 렌더러의 잠김 여부와 관계없이 동작합니다.
      */
     export const render = () => {
-        if (currentSkipedAnimationRequest >= targetSkipAnimationRequest) {
-            syncScreenRect().then(() => {
-                for (const [_, data] of rendererMap) {
-                    data.renderer.render();
-                }
-                currentSkipedAnimationRequest = 0;
-            });
-        } else {
-            currentSkipedAnimationRequest++;
-        }
+        syncScreenRect().then(() => {
+            for (const [_, { renderer }] of rendererMap) {
+                renderer.render();
+            }
+        });
     };
 }

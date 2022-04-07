@@ -12,7 +12,6 @@ export function initGUI() {
     const CSS2DObjectArray = new Array<CSS2DObject>();
 
     const API = {
-        skipFrameSize: 0,
         count: 10000,
         removeAll: () => {
             removeAllController.disable();
@@ -94,9 +93,6 @@ export function initGUI() {
     gui.add(API, 'depth', 1000, 10000).onFinishChange(() => {
         object.geometry.dispose();
         object.geometry = new THREE.BoxBufferGeometry(API.width, API.height, API.depth);
-    });
-    gui.add(API, 'skipFrameSize', 0, 60, 1).onChange(() => {
-        RendererContext.setSkipFrameRequestSize(API.skipFrameSize);
     });
     removeAllController = gui.add(API, 'removeAll');
     removeAsyncAllController = gui.add(API, 'removeAsyncAll');
