@@ -18,4 +18,4 @@ export const RendererMap = {
     MultipleOffscreenRenderer: MultipleOffscreenRenderer,
 };
 
-export type { BaseRenderer as RendererTemplate } from './renderer.template';
+export type { BaseRenderer as RendererTemplate } from '../BaseRenderer';

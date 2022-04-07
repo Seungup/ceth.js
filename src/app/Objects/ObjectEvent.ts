@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs';
-import { ApplicationContext } from '../context';
+import { ApplicationContext } from '../Context/ApplicationContext';
 
 export class ObjectEvent {
     private readonly onKeyDownSubject = new Subject<KeyboardEvent>();

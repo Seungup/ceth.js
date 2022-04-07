@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
-import { IWGS84, WGS84_ACTION } from '../../utils/math';
-import { ObjectData } from '../../utils/object-data';
-import { BaseRenderer } from './renderer.template';
-import { Cesium3Synchronization } from '../../utils/synchronization';
-import { ApplicationContext } from '../../../context';
+import { IWGS84, WGS84_ACTION } from '../../utils/Math';
+import { ObjectData } from '../../../Data/ObjectData';
+import { BaseRenderer } from '../BaseRenderer';
+import { Cesium3Synchronization } from '../../utils/Synchronization';
+import { ApplicationContext } from '../../../Context/ApplicationContext';
 
 // TODO : 단일책임의 원칙에 따라 렌더러에서는 렌더링 관련된 기능만을 수행할 수 있도록, 적절하지 않은 함수는 따로 뺄 수 있도록 변경한다,
 // TODO : 렌더러 클래스의 맴버 변수 scene, camera는 약한 관계를 갖도록 변경한다. 다자인 패턴중에서 전략 패턴을 쓰면 괜찮을 것 같다.

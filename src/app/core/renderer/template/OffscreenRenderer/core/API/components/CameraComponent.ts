@@ -1,5 +1,5 @@
 import { PerspectiveCamera } from 'three';
-import { PerspectiveCameraInitParam } from '../../../../renderer.template';
+import { PerspectiveCameraInitParam } from '../../../../../Renderer.Template';
 
 export namespace CameraComponent {
     export const perspectiveCamera = new PerspectiveCamera();

@@ -1,12 +1,10 @@
 import { Object3D } from 'three';
-import { IMetaObject } from '../..';
-import { ObjectAPI } from './object.api';
-import { isMetaObject } from '../../meta';
-import { Utils } from '../utils';
-import { WGS84_ACTION } from '../core/utils/math';
-import { RendererMap } from '../core';
-import { ApplicationContext, RendererContext } from '../context';
-import { DataAccessStrategy } from '../core/data/AccessStrategy';
+import { ObjectAPI } from './ObjectAPI';
+import { Utils } from '../Utils';
+import { WGS84_ACTION } from '../Core/utils/Math';
+import { ApplicationContext } from '../Context/ApplicationContext';
+import { RendererContext } from '../Context/RendererContext';
+import { RendererMap } from '../Core/Renderer/Template';
 
 export class ObjectPreview {
     private _attachedObjectAPI: ObjectAPI | undefined;
@@ -26,7 +24,7 @@ export class ObjectPreview {
      * @param object
      */
     async attach(
-        object: IMetaObject | Object3D,
+        object: Object3D,
         target: keyof RendererMap,
         onBeforeDetach?: { (api: ObjectAPI): Promise<void> }
     ) {
@@ -34,11 +32,9 @@ export class ObjectPreview {
         this._onBeforeDetach = onBeforeDetach;
 
         const context = RendererContext.getInstance();
-        if (object instanceof Object3D || isMetaObject(object)) {
-            const renderer = context.getRenderer(target);
-            if (renderer) {
-                this._attachedObjectAPI = await renderer.add(object.clone());
-            }
+        const renderer = context.getRenderer(target);
+        if (renderer) {
+            this._attachedObjectAPI = await renderer.add(object.clone());
         }
     }
 

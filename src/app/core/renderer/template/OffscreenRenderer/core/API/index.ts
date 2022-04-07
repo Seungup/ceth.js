@@ -11,9 +11,9 @@
  * 함수가 포함되어있을 경우 메인스레드와 워커스레드간 통신이 되지 않습니다.
  */
 
-import { CameraComponent, RendererComponent, SceneComponent } from './components';
+import { CameraComponent, RendererComponent, SceneComponent } from './Components';
 import { Graphic } from './graphic';
-import { ObjectData } from '../../../../../utils/object-data';
+import { ObjectData } from '../../../../../../Data/ObjectData';
 /**
  * API MAP
  */

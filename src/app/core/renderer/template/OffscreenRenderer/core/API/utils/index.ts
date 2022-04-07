@@ -1,1 +1,1 @@
-export * from './render-queue';
+export * from './RenderSyncer';

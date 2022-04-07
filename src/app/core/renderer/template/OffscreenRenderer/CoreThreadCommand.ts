@@ -3,8 +3,8 @@ import {
     API_MAP_APIFunctions,
     API_MAP_APIFuntionReturnType,
     API_MAP_APIKeys,
-} from './core/API';
-import { CommandReciver, CoreThreadCommands } from './core/command-reciver';
+} from './Core/API';
+import { CommandReciver, CoreThreadCommands } from './Core/CommandReciver';
 import { Remote } from 'comlink';
 
 export namespace CoreThreadCommand {

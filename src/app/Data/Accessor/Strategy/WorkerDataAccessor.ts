@@ -1,10 +1,10 @@
 import { Remote, wrap } from 'comlink';
-import { CoreThreadCommand } from '../renderer/template/OffscreenRenderer/core-thread.command';
-import { CommandReciver } from '../renderer/template/OffscreenRenderer/core/command-reciver';
-import { IWGS84, WGS84_ACTION } from '../utils';
-import { DataAccessStrategy } from './AccessStrategy';
+import { CommandReciver } from '../../../Core/Renderer/Template/OffscreenRenderer/Core/CommandReciver';
+import { CoreThreadCommand } from '../../../Core/renderer/template/OffscreenRenderer/CoreThreadCommand';
+import { IWGS84, WGS84_ACTION } from '../../../core/utils/Math';
+import { DataAccessor } from '../DataAccessor.Interface';
 
-export class WorkerDataAccessStaytagy implements DataAccessStrategy {
+export class WorkerDataAccessStaytagy implements DataAccessor {
     private readonly wrapper: Remote<CommandReciver>;
     constructor(worker: Worker, private readonly id: number) {
         this.wrapper = wrap<CommandReciver>(worker);

@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import { ApplicationContext } from '../../../context';
-import { ObjectAPI } from '../../../objects';
-import { LocalDataAccessStrategy } from '../../data/LocalDataAccessStrategy';
-import { Cesium3Synchronization } from '../../utils/synchronization';
+import { ApplicationContext } from '../../Context/ApplicationContext';
+import { LocalDataAccessStrategy } from '../../Data/Accessor/Strategy/LocalDataAccessor';
+import { ObjectAPI } from '../../Objects/ObjectAPI';
+import { Cesium3Synchronization } from '../utils/Synchronization';
 
 export interface PerspectiveCameraInitParam {
     aspect: number;

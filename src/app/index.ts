@@ -1,9 +1,8 @@
 import { Viewer } from 'cesium';
-import { ApplicationContext, RendererContext } from './context';
-import { RendererMap } from './core/renderer';
-import { Utils } from './utils';
-export * from './objects';
-export * from './core';
+import { ApplicationContext } from './Context/ApplicationContext';
+import { RendererContext } from './Context/RendererContext';
+import { RendererMap } from './Core/Renderer/Template';
+import { Utils } from './Utils';
 
 export namespace Cesium3 {
     let isInit = false;
@@ -26,10 +25,8 @@ export namespace Cesium3 {
         ...Utils,
     } as const;
 
-    export const render = () => {
-        console.time('render');
-        RendererContext.getInstance().doRender();
-        console.timeEnd('render');
+    export const render = async () => {
+        await RendererContext.getInstance().render();
         ApplicationContext.getInstance().viewer?.render();
     };
 }

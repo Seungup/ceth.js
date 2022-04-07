@@ -1,4 +1,4 @@
-import { CT_WGS84, IWGS84, WGS84_ACTION } from './math';
+import { CT_WGS84, IWGS84, WGS84_ACTION } from './Math';
 
 export class Computational {
     static async computePosition(longitude: number, latitude: number, height: number) {

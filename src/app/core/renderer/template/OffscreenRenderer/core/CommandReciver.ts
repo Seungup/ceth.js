@@ -6,9 +6,9 @@ import {
     API_MAP_APIFuntionReturnType,
     API_MAP_APIKeys,
 } from './API';
-import { CameraComponent, RendererComponent } from './API/components';
-import { Cesium3Synchronization } from '../../../../utils/synchronization';
-import { RenderQueue } from './API/utils';
+import { CameraComponent, RendererComponent, SceneComponent } from './API/Components';
+import { Cesium3Synchronization } from '../../../../utils/Synchronization';
+import { RenderSyncer } from './API/Utils';
 
 export enum CoreThreadCommands {
     RENDER,
@@ -39,7 +39,7 @@ export class CommandReciver {
         const param = data.param;
         switch (data.runCommand) {
             case CoreThreadCommands.RENDER:
-                RenderQueue.requestRender();
+                RenderSyncer.requestRender();
                 break;
             case CoreThreadCommands.INIT:
                 RendererComponent.initializationWebGLRenderer(param);

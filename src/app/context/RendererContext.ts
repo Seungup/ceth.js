@@ -1,6 +1,6 @@
-import { RendererMap, RendererTemplate } from '../core';
 import { ApplicationContext } from './ApplicationContext';
 import * as Cesium from 'cesium';
+import { RendererMap, RendererTemplate } from '../Core/Renderer/Template';
 
 export class RendererContext {
     private static instance: RendererContext;
@@ -83,13 +83,11 @@ export class RendererContext {
         this._oldHeight = height;
     }
 
-    /**
-     * 화면을 갱신합니다.
-     */
-    async doRender() {
-        await this.syncScreenRect();
-        for (const [_, renderer] of this.rendererMap) {
-            renderer.render();
-        }
+    async render() {
+        this.syncScreenRect().then(async () => {
+            for (const [_, renderer] of this.rendererMap) {
+                await renderer.render();
+            }
+        });
     }
 }

@@ -1,9 +1,11 @@
-import { Cesium3Synchronization, IWGS84, ObjectData, WGS84_ACTION } from '../utils';
-import { DataAccessStrategy } from './AccessStrategy';
+import { DataAccessor } from '../DataAccessor.Interface';
 
 import * as THREE from 'three';
+import { ObjectData } from '../../ObjectData';
+import { Cesium3Synchronization } from '../../../core/utils/Synchronization';
+import { IWGS84, WGS84_ACTION } from '../../../core/utils/Math';
 
-export class LocalDataAccessStrategy implements DataAccessStrategy {
+export class LocalDataAccessStrategy implements DataAccessor {
     private readonly scene: THREE.Scene;
     private readonly id: number;
     constructor(scene: THREE.Scene, id: number) {

@@ -1,6 +1,6 @@
 import { Cartesian2, Cartographic, Math, Viewer, Cartesian3, BoundingSphere } from 'cesium';
-import { CT_WGS84, IWGS84, WGS84_ACTION } from './core/utils/math';
-import { ObjectAPI } from './objects/object.api';
+import { CT_WGS84, IWGS84, WGS84_ACTION } from './Core/utils/Math';
+import { ObjectAPI } from './Objects/ObjectAPI';
 
 export namespace Utils {
     export const getCameraPosition = (viewer: Viewer) => {

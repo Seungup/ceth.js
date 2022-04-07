@@ -2,15 +2,15 @@ import { Matrix4 } from 'cesium';
 import { Remote, wrap } from 'comlink';
 import { Object3D } from 'three';
 import { randInt } from 'three/src/math/MathUtils';
-import { isMetaObject } from '../../../../meta';
-import { ApplicationContext } from '../../../context';
-import { ObjectAPI } from '../../../objects';
-import { WorkerDataAccessStaytagy } from '../../data/WorkerDataAccessStrategy';
-import { IWGS84, WGS84_ACTION } from '../../utils';
-import { WorkerFactory } from '../../worker.factory';
-import { CoreThreadCommand } from './OffscreenRenderer/core-thread.command';
-import { CommandReciver, CoreThreadCommands } from './OffscreenRenderer/core/command-reciver';
-import { BaseRenderer, PerspectiveCameraInitParam } from './renderer.template';
+import { disposeObject3D } from '../../utils/Cleaner';
+import { WorkerFactory } from '../../Worker.Factory';
+import { CoreThreadCommand } from './OffscreenRenderer/CoreThreadCommand';
+import { CommandReciver, CoreThreadCommands } from './OffscreenRenderer/Core/CommandReciver';
+import { BaseRenderer, PerspectiveCameraInitParam } from '../BaseRenderer';
+import { ApplicationContext } from '../../../Context/ApplicationContext';
+import { IWGS84, WGS84_ACTION } from '../../utils/Math';
+import { ObjectAPI } from '../../../Objects/ObjectAPI';
+import { WorkerDataAccessStaytagy } from '../../../Data/Accessor/Strategy/WorkerDataAccessor';
 
 export class MultipleOffscreenRenderer extends BaseRenderer {
     constructor() {
@@ -117,11 +117,7 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
             position,
             action,
         ]);
-
-        if (isMetaObject(object) && object.dispose) {
-            object.dispose();
-        }
-
+        disposeObject3D(object);
         return await new ObjectAPI(id, new WorkerDataAccessStaytagy(target.worker, id)).updateAll();
     }
 

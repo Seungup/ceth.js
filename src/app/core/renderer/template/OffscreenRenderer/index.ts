@@ -1,13 +1,13 @@
 import { Object3D } from 'three';
-import { CoreThreadCommand } from './core-thread.command';
-import { Utils } from '../../../../utils';
+import { CoreThreadCommand } from './CoreThreadCommand';
+import { Utils } from '../../../../Utils';
 import { wrap } from 'comlink';
-import { PerspectiveCameraInitParam, BaseRenderer } from '../renderer.template';
-import { CommandReciver, CoreThreadCommands } from './core/command-reciver';
-import { ApplicationContext } from '../../../../context/ApplicationContext';
-import { WorkerFactory } from '../../../worker.factory';
-import { ObjectAPI } from '../../../../objects';
-import { WorkerDataAccessStaytagy } from '../../../data/WorkerDataAccessStrategy';
+import { PerspectiveCameraInitParam, BaseRenderer } from '../../BaseRenderer';
+import { CommandReciver, CoreThreadCommands } from './Core/CommandReciver';
+import { ApplicationContext } from '../../../../Context/ApplicationContext';
+import { WorkerFactory } from '../../../Worker.Factory';
+import { ObjectAPI } from '../../../../Objects/ObjectAPI';
+import { WorkerDataAccessStaytagy } from '../../../../Data/Accessor/Strategy/WorkerDataAccessor';
 
 export class OffscreenRenderer extends BaseRenderer {
     private worker = WorkerFactory.createWorker('CommandReciver');

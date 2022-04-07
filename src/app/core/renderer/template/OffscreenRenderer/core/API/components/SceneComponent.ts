@@ -1,8 +1,8 @@
-import { Box3, Object3D, ObjectLoader, Scene } from 'three';
-import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../../../../../utils/math';
-import { isMetaObject } from '../../../../../../../../meta';
-import { Cesium3Synchronization } from '../../../../../../utils/synchronization';
-import { ObjectData } from '../../../../../../utils/object-data';
+import { Box3, Mesh, Object3D, ObjectLoader, Scene } from 'three';
+import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../../../../../utils/Math';
+import { Cesium3Synchronization } from '../../../../../../utils/Synchronization';
+import { ObjectData } from '../../../../../../../data/ObjectData';
+import { disposeObject3D } from '../../../../../../utils/Cleaner';
 
 interface IObjectCallbackFunction<T> {
     onSuccess(object: Object3D): T;
@@ -11,6 +11,7 @@ interface IObjectCallbackFunction<T> {
 
 export namespace SceneComponent {
     export const scene = new Scene();
+    const objectLoader = new ObjectLoader();
 
     function getObject<T>(id: number, cb: IObjectCallbackFunction<T>) {
         const object = scene.getObjectById(id);
@@ -27,7 +28,8 @@ export namespace SceneComponent {
         /**
          * 오브젝트의 포지션을 설정합니다.
          * @param id
-         * @param position
+         * @param wgs84
+         * @param action
          */
         export const setObjectPosition = (
             id: number | Object3D,
@@ -85,7 +87,10 @@ export namespace SceneComponent {
             wgs84?: IWGS84,
             action: WGS84_ACTION = WGS84_ACTION.NONE
         ) => {
-            const object = new ObjectLoader().parse(json);
+            const object = objectLoader.parse(json);
+            if (Object.prototype.hasOwnProperty.call(object, 'isMesh')) {
+                console.log((<Mesh>object).geometry.name);
+            }
 
             ObjectData.setBox3ByObject3D(object);
             ObjectData.setPositionRotationScaleByObject3D(object);
@@ -108,18 +113,14 @@ export namespace SceneComponent {
         export function remove(id: number) {
             getObject(id, {
                 onSuccess(object) {
-                    if (isMetaObject(object) && object.dispose) {
-                        object.dispose();
-                    }
-
+                    disposeObject3D(object);
                     scene.remove(object);
                 },
             });
         }
 
         export function isExistObject(id: number) {
-            const object = scene.getObjectById(id);
-            return !!object;
+            return !!scene.getObjectById(id);
         }
     }
 }

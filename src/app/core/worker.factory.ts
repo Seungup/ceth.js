@@ -1,5 +1,5 @@
 import { wrap, Remote } from 'comlink';
-import type { CommandReciver } from './renderer/template/OffscreenRenderer/core/command-reciver';
+import type { CommandReciver } from './Renderer/Template/OffscreenRenderer/Core/CommandReciver';
 
 interface WorkerMap {
     CommandReciver: CommandReciver;
