@@ -4,7 +4,7 @@ import { CoreThreadCommand } from '../../../Components/Renderer/Template/Offscre
 import { IWGS84, WGS84_ACTION } from '../../../Math';
 import { DataAccessor } from '../DataAccessor';
 
-export class WorkerDataAccessStaytagy implements DataAccessor {
+export class WorkerDataAccessor implements DataAccessor {
     private readonly wrapper: Remote<CommandReciver>;
     constructor(worker: Worker, private readonly id: number) {
         this.wrapper = wrap<CommandReciver>(worker);

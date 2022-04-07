@@ -2,8 +2,8 @@ import { Object3D } from 'three';
 import { ObjectAPI } from './ObjectAPI';
 import { CesiumUtils } from '../Utils/CesiumUtils';
 import { WGS84_ACTION } from '../Math';
-import { ApplicationContext } from '../Context/ApplicationContext';
-import { RendererContext } from '../Context/RendererContext';
+import { ApplicationContext } from '../Contexts/ApplicationContext';
+import { RendererContext } from '../Contexts/RendererContext';
 import { RendererMap } from '../Components/Renderer';
 
 export class ObjectPreview {

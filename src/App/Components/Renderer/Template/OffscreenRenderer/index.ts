@@ -3,10 +3,10 @@ import { CoreThreadCommand } from './CoreThreadCommand';
 import { wrap } from 'comlink';
 import { PerspectiveCameraInitParam, BaseRenderer } from '../../BaseRenderer';
 import { CommandReciver, CoreThreadCommands } from './Core/CommandReciver';
-import { ApplicationContext } from '../../../../Context/ApplicationContext';
+import { ApplicationContext } from '../../../../Contexts/ApplicationContext';
 import { WorkerFactory } from '../../../../WorkerFactory';
 import { ObjectAPI } from '../../../../Objects/ObjectAPI';
-import { WorkerDataAccessStaytagy } from '../../../../Data/Accessor/Strategy/WorkerDataAccessor';
+import { WorkerDataAccessor } from '../../../../Data/Accessor/Strategy/WorkerDataAccessor';
 import { CesiumUtils } from '../../../../Utils/CesiumUtils';
 
 export class OffscreenRenderer extends BaseRenderer {
@@ -53,7 +53,7 @@ export class OffscreenRenderer extends BaseRenderer {
             [object.toJSON()]
         );
 
-        return new ObjectAPI(id, new WorkerDataAccessStaytagy(this.worker, id));
+        return new ObjectAPI(id, new WorkerDataAccessor(this.worker, id));
     }
 
     private createCanvasElement() {

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
-import { ApplicationContext } from '../../../Context/ApplicationContext';
+import { ApplicationContext } from '../../../Contexts/ApplicationContext';
 import { IWGS84, WGS84_ACTION } from '../../../Math';
 import { Cesium3Synchronization } from '../../../Utils/Synchronization';
 import { ObjectData } from '../../../Data/ObjectData';

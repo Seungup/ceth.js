@@ -12,7 +12,7 @@ import {
 import { IWGS84 } from '../../src/App/Math';
 import { ObjectEvent } from '../../src/App/Objects/ObjectEvent';
 import { CesiumUtils } from '../../src/App/Utils/CesiumUtils';
-import { RendererContext } from '../../src/App/Context/RendererContext';
+import { RendererContext } from '../../src/App/Contexts/RendererContext';
 
 const constructorOptions: Viewer.ConstructorOptions = {
     useDefaultRenderLoop: false,

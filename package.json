@@ -10,7 +10,7 @@
     ],
     "scripts": {
         "build": "tsc",
-        "prettier": "prettier --write ./src"
+        "lint": "prettier --write ./src"
     },
     "keywords": [
         "cesium",

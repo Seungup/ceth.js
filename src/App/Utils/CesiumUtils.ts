@@ -1,5 +1,5 @@
 import * as Cesium from 'cesium';
-import { ApplicationContext } from '../Context/ApplicationContext';
+import { ApplicationContext } from '../Contexts/ApplicationContext';
 import { CT_WGS84, IWGS84 } from '../Math';
 import { ObjectAPI } from '../Objects/ObjectAPI';
 

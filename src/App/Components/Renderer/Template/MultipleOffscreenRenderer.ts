@@ -10,10 +10,10 @@ import {
     CoreThreadCommands,
 } from './OffscreenRenderer/Core/CommandReciver';
 import { BaseRenderer, PerspectiveCameraInitParam } from '../BaseRenderer';
-import { ApplicationContext } from '../../../Context/ApplicationContext';
+import { ApplicationContext } from '../../../Contexts/ApplicationContext';
 import { IWGS84, WGS84_ACTION } from '../../../Math';
 import { ObjectAPI } from '../../../Objects/ObjectAPI';
-import { WorkerDataAccessStaytagy } from '../../../Data/Accessor/Strategy/WorkerDataAccessor';
+import { WorkerDataAccessor } from '../../../Data/Accessor/Strategy/WorkerDataAccessor';
 
 export class MultipleOffscreenRenderer extends BaseRenderer {
     constructor() {
@@ -132,7 +132,7 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
 
         return await new ObjectAPI(
             id,
-            new WorkerDataAccessStaytagy(target.worker, id)
+            new WorkerDataAccessor(target.worker, id)
         ).updateAll();
     }
 

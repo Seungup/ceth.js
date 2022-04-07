@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { CameraComponent } from '../Camera/CameraComponent';
 import { SceneComponent } from '../Scene/SceneComponent';
-import { ApplicationContext } from '../../Context/ApplicationContext';
-import { LocalDataAccessStrategy } from '../../Data/Accessor/Strategy/LocalDataAccessor';
+import { ApplicationContext } from '../../Contexts/ApplicationContext';
+import { LocalDataAccessor } from '../../Data/Accessor/Strategy/LocalDataAccessor';
 import { ObjectAPI } from '../../Objects/ObjectAPI';
 import { Cesium3Synchronization } from '../../Utils/Synchronization';
 
@@ -87,7 +87,7 @@ export class BaseRenderer implements IRendererTemplate {
 
         return await new ObjectAPI(
             object.id,
-            new LocalDataAccessStrategy(scene, object.id)
+            new LocalDataAccessor(scene, object.id)
         ).updateAll();
     }
 }

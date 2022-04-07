@@ -1,6 +1,6 @@
 import { Viewer } from 'cesium';
-import { ApplicationContext } from './Context/ApplicationContext';
-import { RendererContext } from './Context/RendererContext';
+import { ApplicationContext } from './Contexts/ApplicationContext';
+import { RendererContext } from './Contexts/RendererContext';
 import { RendererMap } from './Components/Renderer';
 
 export namespace Cesium3 {

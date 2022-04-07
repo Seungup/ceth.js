@@ -5,7 +5,7 @@ import { ObjectData } from '../../ObjectData';
 import { Cesium3Synchronization } from '../../../Utils/Synchronization';
 import { IWGS84, WGS84_ACTION } from '../../../Math';
 
-export class LocalDataAccessStrategy implements DataAccessor {
+export class LocalDataAccessor implements DataAccessor {
     private readonly scene: THREE.Scene;
     private readonly id: number;
     constructor(scene: THREE.Scene, id: number) {
