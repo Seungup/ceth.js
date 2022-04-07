@@ -57,8 +57,8 @@ export namespace Cesium3Synchronization {
      * @param action
      * @returns
      */
-    export const syncObject3DPosition = async (
-        object: Object3D,
+    export const syncObject3DPosition = async <T extends Object3D>(
+        object: T,
         wgs84: IWGS84,
         action: WGS84_ACTION = WGS84_ACTION.NONE
     ) => {

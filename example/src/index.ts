@@ -33,10 +33,13 @@ const viewer = new Viewer('cesiumContainer', constructorOptions);
 Cesium3.init(viewer);
 
 const CANVAS_COUNT = navigator.hardwareConcurrency;
-// const CANVAS_COUNT = 1;
+
 {
     const renderer = Cesium3.Context.RendererContext.getInstance()
-        .addRenderer(Cesium3.Renderers.MultipleOffscreenRenderer)
+        .addRenderer(
+            Cesium3.Renderers.MultipleOffscreenRenderer,
+            Cesium3.Renderers.DOMRenderer
+        )
         .getRenderer('MultipleOffscreenRenderer')
         .makeCanvases(CANVAS_COUNT);
 
@@ -66,7 +69,11 @@ async function addObjectOnScene(
             randInt(0, CANVAS_COUNT - 1),
             wgs84
         );
-        apiArray.push(api);
+        const object2D = await RendererContext.getInstance()
+            .getRenderer('DOMRenderer')
+            .addText(`${Math.random().toFixed(10)}`, wgs84);
+
+        apiArray.push({ ObjectAPI: api, CSS2DObject: object2D });
     } catch (error) {
         console.error(error);
     }

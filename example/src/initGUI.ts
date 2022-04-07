@@ -1,16 +1,29 @@
 import GUI from 'lil-gui';
 import { BoxGeometry, DoubleSide, Mesh, MeshLambertMaterial } from 'three';
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
+import { RendererContext } from '../../src/App/Context/RendererContext';
 import { ObjectAPI } from '../../src/App/Objects/ObjectAPI';
 
 export function initGUI() {
-    const apiArray = new Array<ObjectAPI>();
+    const apiArray = new Array<{
+        ObjectAPI?: ObjectAPI;
+        CSS2DObject?: CSS2DObject;
+    }>();
 
     const API = {
         count: 2500,
         latGap: 0.05,
         removeAll: async () => {
             while (apiArray.length) {
-                await apiArray.pop().remove();
+                const object = apiArray.shift();
+                if (object.ObjectAPI) {
+                    await object.ObjectAPI.remove();
+                }
+                if (object.CSS2DObject) {
+                    RendererContext.getInstance()
+                        .getRenderer('DOMRenderer')
+                        .remove(object.CSS2DObject.id);
+                }
             }
         },
         lonGap: 0.025,
