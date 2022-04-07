@@ -20,6 +20,12 @@ export namespace WorkerRenderer {
      * 장면을 렌더링합니다.
      */
     export const render = () => {
+        /**
+         * 렌더링 전략
+         *
+         * 1. 카메라의 업데이트가 되지 않았을 경우, 렌더를 스킵한다.
+         * 2. 스킵된 프레임은 기록되며, 특정 개수 이상이 되었을 경우 1회 렌더한 후 기록된 값은 초기화한다.
+         */
         if (WebGLRendererComponent.renderer) {
             const camera = CameraComponent.perspectiveCamera;
             if (!renderBehindEarthOfObjects) {
@@ -27,10 +33,10 @@ export namespace WorkerRenderer {
                 SceneComponent.scene.traverse(_setObjectVisible);
             }
 
-            const updated = camera.userData.updated;
             if (
-                skipedFrame >= MAXIUM_SKIBBLE_FRAME_COUNT ||
-                (typeof updated === 'boolean' && updated === true)
+                (typeof camera.userData.updated === 'boolean' &&
+                    camera.userData.updated === true) ||
+                skipedFrame >= MAXIUM_SKIBBLE_FRAME_COUNT
             ) {
                 WebGLRendererComponent.renderer.render(SceneComponent.scene, camera);
                 skipedFrame = 0;
