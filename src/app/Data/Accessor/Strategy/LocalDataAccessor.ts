@@ -1,4 +1,4 @@
-import { DataAccessor } from '../DataAccessor.Interface';
+import { DataAccessor } from '../DataAccessor';
 
 import * as THREE from 'three';
 import { ObjectData } from '../../ObjectData';

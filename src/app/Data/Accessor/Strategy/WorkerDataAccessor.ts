@@ -2,7 +2,7 @@ import { Remote, wrap } from 'comlink';
 import { CommandReciver } from '../../../Core/Renderer/Template/OffscreenRenderer/Core/CommandReciver';
 import { CoreThreadCommand } from '../../../Core/renderer/template/OffscreenRenderer/CoreThreadCommand';
 import { IWGS84, WGS84_ACTION } from '../../../core/utils/Math';
-import { DataAccessor } from '../DataAccessor.Interface';
+import { DataAccessor } from '../DataAccessor';
 
 export class WorkerDataAccessStaytagy implements DataAccessor {
     private readonly wrapper: Remote<CommandReciver>;
