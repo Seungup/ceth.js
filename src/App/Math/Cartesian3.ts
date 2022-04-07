@@ -4,7 +4,7 @@ import {
     EARTH_RADIUS_X_SQURAE,
     EARTH_RADIUS_Y_SQURAE,
     EARTH_RADIUS_Z_SQURAE,
-} from '../../Constants';
+} from '../../Constant';
 
 export class Cartesian3 extends Vector3 {
     static get WGS84_RADII_SQUARED() {
