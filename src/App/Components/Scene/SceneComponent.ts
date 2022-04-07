@@ -67,13 +67,11 @@ export namespace SceneComponent {
                     object.rotation.copy(rps.rotation);
                     object.scale.copy(rps.scale);
 
-                    Cesium3Synchronization.syncObject3DPosition(
-                        object,
-                        wgs84,
-                        action
-                    ).then((result) => {
-                        ObjectData.setWGS84(result.object.id, result.wgs84);
-                    });
+                    Cesium3Synchronization.syncObject3DPosition(object, wgs84, action).then(
+                        (result) => {
+                            ObjectData.setWGS84(result.object.id, result.wgs84);
+                        }
+                    );
                 }
             }
         };

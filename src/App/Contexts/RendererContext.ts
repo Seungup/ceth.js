@@ -2,41 +2,50 @@ import { ApplicationContext } from './ApplicationContext';
 import * as Cesium from 'cesium';
 import { RendererMap, RendererTemplate } from '../Components/Renderer';
 
-export class RendererContext {
-    private static instance: RendererContext;
+export namespace RendererContext {
+    const rendererMap = new Map<string, { renderer: RendererTemplate; lock: boolean }>();
 
-    private constructor() {}
+    export const rockAll = () => {
+        rendererMap.forEach((data) => {
+            data.lock = true;
+        });
+    };
 
-    static render() {
-        RendererContext.getInstance().render();
-    }
-
-    private rendererMap = new Map<string, { renderer: RendererTemplate; use: boolean }>();
-    static getInstance(): RendererContext {
-        if (!RendererContext.instance) {
-            RendererContext.instance = new RendererContext();
+    export const lockedFunction = async (callback: { (): void | Promise<void> }) => {
+        try {
+            RendererContext.rockAll();
+            await callback();
+        } catch (_) {
+        } finally {
+            RendererContext.unlockAll();
         }
-        return RendererContext.instance;
-    }
+    };
+
+    export const unlockAll = () => {
+        rendererMap.forEach((data) => {
+            data.lock = false;
+        });
+    };
 
     /**
      * 렌더러를 추가합니다.
      * @param renderers
      * @returns
      */
-    addRenderer(...renderers: typeof RendererTemplate[]) {
+    export const addRenderer = (...renderers: typeof RendererTemplate[]) => {
         renderers.forEach((renderer) => {
-            if (this.rendererMap.has(renderer.name)) {
+            if (rendererMap.has(renderer.name)) {
                 console.error(`${renderer.name} is already exist.`);
             } else {
-                this.rendererMap.set(renderer.name, {
+                rendererMap.set(renderer.name, {
                     renderer: new renderer(),
-                    use: true,
+                    lock: false,
                 });
             }
         });
-        return this;
-    }
+
+        return RendererContext;
+    };
 
     /**
      * 렌더러를 가져옵니다.
@@ -44,53 +53,58 @@ export class RendererContext {
      * @throws
      * @returns
      */
-    getRenderer<T extends keyof RendererMap>(target: T) {
-        const result = this.rendererMap.get(target);
-        if (result && result.use) {
+    export const getRenderer = <T extends keyof RendererMap>(target: T) => {
+        const result = rendererMap.get(target);
+        if (result && !result.lock) {
             return result.renderer as RendererMap[typeof target];
         }
-    }
+    };
 
-    pauseRenderer<T extends keyof RendererMap>(target: T) {
-        const result = this.rendererMap.get(target);
+    export const lockRenderer = <T extends keyof RendererMap>(target: T) => {
+        const result = rendererMap.get(target);
         if (result) {
-            result.use = false;
+            result.lock = true;
         }
-    }
+    };
 
-    isPaused<T extends keyof RendererMap>(target: T) {
-        const result = this.rendererMap.get(target);
+    export const isLocked = <T extends keyof RendererMap>(target: T) => {
+        const result = rendererMap.get(target);
         if (result) {
-            return !result.use;
+            return result.lock;
         }
-    }
+    };
 
-    resumeRenderer<T extends keyof RendererMap>(target: T) {
-        const result = this.rendererMap.get(target);
+    export const unlockRenderer = <T extends keyof RendererMap>(target: T) => {
+        const result = rendererMap.get(target);
         if (result) {
-            result.use = true;
+            result.lock = false;
         }
-    }
+    };
 
     /**
      * 렌더러를 삭제합니다.
      * @param target
      * @returns
      */
-    removeRenderer<T extends keyof RendererMap>(target: T) {
-        return this.rendererMap.delete(target);
-    }
+    export const removeRenderer = <T extends keyof RendererMap>(target: T) => {
+        const data = rendererMap.get(target);
+        if (data) {
+            data.renderer;
+        }
 
-    private _oldWidth: number | undefined;
-    private _oldHeight: number | undefined;
-    private async syncScreenRect() {
+        return rendererMap.delete(target);
+    };
+
+    let _oldWidth: number | undefined;
+    let _oldHeight: number | undefined;
+    const syncScreenRect = async () => {
         const viewer = ApplicationContext.getInstance().viewer;
         if (!viewer) return;
 
         const width = viewer.canvas.clientWidth;
         const height = viewer.canvas.clientHeight;
 
-        if (this._oldHeight !== height || this._oldWidth !== width) {
+        if (_oldHeight !== height || _oldWidth !== width) {
             const param = {
                 fov: Cesium.Math.toDegrees(
                     (viewer.camera.frustum as Cesium.PerspectiveFrustum).fovy
@@ -100,25 +114,23 @@ export class RendererContext {
                 aspect: width / height,
             };
 
-            for (const [_, data] of this.rendererMap) {
-                if (data.use) {
-                    await data.renderer.setCamera(param);
-                    await data.renderer.setSize(width, height);
-                }
+            for (const [_, data] of rendererMap) {
+                await data.renderer.setCamera(param);
+                await data.renderer.setSize(width, height);
             }
         }
 
-        this._oldWidth = width;
-        this._oldHeight = height;
-    }
+        _oldWidth = width;
+        _oldHeight = height;
+    };
 
-    render() {
-        this.syncScreenRect().then(async () => {
-            for (const [_, data] of this.rendererMap) {
-                if (data.use) {
+    export const render = () => {
+        syncScreenRect().then(async () => {
+            for (const [_, data] of rendererMap) {
+                if (!data.lock) {
                     await data.renderer.render();
                 }
             }
         });
-    }
+    };
 }

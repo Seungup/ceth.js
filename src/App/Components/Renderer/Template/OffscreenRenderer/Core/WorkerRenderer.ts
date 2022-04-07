@@ -15,9 +15,7 @@ export namespace WorkerRenderer {
     export const render = () => {
         if (WebGLRendererComponent.renderer) {
             if (!renderBehindEarthOfObjects) {
-                normalMatrix.getNormalMatrix(
-                    CameraComponent.perspectiveCamera.matrixWorldInverse
-                );
+                normalMatrix.getNormalMatrix(CameraComponent.perspectiveCamera.matrixWorldInverse);
                 SceneComponent.scene.traverse(_setObjectVisible);
             }
 
@@ -56,10 +54,7 @@ export namespace WorkerRenderer {
             .applyMatrix4(CameraComponent.perspectiveCamera.matrixWorldInverse)
             .normalize();
 
-        dot = tempVector
-            .copy(object.position)
-            .applyMatrix3(normalMatrix)
-            .dot(cameraToPoint);
+        dot = tempVector.copy(object.position).applyMatrix3(normalMatrix).dot(cameraToPoint);
 
         object.visible = dot < 0;
     };

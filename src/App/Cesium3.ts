@@ -20,7 +20,12 @@ export namespace Cesium3 {
 
     export const Renderers = RendererMap;
 
-    export const render = async () => {
-        await RendererContext.getInstance().render();
+    let rendererContext: RendererContext | undefined = undefined;
+
+    export const render = () => {
+        if (!rendererContext) {
+            rendererContext = RendererContext.getInstance();
+        }
+        rendererContext.render();
     };
 }

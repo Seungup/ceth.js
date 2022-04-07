@@ -5,10 +5,7 @@ import { randInt } from 'three/src/math/MathUtils';
 import { disposeObject3D } from '../../../Utils/Cleaner';
 import { WorkerFactory } from '../../../WorkerFactory';
 import { CoreThreadCommand } from './OffscreenRenderer/CoreThreadCommand';
-import {
-    CommandReciver,
-    CoreThreadCommands,
-} from './OffscreenRenderer/Core/CommandReciver';
+import { CommandReciver, CoreThreadCommands } from './OffscreenRenderer/Core/CommandReciver';
 import { BaseRenderer, PerspectiveCameraInitParam } from '../BaseRenderer';
 import { ApplicationContext } from '../../../Contexts/ApplicationContext';
 import { IWGS84, WGS84_ACTION } from '../../../Math';
@@ -121,19 +118,15 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
 
         const target = this._workerArray[at];
 
-        const id = await CoreThreadCommand.excuteAPI(
-            target.wrapper,
-            'SceneComponentAPI',
-            'add',
-            [object.toJSON(), position, action]
-        );
+        const id = await CoreThreadCommand.excuteAPI(target.wrapper, 'SceneComponentAPI', 'add', [
+            object.toJSON(),
+            position,
+            action,
+        ]);
 
         disposeObject3D(object);
 
-        return await new ObjectAPI(
-            id,
-            new WorkerDataAccessor(target.worker, id)
-        ).updateAll();
+        return await new ObjectAPI(id, new WorkerDataAccessor(target.worker, id)).updateAll();
     }
 
     async render() {
@@ -144,19 +137,11 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         const inverseViewMatrix = viewer.camera.inverseViewMatrix;
 
         for (let i = 0; i < this._workerArray.length; i++) {
-            this.sendRenderRequest(
-                this._workerArray[i].worker,
-                viewMatrix,
-                inverseViewMatrix
-            );
+            this.sendRenderRequest(this._workerArray[i].worker, viewMatrix, inverseViewMatrix);
         }
     }
 
-    private sendRenderRequest(
-        target: Worker,
-        viewMatrix: Matrix4,
-        inverseViewMatrix: Matrix4
-    ) {
+    private sendRenderRequest(target: Worker, viewMatrix: Matrix4, inverseViewMatrix: Matrix4) {
         {
             const cvm = new Float64Array(viewMatrix);
             const civm = new Float64Array(inverseViewMatrix);

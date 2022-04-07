@@ -34,9 +34,6 @@ export class Ellipsoid extends Vector3 {
 
     geodeticSurfaceNormal(cartesian: Cartesian3, result: Cartesian3 = new Cartesian3()) {
         if (cartesian.isZero()) return;
-        return result
-            .copy(cartesian)
-            .multiply(this._oneOverRadiiSquared)
-            .normalizeByMagnitude();
+        return result.copy(cartesian).multiply(this._oneOverRadiiSquared).normalizeByMagnitude();
     }
 }

@@ -46,12 +46,9 @@ export class OffscreenRenderer extends BaseRenderer {
     }
 
     async add(object: Object3D) {
-        const id = await CoreThreadCommand.excuteAPI(
-            this.wrapper,
-            'SceneComponentAPI',
-            'add',
-            [object.toJSON()]
-        );
+        const id = await CoreThreadCommand.excuteAPI(this.wrapper, 'SceneComponentAPI', 'add', [
+            object.toJSON(),
+        ]);
 
         return new ObjectAPI(id, new WorkerDataAccessor(this.worker, id));
     }
@@ -86,22 +83,17 @@ export class OffscreenRenderer extends BaseRenderer {
     }
 
     async setSize(width: number, height: number) {
-        await CoreThreadCommand.excuteAPI(
-            this.wrapper,
-            'RendererComponentAPI',
-            'setSize',
-            [width, height]
-        );
+        await CoreThreadCommand.excuteAPI(this.wrapper, 'RendererComponentAPI', 'setSize', [
+            width,
+            height,
+        ]);
         return this;
     }
 
     async setCamera(param: PerspectiveCameraInitParam) {
-        await CoreThreadCommand.excuteAPI(
-            this.wrapper,
-            'CameraComponentAPI',
-            'initCamera',
-            [param]
-        );
+        await CoreThreadCommand.excuteAPI(this.wrapper, 'CameraComponentAPI', 'initCamera', [
+            param,
+        ]);
         return this;
     }
 

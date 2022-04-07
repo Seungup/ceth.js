@@ -1,62 +1,55 @@
 import GUI, { Controller } from 'lil-gui';
 import { BoxGeometry, DoubleSide, Mesh, MeshLambertMaterial } from 'three';
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
-import { RendererContext } from '../../src/App/Context/RendererContext';
+import { RendererContext } from '../../src/App/Contexts/RendererContext';
 import { ObjectAPI } from '../../src/App/Objects/ObjectAPI';
 
-let useDOMRendererController: Controller;
-let useWebGLRendererController: Controller;
+let removeAllController: Controller;
+let removeAsyncAllController: Controller;
 
 export function initGUI() {
-    const apiArray = new Array<{
-        ObjectAPI?: ObjectAPI;
-        CSS2DObject?: CSS2DObject;
-    }>();
+    const objectAPIArray = new Array<ObjectAPI>();
+    const CSS2DObjectArray = new Array<CSS2DObject>();
 
     const API = {
         count: 2500,
         latGap: 0.05,
-        removeAll: async () => {
-            const useDomRenderer: boolean = useDOMRendererController.getValue(),
-                useWebGLRenderer: boolean = useWebGLRendererController.getValue();
-
-            useDOMRendererController.disable();
-            useWebGLRendererController.disable();
-
-            const context = RendererContext.getInstance();
-
-            if (!useWebGLRenderer) {
-                context.resumeRenderer('DOMRenderer');
+        removeAll: () => {
+            removeAllController.disable();
+            removeAsyncAllController.disable();
+            const domRenderer = RendererContext.getRenderer('DOMRenderer');
+            console.time('delete');
+            while (objectAPIArray.length) {
+                objectAPIArray.pop().remove();
             }
-            if (!useDomRenderer) {
-                context.resumeRenderer('OffscreenRenderer');
-                context.resumeRenderer('MultipleOffscreenRenderer');
-            }
-
-            const domRenderer = context.getRenderer('DOMRenderer');
-
-            while (apiArray.length) {
-                const object = apiArray.pop();
-
-                if (object.ObjectAPI) {
-                    await object.ObjectAPI.remove();
-                }
-
-                if (object.CSS2DObject && domRenderer) {
-                    domRenderer.remove(object.CSS2DObject.id);
+            console.timeEnd('delete');
+            if (domRenderer) {
+                while (CSS2DObjectArray.length) {
+                    const object = CSS2DObjectArray.pop();
+                    domRenderer.remove(object.id);
                 }
             }
+            removeAsyncAllController.enable();
+            removeAllController.enable();
+        },
+        removeAsyncAll: async () => {
+            removeAllController.disable();
+            removeAsyncAllController.disable();
 
-            if (!useDomRenderer) {
-                context.pauseRenderer('DOMRenderer');
+            const domRenderer = RendererContext.getRenderer('DOMRenderer');
+            console.time('await delete');
+            while (objectAPIArray.length) {
+                await objectAPIArray.pop().remove();
             }
-            if (!useWebGLRenderer) {
-                context.pauseRenderer('OffscreenRenderer');
-                context.pauseRenderer('MultipleOffscreenRenderer');
+            console.timeEnd('await delete');
+            if (domRenderer) {
+                while (CSS2DObjectArray.length) {
+                    const object = CSS2DObjectArray.pop();
+                    domRenderer.remove(object.id);
+                }
             }
-
-            useDOMRendererController.enable();
-            useWebGLRendererController.enable();
+            removeAllController.enable();
+            removeAsyncAllController.enable();
         },
         lonGap: 0.025,
         help: () => {
@@ -65,8 +58,6 @@ export function initGUI() {
         width: 10000,
         height: 10000,
         depth: 10000,
-        useDOMRenderer: true,
-        useWebGLRenderer: true,
     };
 
     const object = new Mesh(
@@ -94,26 +85,14 @@ export function initGUI() {
         object.geometry.dispose();
         object.geometry = new BoxGeometry(API.width, API.height, API.depth);
     });
-    useDOMRendererController = gui.add(API, 'useDOMRenderer');
-    useDOMRendererController.onChange(() => {
-        if (API.useDOMRenderer) {
-            RendererContext.getInstance().resumeRenderer('DOMRenderer');
-        } else {
-            RendererContext.getInstance().pauseRenderer('DOMRenderer');
-        }
-    });
-    useWebGLRendererController = gui.add(API, 'useWebGLRenderer');
-    useWebGLRendererController.onChange(() => {
-        if (API.useWebGLRenderer) {
-            RendererContext.getInstance().resumeRenderer('MultipleOffscreenRenderer');
-            RendererContext.getInstance().resumeRenderer('OffscreenRenderer');
-        } else {
-            RendererContext.getInstance().pauseRenderer('MultipleOffscreenRenderer');
-            RendererContext.getInstance().pauseRenderer('OffscreenRenderer');
-        }
-    });
-    gui.add(API, 'removeAll');
+    removeAllController = gui.add(API, 'removeAll');
+    removeAsyncAllController = gui.add(API, 'removeAsyncAll');
     gui.add(API, 'help');
 
-    return { API: API, object: object, apiArray: apiArray };
+    return {
+        API: API,
+        object: object,
+        objectAPIArray: objectAPIArray,
+        CSS2DObjectArray: CSS2DObjectArray,
+    };
 }

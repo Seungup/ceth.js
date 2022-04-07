@@ -17,10 +17,7 @@ export class DOMRenderer extends BaseRenderer {
         this.renderer = new CSS2DRenderer();
         const context = ApplicationContext.getInstance();
         if (context.viewer) {
-            this.renderer.setSize(
-                context.viewer.canvas.width,
-                context.viewer.canvas.height
-            );
+            this.renderer.setSize(context.viewer.canvas.width, context.viewer.canvas.height);
         }
         this.renderer.domElement.style.position = 'absolute';
         this.renderer.domElement.style.top = '0px';
@@ -48,11 +45,9 @@ export class DOMRenderer extends BaseRenderer {
 
         ObjectData.setPositionRotationScaleByObject3D(object);
         const scene = SceneComponent.scene;
-        Cesium3Synchronization.syncObject3DPosition(object, wgs84, action).then(
-            (result) => {
-                scene.add(result.object);
-            }
-        );
+        Cesium3Synchronization.syncObject3DPosition(object, wgs84, action).then((result) => {
+            scene.add(result.object);
+        });
 
         return object;
     }
@@ -77,11 +72,7 @@ export class DOMRenderer extends BaseRenderer {
                 object.rotation.copy(prs.rotation);
                 object.scale.copy(prs.scale);
             }
-            await Cesium3Synchronization.syncObject3DPosition(
-                object,
-                position,
-                positionAction
-            );
+            await Cesium3Synchronization.syncObject3DPosition(object, position, positionAction);
         }
     }
 

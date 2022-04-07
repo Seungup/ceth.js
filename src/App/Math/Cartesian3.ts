@@ -8,11 +8,7 @@ import {
 
 export class Cartesian3 extends Vector3 {
     static get WGS84_RADII_SQUARED() {
-        return new Cartesian3(
-            EARTH_RADIUS_X_SQURAE,
-            EARTH_RADIUS_Y_SQURAE,
-            EARTH_RADIUS_Z_SQURAE
-        );
+        return new Cartesian3(EARTH_RADIUS_X_SQURAE, EARTH_RADIUS_Y_SQURAE, EARTH_RADIUS_Z_SQURAE);
     }
 
     static get UINT_X() {

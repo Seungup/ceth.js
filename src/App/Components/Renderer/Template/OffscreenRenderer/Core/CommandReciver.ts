@@ -32,9 +32,7 @@ export type API_MAP_APIFunctionArgs<
 export type API_MAP_APIFuntionReturnType<
     K extends API_MAP_APIKeys,
     V extends API_MAP_APIFunctions<K>
-> = API_MAP_APIFuntion<K, V> extends (...args: any) => infer returnType
-    ? returnType
-    : any;
+> = API_MAP_APIFuntion<K, V> extends (...args: any) => infer returnType ? returnType : any;
 
 export enum CoreThreadCommands {
     RENDER,

@@ -4,11 +4,7 @@ import { Cartesian3 } from '.';
 export class Quaternion extends Vector4 {
     private static _fromAxisAngleScratch = new Cartesian3();
 
-    static fromAxisAngle(
-        aixs: Cartesian3,
-        angle: number,
-        result: Quaternion = new Quaternion()
-    ) {
+    static fromAxisAngle(aixs: Cartesian3, angle: number, result: Quaternion = new Quaternion()) {
         const halfAngle = angle / 2.0;
 
         const halfAnlgOfSin = Math.sin(halfAngle);
@@ -40,11 +36,7 @@ export class Quaternion extends Vector4 {
             this._scratchHPRQuaternion
         );
 
-        result = this.fromAxisAngle(
-            Cartesian3.UINT_Y,
-            pitch,
-            this._scratchPitchQuaternion
-        );
+        result = this.fromAxisAngle(Cartesian3.UINT_Y, pitch, this._scratchPitchQuaternion);
 
         this._scratchPitchQuaternion.multiply(this._scratchRollQuaternion);
 
@@ -54,8 +46,6 @@ export class Quaternion extends Vector4 {
             this._scratchHPRQuaternion
         );
 
-        return result.copy(
-            new Quaternion().copy(this._scratchHeadingQuaternion).multiply(result)
-        );
+        return result.copy(new Quaternion().copy(this._scratchHeadingQuaternion).multiply(result));
     }
 }

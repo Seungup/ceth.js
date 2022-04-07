@@ -85,9 +85,6 @@ export class BaseRenderer implements IRendererTemplate {
         const scene = SceneComponent.scene;
         scene.add(object);
 
-        return await new ObjectAPI(
-            object.id,
-            new LocalDataAccessor(scene, object.id)
-        ).updateAll();
+        return await new ObjectAPI(object.id, new LocalDataAccessor(scene, object.id)).updateAll();
     }
 }

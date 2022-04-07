@@ -8,10 +8,7 @@ export class CesiumUtils {
         const viewer = ApplicationContext.getInstance().viewer;
         if (viewer) {
             const result = new Cesium.Cartographic();
-            viewer.scene.globe.ellipsoid.cartesianToCartographic(
-                viewer.camera.positionWC,
-                result
-            );
+            viewer.scene.globe.ellipsoid.cartesianToCartographic(viewer.camera.positionWC, result);
             return {
                 longitude: Cesium.Math.toDegrees(result.longitude),
                 latitude: Cesium.Math.toDegrees(result.latitude),
@@ -77,9 +74,7 @@ export class CesiumUtils {
                 position.height
             );
 
-            viewer.camera.flyToBoundingSphere(
-                new Cesium.BoundingSphere(wgs84Position, radius)
-            );
+            viewer.camera.flyToBoundingSphere(new Cesium.BoundingSphere(wgs84Position, radius));
         }
     }
 }

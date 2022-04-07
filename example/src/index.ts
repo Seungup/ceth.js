@@ -5,10 +5,7 @@ import './css/main.css';
 import { randInt } from 'three/src/math/MathUtils';
 import { initGUI } from './initGUI';
 import { MeshLambertMaterial } from 'three';
-import {
-    DOMRenderer,
-    MultipleOffscreenRenderer,
-} from '../../src/App/Components/Renderer';
+import { DOMRenderer, MultipleOffscreenRenderer } from '../../src/App/Components/Renderer';
 import { IWGS84 } from '../../src/App/Math';
 import { ObjectEvent } from '../../src/App/Objects/ObjectEvent';
 import { CesiumUtils } from '../../src/App/Utils/CesiumUtils';
@@ -38,11 +35,8 @@ Cesium3.init(viewer);
 const CANVAS_COUNT = navigator.hardwareConcurrency;
 
 {
-    const renderer = Cesium3.Context.RendererContext.getInstance()
-        .addRenderer(
-            Cesium3.Renderers.MultipleOffscreenRenderer,
-            Cesium3.Renderers.DOMRenderer
-        )
+    const renderer = RendererContext.addRenderer(MultipleOffscreenRenderer)
+        // .addRenderer(DOMRenderer)
         .getRenderer('MultipleOffscreenRenderer')
         .makeCanvases(CANVAS_COUNT);
 
@@ -57,58 +51,49 @@ const CANVAS_COUNT = navigator.hardwareConcurrency;
     requestAnimationFrame(animation);
 })();
 
-const { API, object, apiArray } = initGUI();
+const { API, object, objectAPIArray, CSS2DObjectArray } = initGUI();
 
 (<MeshLambertMaterial>object.material).onBeforeCompile;
 
 async function addObjectOnScene(
     object: THREE.Object3D,
     wgs84: IWGS84,
-    multipleOffscreenRenderer?: MultipleOffscreenRenderer,
-    domRenderer?: DOMRenderer
+    multipleOffscreenRenderer?: MultipleOffscreenRenderer | undefined,
+    domRenderer?: DOMRenderer | undefined
 ) {
     try {
-        apiArray.push({
-            ObjectAPI: await multipleOffscreenRenderer?.addAt(
-                object,
-                randInt(0, CANVAS_COUNT - 1),
-                wgs84
-            ),
-            CSS2DObject: await domRenderer?.addText(
-                `${Math.random().toFixed(10)}`,
-                wgs84
-            ),
-        });
+        if (multipleOffscreenRenderer) {
+            objectAPIArray.push(
+                await multipleOffscreenRenderer.addAt(object, randInt(0, CANVAS_COUNT - 1), wgs84)
+            );
+        }
+        if (domRenderer) {
+            CSS2DObjectArray.push(await domRenderer.addText(`${Math.random().toFixed(10)}`, wgs84));
+        }
     } catch (error) {
         console.error(error);
     }
 }
 
-new ObjectEvent().onContextMenu.subscribe((event) => {
-    (async () => {
-        const posiiton = CesiumUtils.getLongitudeLatitudeByMouseEvent(event);
-        const count = API.count;
+async function addObject(posiiton: { latitude: number; longitude: number }) {
+    const count = API.count;
 
-        const context = RendererContext.getInstance();
-
-        const multipleOffscreenRenderer = context.getRenderer(
-            'MultipleOffscreenRenderer'
+    for (let i = 0; i < count; i++) {
+        await addObjectOnScene(
+            object.clone(),
+            {
+                height: 0,
+                latitude: posiiton.latitude,
+                longitude: posiiton.longitude,
+            },
+            RendererContext.getRenderer('MultipleOffscreenRenderer'),
+            RendererContext.getRenderer('DOMRenderer')
         );
-        const domRenderer = context.getRenderer('DOMRenderer');
+        posiiton.latitude += API.latGap;
+        posiiton.longitude += API.lonGap;
+    }
+}
 
-        for (let i = 0; i < count; i++) {
-            await addObjectOnScene(
-                object.clone(),
-                {
-                    height: 0,
-                    latitude: posiiton.latitude,
-                    longitude: posiiton.longitude,
-                },
-                multipleOffscreenRenderer,
-                domRenderer
-            );
-            posiiton.latitude += API.latGap;
-            posiiton.longitude += API.lonGap;
-        }
-    })();
+new ObjectEvent().onContextMenu.subscribe(async (event) => {
+    await addObject(CesiumUtils.getLongitudeLatitudeByMouseEvent(event));
 });

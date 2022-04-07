@@ -12,10 +12,7 @@ export class ObjectPreview {
         const context = ApplicationContext.getInstance();
 
         if (context.viewer) {
-            context.viewer.canvas.addEventListener(
-                'pointermove',
-                this._onMouseEvent.bind(this)
-            );
+            context.viewer.canvas.addEventListener('pointermove', this._onMouseEvent.bind(this));
         }
     }
 
@@ -82,10 +79,7 @@ export class ObjectPreview {
         const position = CesiumUtils.getLongitudeLatitudeByMouseEvent(event);
 
         if (position) {
-            this._attachedObjectAPI.setPosition(
-                { ...position, height: 0 },
-                WGS84_ACTION.NONE
-            );
+            this._attachedObjectAPI.setPosition({ ...position, height: 0 }, WGS84_ACTION.NONE);
         }
     }
 }
