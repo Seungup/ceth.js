@@ -5,7 +5,10 @@ import './css/main.css';
 import { randInt } from 'three/src/math/MathUtils';
 import { initGUI } from './initGUI';
 import { MeshLambertMaterial } from 'three';
-import { MultipleOffscreenRenderer } from '../../src/App/Components/Renderer';
+import {
+    DOMRenderer,
+    MultipleOffscreenRenderer,
+} from '../../src/App/Components/Renderer';
 import { IWGS84 } from '../../src/App/Math';
 import { ObjectEvent } from '../../src/App/Objects/ObjectEvent';
 import { CesiumUtils } from '../../src/App/Utils/CesiumUtils';
@@ -59,21 +62,23 @@ const { API, object, apiArray } = initGUI();
 (<MeshLambertMaterial>object.material).onBeforeCompile;
 
 async function addObjectOnScene(
-    renderer: MultipleOffscreenRenderer,
     object: THREE.Object3D,
-    wgs84: IWGS84
+    wgs84: IWGS84,
+    multipleOffscreenRenderer?: MultipleOffscreenRenderer,
+    domRenderer?: DOMRenderer
 ) {
     try {
-        const api = await renderer.addAt(
-            object,
-            randInt(0, CANVAS_COUNT - 1),
-            wgs84
-        );
-        const object2D = await RendererContext.getInstance()
-            .getRenderer('DOMRenderer')
-            .addText(`${Math.random().toFixed(10)}`, wgs84);
-
-        apiArray.push({ ObjectAPI: api, CSS2DObject: object2D });
+        apiArray.push({
+            ObjectAPI: await multipleOffscreenRenderer?.addAt(
+                object,
+                randInt(0, CANVAS_COUNT - 1),
+                wgs84
+            ),
+            CSS2DObject: await domRenderer?.addText(
+                `${Math.random().toFixed(10)}`,
+                wgs84
+            ),
+        });
     } catch (error) {
         console.error(error);
     }
@@ -83,15 +88,25 @@ new ObjectEvent().onContextMenu.subscribe((event) => {
     (async () => {
         const posiiton = CesiumUtils.getLongitudeLatitudeByMouseEvent(event);
         const count = API.count;
-        const renderer = RendererContext.getInstance().getRenderer(
+
+        const context = RendererContext.getInstance();
+
+        const multipleOffscreenRenderer = context.getRenderer(
             'MultipleOffscreenRenderer'
         );
+        const domRenderer = context.getRenderer('DOMRenderer');
+
         for (let i = 0; i < count; i++) {
-            await addObjectOnScene(renderer, object.clone(), {
-                height: 0,
-                latitude: posiiton.latitude,
-                longitude: posiiton.longitude,
-            });
+            await addObjectOnScene(
+                object.clone(),
+                {
+                    height: 0,
+                    latitude: posiiton.latitude,
+                    longitude: posiiton.longitude,
+                },
+                multipleOffscreenRenderer,
+                domRenderer
+            );
             posiiton.latitude += API.latGap;
             posiiton.longitude += API.lonGap;
         }

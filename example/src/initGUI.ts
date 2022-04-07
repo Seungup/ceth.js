@@ -1,8 +1,11 @@
-import GUI from 'lil-gui';
+import GUI, { Controller } from 'lil-gui';
 import { BoxGeometry, DoubleSide, Mesh, MeshLambertMaterial } from 'three';
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
 import { RendererContext } from '../../src/App/Context/RendererContext';
 import { ObjectAPI } from '../../src/App/Objects/ObjectAPI';
+
+let useDOMRendererController: Controller;
+let useWebGLRendererController: Controller;
 
 export function initGUI() {
     const apiArray = new Array<{
@@ -14,17 +17,46 @@ export function initGUI() {
         count: 2500,
         latGap: 0.05,
         removeAll: async () => {
+            const useDomRenderer: boolean = useDOMRendererController.getValue(),
+                useWebGLRenderer: boolean = useWebGLRendererController.getValue();
+
+            useDOMRendererController.disable();
+            useWebGLRendererController.disable();
+
+            const context = RendererContext.getInstance();
+
+            if (!useWebGLRenderer) {
+                context.resumeRenderer('DOMRenderer');
+            }
+            if (!useDomRenderer) {
+                context.resumeRenderer('OffscreenRenderer');
+                context.resumeRenderer('MultipleOffscreenRenderer');
+            }
+
+            const domRenderer = context.getRenderer('DOMRenderer');
+
             while (apiArray.length) {
-                const object = apiArray.shift();
+                const object = apiArray.pop();
+
                 if (object.ObjectAPI) {
                     await object.ObjectAPI.remove();
                 }
-                if (object.CSS2DObject) {
-                    RendererContext.getInstance()
-                        .getRenderer('DOMRenderer')
-                        .remove(object.CSS2DObject.id);
+
+                if (object.CSS2DObject && domRenderer) {
+                    domRenderer.remove(object.CSS2DObject.id);
                 }
             }
+
+            if (!useDomRenderer) {
+                context.pauseRenderer('DOMRenderer');
+            }
+            if (!useWebGLRenderer) {
+                context.pauseRenderer('OffscreenRenderer');
+                context.pauseRenderer('MultipleOffscreenRenderer');
+            }
+
+            useDOMRendererController.enable();
+            useWebGLRendererController.enable();
         },
         lonGap: 0.025,
         help: () => {
@@ -33,6 +65,8 @@ export function initGUI() {
         width: 10000,
         height: 10000,
         depth: 10000,
+        useDOMRenderer: true,
+        useWebGLRenderer: true,
     };
 
     const object = new Mesh(
@@ -59,6 +93,24 @@ export function initGUI() {
     gui.add(API, 'depth', 1000, 10000).onFinishChange(() => {
         object.geometry.dispose();
         object.geometry = new BoxGeometry(API.width, API.height, API.depth);
+    });
+    useDOMRendererController = gui.add(API, 'useDOMRenderer');
+    useDOMRendererController.onChange(() => {
+        if (API.useDOMRenderer) {
+            RendererContext.getInstance().resumeRenderer('DOMRenderer');
+        } else {
+            RendererContext.getInstance().pauseRenderer('DOMRenderer');
+        }
+    });
+    useWebGLRendererController = gui.add(API, 'useWebGLRenderer');
+    useWebGLRendererController.onChange(() => {
+        if (API.useWebGLRenderer) {
+            RendererContext.getInstance().resumeRenderer('MultipleOffscreenRenderer');
+            RendererContext.getInstance().resumeRenderer('OffscreenRenderer');
+        } else {
+            RendererContext.getInstance().pauseRenderer('MultipleOffscreenRenderer');
+            RendererContext.getInstance().pauseRenderer('OffscreenRenderer');
+        }
     });
     gui.add(API, 'removeAll');
     gui.add(API, 'help');

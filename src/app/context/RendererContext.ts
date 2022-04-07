@@ -11,7 +11,10 @@ export class RendererContext {
         RendererContext.getInstance().render();
     }
 
-    private rendererMap = new Map<string, RendererTemplate>();
+    private rendererMap = new Map<
+        string,
+        { renderer: RendererTemplate; use: boolean }
+    >();
     static getInstance(): RendererContext {
         if (!RendererContext.instance) {
             RendererContext.instance = new RendererContext();
@@ -29,7 +32,10 @@ export class RendererContext {
             if (this.rendererMap.has(renderer.name)) {
                 console.error(`${renderer.name} is already exist.`);
             } else {
-                this.rendererMap.set(renderer.name, new renderer());
+                this.rendererMap.set(renderer.name, {
+                    renderer: new renderer(),
+                    use: true,
+                });
             }
         });
         return this;
@@ -42,11 +48,31 @@ export class RendererContext {
      * @returns
      */
     getRenderer<T extends keyof RendererMap>(target: T) {
-        const renderer = this.rendererMap.get(target);
-        if (renderer) {
-            return renderer as RendererMap[typeof target];
+        const result = this.rendererMap.get(target);
+        if (result && result.use) {
+            return result.renderer as RendererMap[typeof target];
         }
-        throw new Error(`${target} is not exist on RenderMap.`);
+    }
+
+    pauseRenderer<T extends keyof RendererMap>(target: T) {
+        const result = this.rendererMap.get(target);
+        if (result) {
+            result.use = false;
+        }
+    }
+
+    isPaused<T extends keyof RendererMap>(target: T) {
+        const result = this.rendererMap.get(target);
+        if (result) {
+            return !result.use;
+        }
+    }
+
+    resumeRenderer<T extends keyof RendererMap>(target: T) {
+        const result = this.rendererMap.get(target);
+        if (result) {
+            result.use = true;
+        }
     }
 
     /**
@@ -77,9 +103,11 @@ export class RendererContext {
                 aspect: width / height,
             };
 
-            for (const [_, renderer] of this.rendererMap) {
-                await renderer.setCamera(param);
-                await renderer.setSize(width, height);
+            for (const [_, data] of this.rendererMap) {
+                if (data.use) {
+                    await data.renderer.setCamera(param);
+                    await data.renderer.setSize(width, height);
+                }
             }
         }
 
@@ -89,8 +117,10 @@ export class RendererContext {
 
     render() {
         this.syncScreenRect().then(async () => {
-            for (const [_, renderer] of this.rendererMap) {
-                await renderer.render();
+            for (const [_, data] of this.rendererMap) {
+                if (data.use) {
+                    await data.renderer.render();
+                }
             }
         });
     }
