@@ -4,7 +4,7 @@ import { WebGLRendererComponent } from '../../WebGLRenderer';
 import { SceneComponent } from '../../../../Scene/SceneComponent';
 export namespace WorkerRenderer {
     // 지구 뒷편 오브젝트 렌더링 여부
-    let renderBehindEarthOfObjects: boolean = true;
+    let renderBehindEarthOfObjects: boolean = false;
 
     const normalMatrix = new Matrix3();
     const tempVector = new Vector3();
