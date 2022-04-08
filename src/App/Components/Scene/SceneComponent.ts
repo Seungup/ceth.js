@@ -1,8 +1,11 @@
-import { Box3, Object3D, ObjectLoader, Scene } from 'three';
+import { Box3, BufferGeometry, Material, Object3D, ObjectLoader, Scene } from 'three';
 import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../Math';
 import { Cesium3Synchronization } from '../../Utils/Synchronization';
 import { ObjectData } from '../../data/ObjectData';
 import { disposeObject3D } from '../../Utils/Cleaner';
+import { Manager } from '../../Managers/Manager';
+import { InstancedManager } from '../../Managers/Strategy/InstancedManager';
+import { Visibility } from 'cesium';
 
 interface IObjectCallbackFunction<T> {
     onSuccess(object: Object3D): T;
@@ -76,10 +79,16 @@ export namespace SceneComponent {
             }
         };
 
+        interface IObject extends Object3D {
+            geometry: BufferGeometry;
+            material: Material | Material[];
+        }
+
         /**
          * 오브젝트를 추가합니다.
          * @param json
-         * @param position
+         * @param wgs84
+         * @param action
          * @returns
          */
         export const add = async (
@@ -102,6 +111,90 @@ export namespace SceneComponent {
 
             return object.id;
         };
+
+        /**
+         *
+         * @param json
+         * @param wgs84
+         * @param action
+         */
+        export function dynamicAppend(
+            json: any,
+            wgs84: IWGS84,
+            action: WGS84_ACTION = WGS84_ACTION.NONE,
+            visibility: boolean = true
+        ) {
+            const original = objectLoader.parse(json) as unknown as IObject;
+
+            const managerAccessKey = Manager.getManagerAccessKey(
+                original.geometry,
+                original.material
+            );
+
+            let manager = Manager.getClass<InstancedManager>(managerAccessKey);
+
+            if (!manager) {
+                manager = new InstancedManager(
+                    {
+                        geomtery: original.geometry,
+                        material: original.material,
+                        maxCount: 1000000,
+                    },
+                    SceneComponent.scene
+                );
+                Manager.registClass(manager);
+            }
+
+            const position = new CT_WGS84(wgs84, action);
+
+            const objectId = manager.add(position.getMatrix4(), visibility, {
+                wgs84: position.toIWGS84(),
+            });
+
+            return {
+                managerAccessKey: managerAccessKey,
+                objectId: objectId,
+            };
+        }
+
+        export function getDynamicPosition(
+            managerAccessKey: string,
+            objectId: number
+        ): IWGS84 | undefined {
+            let manager = Manager.getClass<InstancedManager>(managerAccessKey);
+
+            if (manager) {
+                return manager.getUserData(objectId)?.wgs84;
+            }
+        }
+
+        export function dynamicUpdate(
+            managerAccessKey: string,
+            objectId: number,
+            wgs84: IWGS84,
+            action: WGS84_ACTION = WGS84_ACTION.NONE
+        ) {
+            let manager = Manager.getClass(managerAccessKey);
+            if (manager) {
+                if (manager.delete(objectId)) {
+                    manager.add(new CT_WGS84(wgs84, action).getMatrix4());
+                }
+            }
+        }
+
+        export function dynamicDelete(managerAccessKey: string, objectId: number) {
+            let manager = Manager.getClass(managerAccessKey);
+            if (manager) {
+                manager.delete(objectId);
+            }
+        }
+
+        export function dynamicVisible(managerAccessKey: string, id: number, visible: boolean) {
+            let manager = Manager.getClass(managerAccessKey);
+            if (manager) {
+                manager.setVisibiltiy(id, visible);
+            }
+        }
 
         /**
          * 오브젝트를 제거합니다.

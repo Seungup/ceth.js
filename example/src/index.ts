@@ -4,12 +4,11 @@ import { Cesium3 } from '../../src/App/Cesium3';
 import './css/main.css';
 import { randInt } from 'three/src/math/MathUtils';
 import { initGUI } from './initGUI';
-import { MeshLambertMaterial } from 'three';
-import { DOMRenderer, MultipleOffscreenRenderer } from '../../src/App/Components/Renderer';
-import { IWGS84 } from '../../src/App/Math';
 import { ObjectEvent } from '../../src/App/Objects/ObjectEvent';
 import { CesiumUtils } from '../../src/App/Utils/CesiumUtils';
 import { RendererContext } from '../../src/App/Contexts/RendererContext';
+import { MultipleOffscreenRenderer } from '../../src/App/Components/Renderer';
+import { WGS84_ACTION } from '../../src/App/Math';
 
 const constructorOptions: Viewer.ConstructorOptions = {
     useDefaultRenderLoop: false,
@@ -51,40 +50,20 @@ const CANVAS_COUNT = navigator.hardwareConcurrency - 1; // without main thread
     requestAnimationFrame(animation);
 })();
 
-const { API, object, objectAPIArray, CSS2DObjectArray } = initGUI();
-
-async function addObjectOnScene(
-    object: THREE.Object3D,
-    wgs84: IWGS84,
-    multipleOffscreenRenderer?: MultipleOffscreenRenderer | undefined,
-    domRenderer?: DOMRenderer | undefined
-) {
-    try {
-        if (multipleOffscreenRenderer) {
-            objectAPIArray.push(
-                await multipleOffscreenRenderer.addAt(object, randInt(0, CANVAS_COUNT - 1), wgs84)
-            );
-        }
-        if (domRenderer) {
-            CSS2DObjectArray.push(await domRenderer.addText(`${Math.random().toFixed(10)}`, wgs84));
-        }
-    } catch (error) {
-        console.error(error);
-    }
-}
+const { API, object, objectAPIArray } = initGUI();
 
 async function addObject(posiiton: { latitude: number; longitude: number }) {
     const count = API.count;
     for (let i = 0; i < count; i++) {
-        await addObjectOnScene(
+        console.log(`${i}/${count}`);
+        const api = await RendererContext.getRenderer('MultipleOffscreenRenderer').dynamicAppend(
             object.clone(),
-            {
-                height: 0,
-                ...posiiton,
-            },
-            RendererContext.getRenderer('MultipleOffscreenRenderer'),
-            RendererContext.getRenderer('DOMRenderer')
+            randInt(0, CANVAS_COUNT - 1),
+            { height: 0, latitude: posiiton.latitude, longitude: posiiton.longitude },
+            WGS84_ACTION.NONE,
+            true
         );
+        objectAPIArray.push(api);
         posiiton.latitude += API.latGap;
         posiiton.longitude += API.lonGap;
     }

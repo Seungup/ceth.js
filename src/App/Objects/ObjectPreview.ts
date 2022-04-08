@@ -31,8 +31,7 @@ export class ObjectPreview {
         this.detach();
         this._onBeforeDetach = onBeforeDetach;
 
-        const context = RendererContext.getInstance();
-        const renderer = context.getRenderer(target);
+        const renderer = RendererContext.getRenderer(target);
         if (renderer) {
             this._attachedObjectAPI = await renderer.add(object.clone());
         }

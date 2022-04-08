@@ -4,7 +4,6 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
 import { RendererContext } from '../../src/App/Contexts/RendererContext';
 import { ObjectAPI } from '../../src/App/Objects/ObjectAPI';
 
-let removeAllController: Controller;
 let removeAsyncAllController: Controller;
 
 export function initGUI() {
@@ -12,32 +11,8 @@ export function initGUI() {
     const CSS2DObjectArray = new Array<CSS2DObject>();
 
     const API = {
-        count: 10000,
-        removeAll: () => {
-            removeAllController.disable();
-            removeAsyncAllController.disable();
-            const domRenderer = RendererContext.getRenderer('DOMRenderer');
-
-            console.time('delete api');
-            while (objectAPIArray.length) {
-                objectAPIArray.pop().remove();
-            }
-            console.timeEnd('delete api');
-
-            if (domRenderer) {
-                console.time('delete dom');
-                while (CSS2DObjectArray.length) {
-                    const object = CSS2DObjectArray.pop();
-                    domRenderer.remove(object.id);
-                }
-                console.timeEnd('delete dom');
-            }
-
-            removeAsyncAllController.enable();
-            removeAllController.enable();
-        },
+        count: 10_000,
         removeAsyncAll: async () => {
-            removeAllController.disable();
             removeAsyncAllController.disable();
 
             const domRenderer = RendererContext.getRenderer('DOMRenderer');
@@ -56,7 +31,6 @@ export function initGUI() {
                 }
                 console.timeEnd('delete dom');
             }
-            removeAllController.enable();
             removeAsyncAllController.enable();
         },
         lonGap: 0.05,
@@ -79,7 +53,7 @@ export function initGUI() {
     gui.domElement.style.top = '2px';
     gui.domElement.style.left = '2px';
     document.body.appendChild(gui.domElement);
-    gui.add(API, 'count', 1, 50000, 1);
+    gui.add(API, 'count', 1, 5_000_000, 1);
     gui.add(API, 'latGap', 0.001, 0.1, 0.001);
     gui.add(API, 'lonGap', 0.001, 0.1, 0.001);
     gui.add(API, 'width', 1000, 10000).onFinishChange(() => {
@@ -94,7 +68,6 @@ export function initGUI() {
         object.geometry.dispose();
         object.geometry = new THREE.BoxBufferGeometry(API.width, API.height, API.depth);
     });
-    removeAllController = gui.add(API, 'removeAll');
     removeAsyncAllController = gui.add(API, 'removeAsyncAll');
     gui.add(API, 'help');
 

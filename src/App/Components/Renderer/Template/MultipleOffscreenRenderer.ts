@@ -11,6 +11,7 @@ import { ApplicationContext } from '../../../Contexts/ApplicationContext';
 import { IWGS84, WGS84_ACTION } from '../../../Math';
 import { ObjectAPI } from '../../../Objects/ObjectAPI';
 import { WorkerDataAccessor } from '../../../Data/Accessor/Strategy/WorkerDataAccessor';
+import { InstanceDataAccessor } from '../../../Data/Accessor/Strategy/InstanceDataAccessor';
 
 export class MultipleOffscreenRenderer extends BaseRenderer {
     constructor() {
@@ -109,6 +110,34 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
 
     async add(object: Object3D) {
         return this.addAt(object, randInt(0, this._workerArray.length - 1));
+    }
+
+    async dynamicAppend(
+        object: Object3D,
+        at: number,
+        wgs84: IWGS84,
+        action?: WGS84_ACTION,
+        visibility: boolean = true
+    ) {
+        if (this._workerArray.length <= at || at < 0) {
+            throw new Error(`BufferFlowError : cannot access at ${at} `);
+        }
+
+        const target = this._workerArray[at];
+
+        const result = await CoreThreadCommand.excuteAPI(
+            target.wrapper,
+            'SceneComponentAPI',
+            'dynamicAppend',
+            [object.toJSON(), wgs84, action, visibility]
+        );
+
+        disposeObject3D(object);
+
+        return await new ObjectAPI(
+            result.objectId,
+            new InstanceDataAccessor(target.worker, result.managerAccessKey, result.objectId)
+        ).updateAll();
     }
 
     async addAt(object: Object3D, at: number, position?: IWGS84, action?: WGS84_ACTION) {
