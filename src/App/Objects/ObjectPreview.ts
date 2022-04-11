@@ -9,10 +9,8 @@ import { DataAccessor } from "../Data/Accessor/DataAccessor";
 export class ObjectPreview {
     private _attachedDataAccessor: DataAccessor | undefined;
     constructor() {
-        const context = ApplicationContext.getInstance();
-
-        if (context.viewer) {
-            context.viewer.canvas.addEventListener(
+        if (ApplicationContext.viewer) {
+            ApplicationContext.viewer.canvas.addEventListener(
                 "pointermove",
                 this._onMouseEvent.bind(this)
             );
@@ -75,7 +73,7 @@ export class ObjectPreview {
     private _onMouseEvent(event: MouseEvent) {
         if (!this._attachedDataAccessor) return;
         if (!this.autoPositionUpdate) return;
-        const viewer = ApplicationContext.getInstance().viewer;
+        const viewer = ApplicationContext.viewer;
         if (!viewer) return;
 
         const position = CesiumUtils.getLongitudeLatitudeByMouseEvent(event);

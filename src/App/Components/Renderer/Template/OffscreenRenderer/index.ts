@@ -19,7 +19,7 @@ export class OffscreenRenderer extends BaseRenderer {
     }
 
     private setCanvasToOffscreenCanvas(canvas: HTMLCanvasElement) {
-        const viewer = ApplicationContext.getInstance().viewer;
+        const viewer = ApplicationContext.viewer;
         if (viewer) {
             try {
                 const offscreen = canvas.transferControlToOffscreen();
@@ -56,8 +56,9 @@ export class OffscreenRenderer extends BaseRenderer {
     }
 
     private createCanvasElement() {
-        const context = ApplicationContext.getInstance();
-        if (!context.viewer) {
+        const viewer = ApplicationContext.viewer,
+            container = ApplicationContext.container;
+        if (!viewer) {
             console.error(
                 `Failed to initialize Offscreen Render because the Context does not have a viewer configured.`
             );
@@ -66,16 +67,16 @@ export class OffscreenRenderer extends BaseRenderer {
 
         const canvas = document.createElement("canvas");
 
-        context.container.appendChild(canvas);
+        container.appendChild(canvas);
 
-        const root = context.viewer.container.parentElement;
+        const root = viewer.container.parentElement;
         if (!root) {
             throw new Error("cannot fond parent element");
         } else {
-            root.appendChild(context.container);
+            root.appendChild(container);
         }
 
-        if (context.viewer.useDefaultRenderLoop) {
+        if (viewer.useDefaultRenderLoop) {
             console.warn(
                 "Please set Cesium viewer.useDefaultRenderLoop = false for syncronize animation frame to this plug-in"
             );
@@ -105,8 +106,8 @@ export class OffscreenRenderer extends BaseRenderer {
     }
 
     async render() {
-        const context = ApplicationContext.getInstance();
-        if (!context.viewer) return;
+        const viewer = ApplicationContext.viewer;
+        if (!viewer) return;
 
         // Update Object3D Visibles
         {
@@ -126,10 +127,8 @@ export class OffscreenRenderer extends BaseRenderer {
 
         // SYNC Camera
         {
-            const cvm = new Float64Array(context.viewer.camera.viewMatrix);
-            const civm = new Float64Array(
-                context.viewer.camera.inverseViewMatrix
-            );
+            const cvm = new Float64Array(viewer.camera.viewMatrix);
+            const civm = new Float64Array(viewer.camera.inverseViewMatrix);
 
             const args = { cvm: cvm, civm: civm };
             const transfer = [cvm.buffer, civm.buffer];

@@ -7,9 +7,14 @@ import { initGUI } from "./initGUI";
 import { ObjectEvent } from "../../src/App/Objects/ObjectEvent";
 import { CesiumUtils } from "../../src/App/Utils/CesiumUtils";
 import { RendererContext } from "../../src/App/Contexts/RendererContext";
-import { MultipleOffscreenRenderer } from "../../src/App/Components/Renderer";
+import {
+    MultipleOffscreenBuilder,
+    MultipleOffscreenRenderer,
+} from "../../src/App/Components/Renderer";
 import { WGS84_ACTION } from "../../src/App/Math";
 import { DataAccessor } from "../../src/App/Data/Accessor/DataAccessor";
+import Appearance from "cesium/Source/Scene/Appearance";
+import { ApplicationContext } from "../../src/App/Contexts/ApplicationContext";
 
 const constructorOptions: Viewer.ConstructorOptions = {
     useDefaultRenderLoop: false,
@@ -35,11 +40,11 @@ Cesium3.init(viewer);
 const CANVAS_COUNT = navigator.hardwareConcurrency - 1; // without main thread
 
 {
-    RendererContext.addRenderer(MultipleOffscreenRenderer);
+    const builder = new MultipleOffscreenBuilder();
 
-    const renderer = RendererContext.getRenderer("MultipleOffscreenRenderer");
+    const renderer = builder.setCanvasCount(CANVAS_COUNT).build();
 
-    renderer.makeCanvases(CANVAS_COUNT);
+    RendererContext.addRenderer(renderer);
 
     for (let i = 0; i < CANVAS_COUNT; i++) {
         renderer.addAt(new THREE.AmbientLight(), i);

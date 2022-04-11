@@ -5,7 +5,7 @@ import { CT_WGS84, IWGS84 } from "../Math";
 
 export class CesiumUtils {
     static getCameraPosition() {
-        const viewer = ApplicationContext.getInstance().viewer;
+        const viewer = ApplicationContext.viewer;
         if (viewer) {
             const result = new Cesium.Cartographic();
             viewer.scene.globe.ellipsoid.cartesianToCartographic(
@@ -31,7 +31,7 @@ export class CesiumUtils {
     }
 
     static getLongitudeLatitudeByLocation(position: Cesium.Cartesian2) {
-        const viewer = ApplicationContext.getInstance().viewer;
+        const viewer = ApplicationContext.viewer;
         if (viewer) {
             const ellipsoid = viewer.scene.globe.ellipsoid;
             const cartesian = viewer.camera.pickEllipsoid(position, ellipsoid);
@@ -78,7 +78,7 @@ export class CesiumUtils {
         position: IWGS84,
         radius: number | undefined = undefined
     ) {
-        const viewer = ApplicationContext.getInstance().viewer;
+        const viewer = ApplicationContext.viewer;
         if (viewer) {
             const wgs84Position = Cesium.Cartesian3.fromDegrees(
                 position.longitude,

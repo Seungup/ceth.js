@@ -89,17 +89,26 @@ export namespace RendererContext {
      * @param renderers
      * @returns
      */
-    export const addRenderer = (...renderers: typeof RendererTemplate[]) => {
-        renderers.forEach((renderer) => {
-            if (rendererMap.has(renderer.name)) {
-                console.error(`${renderer.name} is already exist.`);
+    export const addRenderer = (
+        ...renderers: typeof RendererTemplate[] | RendererTemplate[]
+    ) => {
+        let renderer: RendererTemplate;
+        let data: typeof RendererTemplate | RendererTemplate;
+
+        for (let i = 0, len = renderers.length; i < len; i++) {
+            data = renderers[i];
+
+            if (typeof data === "function") {
+                renderer = new data();
             } else {
-                rendererMap.set(renderer.name, {
-                    renderer: new renderer(),
-                    state: { lock: false },
-                });
+                renderer = data;
             }
-        });
+
+            rendererMap.set(renderer.name, {
+                renderer: renderer,
+                state: { lock: false },
+            });
+        }
 
         return RendererContext;
     };
@@ -173,7 +182,7 @@ export namespace RendererContext {
      * @returns
      */
     const syncScreenRect = async () => {
-        const viewer = ApplicationContext.getInstance().viewer;
+        const viewer = ApplicationContext.viewer;
         if (!viewer) return;
 
         const width = viewer.canvas.clientWidth;

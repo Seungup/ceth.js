@@ -1,27 +1,24 @@
 import { Viewer } from "cesium";
-import { RendererContext } from "./RendererContext";
 
-export class ApplicationContext {
-    private static instance: ApplicationContext;
+export namespace ApplicationContext {
+    export const container = document.createElement("div");
+    export let viewer: Viewer | undefined = undefined;
 
-    container: HTMLElement;
-    viewer: Viewer | undefined;
-
-    private constructor() {
-        this.container = document.createElement("div");
-        this.container.style.position = "absolute";
-        this.container.style.top = "0";
-        this.container.style.left = "0";
-        this.container.style.height = "100%";
-        this.container.style.width = "100%";
-        this.container.style.margin = "0";
-        this.container.style.overflow = "hidden";
-        this.container.style.padding = "0";
-        this.container.style.pointerEvents = "none";
+    {
+        container;
+        container.style.position = "absolute";
+        container.style.top = "0";
+        container.style.left = "0";
+        container.style.height = "100%";
+        container.style.width = "100%";
+        container.style.margin = "0";
+        container.style.overflow = "hidden";
+        container.style.padding = "0";
+        container.style.pointerEvents = "none";
     }
 
-    setViewer(viewer: Viewer) {
-        this.viewer = viewer;
+    export function setViewer(cesiumViewer: Viewer) {
+        viewer = cesiumViewer;
 
         const root = viewer.container.parentElement;
 
@@ -35,13 +32,6 @@ export class ApplicationContext {
             );
         }
 
-        root.appendChild(this.container);
-    }
-
-    static getInstance(): ApplicationContext {
-        if (!ApplicationContext.instance) {
-            ApplicationContext.instance = new ApplicationContext();
-        }
-        return ApplicationContext.instance;
+        root.appendChild(container);
     }
 }

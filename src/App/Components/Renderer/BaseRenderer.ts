@@ -60,12 +60,12 @@ export class BaseRenderer implements IRendererTemplate {
      * 장면을 렌더링합니다.
      */
     async render() {
-        const conetext = ApplicationContext.getInstance();
-        if (!conetext.viewer) return;
+        const viewer = ApplicationContext.viewer;
+        if (!viewer) return;
         if (!this.renderer) return;
 
-        const cvm = new Float64Array(conetext.viewer.camera.viewMatrix),
-            civm = new Float64Array(conetext.viewer.camera.inverseViewMatrix),
+        const cvm = new Float64Array(viewer.camera.viewMatrix),
+            civm = new Float64Array(viewer.camera.inverseViewMatrix),
             camera = CameraComponent.perspectiveCamera,
             scene = SceneComponent.scene;
 
