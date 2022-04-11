@@ -7,14 +7,9 @@ import { initGUI } from "./initGUI";
 import { ObjectEvent } from "../../src/App/Objects/ObjectEvent";
 import { CesiumUtils } from "../../src/App/Utils/CesiumUtils";
 import { RendererContext } from "../../src/App/Contexts/RendererContext";
-import {
-    MultipleOffscreenBuilder,
-    MultipleOffscreenRenderer,
-} from "../../src/App/Components/Renderer";
+import { MultipleOffscreenBuilder } from "../../src/App/Components/Renderer";
 import { WGS84_ACTION } from "../../src/App/Math";
 import { DataAccessor } from "../../src/App/Data/Accessor/DataAccessor";
-import Appearance from "cesium/Source/Scene/Appearance";
-import { ApplicationContext } from "../../src/App/Contexts/ApplicationContext";
 
 const constructorOptions: Viewer.ConstructorOptions = {
     useDefaultRenderLoop: false,
@@ -37,7 +32,7 @@ const viewer = new Viewer("cesiumContainer", constructorOptions);
 
 Cesium3.init(viewer);
 
-const CANVAS_COUNT = navigator.hardwareConcurrency - 1; // without main thread
+const CANVAS_COUNT = navigator.hardwareConcurrency;
 
 {
     RendererContext.addRenderer(
@@ -66,17 +61,28 @@ async function addObject(posiiton: { latitude: number; longitude: number }) {
 
     let dataAccessor: DataAccessor;
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 1; i <= count; i++) {
+        if (i % 100 === 0) {
+            console.log(
+                `${i.toLocaleString()} / ${count.toLocaleString()} ${Number(
+                    ((i / count) * 100).toFixed(10)
+                ).toLocaleString()}%`
+            );
+        }
+
         dataAccessor = await renderer.dynamicAppend(
             object.clone(),
-            randInt(0, CANVAS_COUNT - 1),
+            i % CANVAS_COUNT,
             {
-                height: 0,
-                latitude: posiiton.latitude,
-                longitude: posiiton.longitude,
-            },
-            WGS84_ACTION.NONE,
-            true
+                position: {
+                    wgs84: {
+                        height: 0,
+                        latitude: posiiton.latitude,
+                        longitude: posiiton.longitude,
+                    },
+                },
+                visibility: true,
+            }
         );
 
         DataAccessorArray.push(dataAccessor);

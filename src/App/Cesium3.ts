@@ -6,12 +6,12 @@ import { RendererMap } from "./Components/Renderer";
 export namespace Cesium3 {
     let isInit = false;
 
-    export const init = (viewer: Viewer) => {
+    export function init(viewer: Viewer) {
         if (!isInit) {
             ApplicationContext.setViewer(viewer);
             isInit = true;
         }
-    };
+    }
 
     export const Context = {
         ApplicationContext: ApplicationContext,
@@ -20,7 +20,7 @@ export namespace Cesium3 {
 
     export const Renderers = RendererMap;
 
-    export const render = () => {
+    export function render() {
         RendererContext.render();
-    };
+    }
 }

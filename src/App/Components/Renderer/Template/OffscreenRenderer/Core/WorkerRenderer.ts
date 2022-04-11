@@ -1,8 +1,6 @@
-import { Object3D, Scene, Vector3 } from "three";
 import { CameraComponent } from "../../../../Camera/CameraComponent";
 import { WebGLRendererComponent } from "../../WebGLRenderer";
 import { SceneComponent } from "../../../../Scene/SceneComponent";
-import { DefaultObjectPositionChecker } from "../../../Strategy/DefaultObjectRender";
 import { ObjectPositionChecker } from "../../../Strategy/ObjectPositionChecker";
 
 export namespace WorkerRenderer {
@@ -12,12 +10,12 @@ export namespace WorkerRenderer {
     /**
      * 최대 스킵 가능한 프레임 개수입니다.
      */
-    let MAXIUM_SKIBBLE_FRAME_COUNT = 60;
+    let MAXIUM_SKIBBLE_FRAME_COUNT = 30;
     let skipedFrame = 0;
     /**
      * 장면을 렌더링합니다.
      */
-    export const render = () => {
+    export function render() {
         /**
          * 렌더링 전략
          *
@@ -43,7 +41,7 @@ export namespace WorkerRenderer {
             }
             camera.userData.updated = false;
         }
-    };
+    }
 
     export namespace API {
         /**
@@ -51,9 +49,9 @@ export namespace WorkerRenderer {
          *
          * @param visible 가시 여부
          */
-        export const setRenderBehindEarthOfObjects = (visible: boolean) => {
+        export function setRenderBehindEarthOfObjects(visible: boolean) {
             renderBehindEarthOfObjects = visible;
-        };
+        }
 
         /**
          * 최대 스킵 가능한 프레임의 개수를 설정합니다.
@@ -61,8 +59,8 @@ export namespace WorkerRenderer {
          * @default 60
          * @param count
          */
-        export const setMaxiumSkibbleFrameCount = (count: number) => {
+        export function setMaxiumSkibbleFrameCount(count: number) {
             MAXIUM_SKIBBLE_FRAME_COUNT = -1 > count ? 0 : count;
-        };
+        }
     }
 }

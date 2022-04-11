@@ -1,46 +1,79 @@
 import * as THREE from "three";
+import { Observable } from "rxjs";
 
 export namespace Manager {
     const managerMap = new Map<string, Interface>();
 
-    export const registClass = (_this: Interface) => {
+    function onDispose(manager: Interface) {
+        managerMap.delete(manager.hash);
+    }
+
+    export function registClass(_this: Interface) {
         if (!getClass(_this.hash)) {
+            _this.$dispose.subscribe(onDispose);
+
             managerMap.set(_this.hash, _this);
         } else {
-            console.error(`manager already exist`);
+            console.error(`${_this.hash} manager already exist`);
         }
-    };
+    }
 
-    export const getClass = <T extends Interface>(
-        hashKey: string
-    ): T | undefined => {
+    export function getClass<T extends Interface>(hashKey: string) {
         const manager = managerMap.get(hashKey);
         if (manager) {
             return manager as T;
         }
-    };
+    }
 
-    export const getHashByGeometryMaterial = <
+    export function getAllClass<T extends Interface>(baseKey: string) {
+        const result = new Array<{ manager: T; accessKey: string }>();
+
+        for (let [key, manager] of managerMap) {
+            const _baseKey = manager.hash.split(`_$`)[0];
+            if (_baseKey === baseKey && manager.isAddble()) {
+                result.push({ manager: manager as T, accessKey: key });
+            }
+        }
+
+        return result;
+    }
+
+    export function getWriteableClass<T extends Interface>(baseKey: string) {
+        let result: { manager: T; accessKey: string } | undefined;
+
+        for (let [key, manager] of managerMap) {
+            const _baseKey = manager.hash.split(`_$`)[0];
+            if (_baseKey === baseKey && manager.isAddble()) {
+                result = { manager: manager as T, accessKey: key };
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    export function getHashByGeometryMaterial<
         TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
         TMaterial extends THREE.Material | THREE.Material[] =
             | THREE.Material
             | THREE.Material[]
-    >(
-        geometry: TGeometry,
-        material: TMaterial
-    ) => {
-        const hash: string = geometry.type;
+    >(geometry: TGeometry, material: TMaterial, id?: number) {
+        let hash: string = geometry.type;
 
         if (material instanceof THREE.Material) {
-            hash.concat(material.type);
+            hash = hash.concat(material.type);
         } else {
             material.forEach((m) => {
-                hash.concat(m.type);
+                hash = hash.concat(m.type);
             });
         }
 
+        if (id) {
+            hash = hash.concat(`_$${id.toString()}`);
+        }
+
         return hash;
-    };
+    }
 
     export interface Interface<
         TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
@@ -49,6 +82,11 @@ export namespace Manager {
             | THREE.Material[]
     > {
         readonly hash: string;
+
+        /**
+         * 객체를 추가로 생성 가능한지 확인합니다.
+         */
+        isAddble(): boolean;
 
         /**
          * 행렬을 추가합니다.
@@ -92,6 +130,7 @@ export namespace Manager {
          * 오브젝트를 파기합니다.
          */
         dispose(): void;
+        $dispose: Observable<this>;
 
         /**
          * 모든 데이터를 초기 상태로 되돌립니다.

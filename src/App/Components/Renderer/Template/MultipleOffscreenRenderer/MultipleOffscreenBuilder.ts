@@ -1,4 +1,4 @@
-import { Remote, wrap } from "comlink";
+import { wrap } from "comlink";
 import { ApplicationContext } from "../../../../Contexts/ApplicationContext";
 import { WorkerFactory } from "../../../../WorkerFactory";
 import {

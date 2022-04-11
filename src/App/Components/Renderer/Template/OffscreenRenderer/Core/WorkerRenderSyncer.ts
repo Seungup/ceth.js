@@ -9,18 +9,18 @@ export namespace WorkerRenderSyncer {
     /**
      * 다음 장면을 그립니다.
      */
-    const render = () => {
+    function render() {
         WorkerRenderer.render();
         isRequestRender = false;
-    };
+    }
 
     /**
      * 다음 장면을 요청합니다.
      */
-    export const requestRender = () => {
+    export function requestRender() {
         if (!isRequestRender) {
             isRequestRender = true;
             render();
         }
-    };
+    }
 }

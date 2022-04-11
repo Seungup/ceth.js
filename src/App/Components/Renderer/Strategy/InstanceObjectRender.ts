@@ -6,11 +6,9 @@ import { DefaultObjectPositionChecker } from "./DefaultObjectRender";
 export class InstanceObjectPositionChecker extends DefaultObjectPositionChecker {
     checkPosition(object: THREE.InstancedMesh) {
         this.setNormalMatrix();
-        const hash = Manager.getHashByGeometryMaterial(
-            object.geometry,
-            object.material
+        const manager = Manager.getClass<InstancedManager>(
+            object.userData.hash
         );
-        const manager = Manager.getClass<InstancedManager>(hash);
         if (manager) {
             const position = new THREE.Vector3();
             manager.traverse((matrix, id) => {

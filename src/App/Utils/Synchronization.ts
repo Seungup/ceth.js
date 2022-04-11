@@ -16,10 +16,10 @@ export namespace Cesium3Synchronization {
      * @param camera threejs camera
      * @param param cesium camera matrix param
      */
-    export const syncPerspectiveCamera = (
+    export function syncPerspectiveCamera(
         camera: PerspectiveCamera,
         param: ISyncPerspectiveCameraParam
-    ) => {
+    ) {
         camera.matrixAutoUpdate = false;
         let needUpdate = false;
 
@@ -73,7 +73,7 @@ export namespace Cesium3Synchronization {
         }
 
         camera.userData.updated = needUpdate;
-    };
+    }
 
     /**
      * threejs 의 오브젝트의 위치를 cesium 지구 표면의 위치와 동기화합니다.
@@ -82,18 +82,16 @@ export namespace Cesium3Synchronization {
      * @param action
      * @returns
      */
-    export const syncObject3DPosition = async <T extends Object3D>(
+    export async function syncObject3DPosition<T extends Object3D>(
         object: T,
         wgs84: IWGS84,
         action: WGS84_ACTION = WGS84_ACTION.NONE
-    ) => {
+    ) {
         const matrix = await Computational.computePositionByWGS84(
             wgs84,
             action
         );
-
         object.applyMatrix4(matrix);
-
         return { object: object, wgs84: wgs84 };
-    };
+    }
 }

@@ -1,5 +1,12 @@
+import { Observable, Subject } from "rxjs";
 import * as THREE from "three";
+import { THREEUtils } from "../../Utils/ThreeUtils";
 import { Manager } from "../Manager";
+
+export const ERROR_CODE = {
+    SUCCESS: 0,
+    MAXIUM_INSTANCE: 1,
+} as const;
 
 /**
  * 인스턴스 메시의 관리를 위한 메니저 클래스입니다.
@@ -16,25 +23,41 @@ export class InstancedManager<
     private readonly entityIdArray = new Array<number>();
 
     private id_counter = 0;
+    private readonly MAX_COUNT: number;
 
     readonly hash: string;
+    readonly id: number;
+
     constructor(
         param: { geomtery: TGeometry; material: TMaterial; maxCount: number },
-        scene: THREE.Scene
+        public readonly scene: THREE.Scene
     ) {
+        this.MAX_COUNT = param.maxCount;
+
         this.instancedMesh = new THREE.InstancedMesh(
             param.geomtery,
             param.material,
             param.maxCount
         );
+        this.id = this.instancedMesh.id;
         this.instancedMesh.count = 0;
 
         this.hash = Manager.getHashByGeometryMaterial(
             this.instancedMesh.geometry,
-            this.instancedMesh.material
+            this.instancedMesh.material,
+            this.id
         );
+        this.instancedMesh.userData.hash = this.hash;
 
-        scene.add(this.instancedMesh);
+        this.scene.add(this.instancedMesh);
+    }
+
+    isEmpty() {
+        return this.entityIdArray.length === 0;
+    }
+
+    isAddble(): boolean {
+        return this.entityIdArray.length < this.MAX_COUNT;
     }
 
     private setMatrixAt(index: number, matrix: THREE.Matrix4) {
@@ -43,9 +66,20 @@ export class InstancedManager<
         this.instancedMesh.instanceMatrix.needsUpdate = true;
     }
 
+    private readonly onDisposeSubject = new Subject<this>();
+    $dispose = this.onDisposeSubject.pipe();
     dispose(): void {
-        this.clear();
-        this.instancedMesh.dispose();
+        try {
+            this.onDisposeSubject.next(this);
+            this.clear();
+            this.instancedMesh.dispose();
+            THREEUtils.disposeObject3D(this.instancedMesh);
+            this.scene.remove(this.instancedMesh);
+        } catch (error) {
+            this.onDisposeSubject.error(error);
+        } finally {
+            this.onDisposeSubject.complete();
+        }
     }
 
     clear(): void {
@@ -79,11 +113,19 @@ export class InstancedManager<
         return this.entityDataMap.get(id);
     }
 
+    /**
+     * 데이터를 추가합니다.
+     *
+     * @param matrix 행렬
+     * @param visible 가시성
+     * @param userData 유저 데이터
+     * @returns 아이디
+     */
     add(
         matrix: THREE.Matrix4,
         visible: boolean = true,
         userData?: { [key: string]: any }
-    ): number {
+    ) {
         this.entityIdArray.push(++this.id_counter);
 
         if (userData) {

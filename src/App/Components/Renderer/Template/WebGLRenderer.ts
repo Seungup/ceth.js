@@ -11,7 +11,7 @@ export namespace WebGLRendererComponent {
      * WebGL 렌더러를 초기화합니다.
      * @param param
      */
-    export const initRenderer = (param: InitParameter) => {
+    export function initRenderer(param: InitParameter) {
         if (renderer) {
             console.warn("The initialized Render has been reinitialized.");
         }
@@ -34,7 +34,7 @@ export namespace WebGLRendererComponent {
 
         renderer = new WebGLRenderer(params);
         renderer.outputEncoding = sRGBEncoding;
-    };
+    }
 
     /**
      * 메인 스레드에서 사용될 API 입니다.
@@ -45,7 +45,7 @@ export namespace WebGLRendererComponent {
          * @param width
          * @param height
          */
-        export const setSize = (width: number, height: number) => {
+        export function setSize(width: number, height: number) {
             if (renderer) {
                 renderer.setSize(width, height, false);
             } else {
@@ -53,6 +53,6 @@ export namespace WebGLRendererComponent {
                     "setRenderSize was called without Render initialization."
                 );
             }
-        };
+        }
     }
 }

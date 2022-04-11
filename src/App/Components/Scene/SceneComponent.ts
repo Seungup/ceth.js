@@ -116,9 +116,13 @@ export namespace SceneComponent {
          */
         export function dynamicAppend(
             json: any,
-            wgs84: IWGS84,
-            action: WGS84_ACTION = WGS84_ACTION.NONE,
-            visibility: boolean = true
+            option: {
+                position: {
+                    wgs84: IWGS84;
+                    action?: WGS84_ACTION;
+                };
+                visibility?: boolean;
+            }
         ) {
             const original = THREEUtils.getTypeSafeObject3D(
                 objectLoader.parse(json)
@@ -126,37 +130,42 @@ export namespace SceneComponent {
 
             if (original.geometry && original.material) {
                 const managerAccessKey = Manager.getHashByGeometryMaterial(
-                    original.geometry,
-                    original.material
-                );
-                let manager =
-                    Manager.getClass<InstancedManager>(managerAccessKey);
+                        original.geometry,
+                        original.material
+                    ),
+                    writeAbleClass =
+                        Manager.getWriteableClass<InstancedManager>(
+                            managerAccessKey
+                        );
 
-                if (!manager) {
+                let manager: InstancedManager;
+                if (!writeAbleClass) {
                     manager = new InstancedManager(
                         {
                             geomtery: original.geometry,
                             material: original.material,
-                            maxCount: 100000,
+                            maxCount: 100,
                         },
                         SceneComponent.scene
                     );
+
+                    // don't for regist manager class
                     Manager.registClass(manager);
+                } else {
+                    manager = writeAbleClass.manager;
                 }
 
-                const position = new CT_WGS84(wgs84, action);
-
-                const objectId = manager.add(
-                    position.getMatrix4(),
-                    visibility,
-                    {
-                        wgs84: position.toIWGS84(),
-                    }
-                );
+                const _wgs84 = new CT_WGS84(
+                        option.position.wgs84,
+                        option.position.action
+                    ),
+                    matrix = _wgs84.getMatrix4(),
+                    userData = { wgs84: _wgs84.toIWGS84() },
+                    id = manager.add(matrix, option.visibility, userData);
 
                 return {
-                    managerAccessKey: managerAccessKey,
-                    objectId: objectId,
+                    managerAccessKey: manager.hash,
+                    objectId: id,
                 };
             }
         }
@@ -190,9 +199,12 @@ export namespace SceneComponent {
             managerAccessKey: string,
             objectId: number
         ) {
-            let manager = Manager.getClass(managerAccessKey);
+            let manager = Manager.getClass<InstancedManager>(managerAccessKey);
             if (manager) {
                 manager.delete(objectId);
+                if (manager.isEmpty()) {
+                    manager.dispose();
+                }
             }
         }
 

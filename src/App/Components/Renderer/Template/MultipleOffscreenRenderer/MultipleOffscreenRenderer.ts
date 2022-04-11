@@ -16,6 +16,9 @@ import { THREEUtils } from "../../../../Utils/ThreeUtils";
 import { DataAccessor } from "../../../../Data/Accessor/DataAccessor";
 
 export class MultipleOffscreenRenderer extends BaseRenderer {
+    /**
+     * 워커의 배열입니다. 해당 배열에 존재하는 스레드를 바탕으로 장면이 그려집니다.
+     */
     workerArray = new Array<{
         worker: Worker;
         wrapper: Remote<CommandReciver>;
@@ -61,34 +64,40 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
 
     async dynamicAppend(
         object: Object3D,
-        at: number,
-        wgs84: IWGS84,
-        action?: WGS84_ACTION,
-        visibility: boolean = true
+        workerIndex: number,
+        option: {
+            position: {
+                wgs84: IWGS84;
+                action?: WGS84_ACTION;
+            };
+            visibility: boolean;
+        }
     ): Promise<DataAccessor> {
-        if (this.workerArray.length <= at || at < 0) {
-            throw new Error(`BufferFlowError : cannot access at ${at} `);
+        if (this.workerArray.length <= workerIndex || workerIndex < 0) {
+            throw new Error(
+                `BufferFlowError : cannot access at ${workerIndex} `
+            );
         }
 
-        const target = this.workerArray[at];
+        const target = this.workerArray[workerIndex];
 
         const result = await CoreThreadCommand.excuteAPI(
             target.wrapper,
             "SceneComponentAPI",
             "dynamicAppend",
-            [object.toJSON(), wgs84, action, visibility]
+            [object.toJSON(), option]
         );
 
         if (!result) {
             throw new Error(
-                `can not append the object on the scene.\ncheck the thread number : ${at}`
+                `can not append the object on the scene.\ncheck the thread number : ${workerIndex}`
             );
         }
 
         THREEUtils.disposeObject3D(object);
 
         return new InstanceDataAccessor(
-            target.worker,
+            target.wrapper,
             result.managerAccessKey,
             result.objectId
         );

@@ -33,8 +33,8 @@ export function initGUI() {
             }
             removeAsyncAllController.enable();
         },
-        lonGap: 0.05,
-        latGap: 0.02,
+        lonGap: Math.random(),
+        latGap: Math.random(),
         help: () => {
             alert("mouse right click somewhere in earth.");
         },
@@ -47,7 +47,7 @@ export function initGUI() {
         new THREE.BoxBufferGeometry(API.width, API.height, API.depth),
         new THREE.MeshPhongMaterial({
             side: THREE.DoubleSide,
-            color: 0xffffff * Math.random(),
+            color: 0xffffff,
         })
     );
 
@@ -56,9 +56,9 @@ export function initGUI() {
     gui.domElement.style.top = "2px";
     gui.domElement.style.left = "2px";
     document.body.appendChild(gui.domElement);
-    gui.add(API, "count", 1, 5_000_000, 1);
-    gui.add(API, "latGap", 0.001, 0.1, 0.001);
-    gui.add(API, "lonGap", 0.001, 0.1, 0.001);
+    gui.add(API, "count", 1, 1_000_000, 1000);
+    gui.add(API, "latGap", 0, 1, 0.001);
+    gui.add(API, "lonGap", 0, 1, 0.001);
     gui.add(API, "width", 1000, 10000).onFinishChange(() => {
         object.geometry.dispose();
         object.geometry = new THREE.BoxBufferGeometry(

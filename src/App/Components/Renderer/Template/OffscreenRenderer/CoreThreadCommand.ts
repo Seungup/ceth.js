@@ -37,14 +37,14 @@ export namespace CoreThreadCommand {
      * @param args
      * @param transfer
      */
-    export const excuteCommand = async (
+    export async function excuteCommand(
         worker: Worker,
         runCommand: CoreThreadCommands,
         args: {
             [key: string]: any;
         } = {},
         transfer?: Array<Transferable | OffscreenCanvas>
-    ) => {
+    ) {
         worker.postMessage(
             {
                 runCommand: runCommand,
@@ -52,5 +52,5 @@ export namespace CoreThreadCommand {
             },
             transfer
         );
-    };
+    }
 }

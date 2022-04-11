@@ -11,8 +11,12 @@ export class InstanceDataAccessor implements DataAccessor {
     private readonly managerHashKey: string;
     private isRemoved = false;
 
-    constructor(worker: Worker, managerHashKey: string, objectId: number) {
-        this.wrapper = wrap(worker);
+    constructor(
+        wrapper: Remote<CommandReciver>,
+        managerHashKey: string,
+        objectId: number
+    ) {
+        this.wrapper = wrapper;
         this.managerHashKey = managerHashKey;
         this.objectId = objectId;
     }
