@@ -20,13 +20,16 @@ export class DefaultObjectPositionChecker
     }
 
     protected getVisible(position: THREE.Vector3) {
-        this.cameraToPoint.copy(position);
-        this.cameraToPoint.applyMatrix4(this._camera.matrixWorldInverse);
-        this.cameraToPoint.normalize();
+        this.cameraToPoint
+            .copy(position)
+            .applyMatrix4(this._camera.matrixWorldInverse)
+            .normalize();
 
-        this.tempVector.copy(position);
-        this.tempVector.applyMatrix3(this.normalMatrix);
-
-        return this.tempVector.dot(this.cameraToPoint) < 0;
+        return (
+            this.tempVector
+                .copy(position)
+                .applyMatrix3(this.normalMatrix)
+                .dot(this.cameraToPoint) < 0
+        );
     }
 }

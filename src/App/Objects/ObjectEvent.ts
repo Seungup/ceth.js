@@ -12,8 +12,7 @@ export class ObjectEvent {
     readonly onContextMenu = this.onContextMenuSubject.pipe();
 
     constructor() {
-        const root =
-            ApplicationContext.getInstance().viewer?.container.parentElement;
+        const root = ApplicationContext.viewer?.container.parentElement;
         root?.addEventListener("keydown", (event) => {
             this.onKeyDownSubject.next(event);
         });

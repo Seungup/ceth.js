@@ -11,7 +11,7 @@ import { MultipleOffscreenRenderer } from "./MultipleOffscreenRenderer";
 export class MultipleOffscreenBuilder {
     private count: number = 1;
     setCanvasCount(count: number) {
-        count = count > 1 ? count : 1;
+        this.count = 1 > count ? 1 : count;
         return this;
     }
 
@@ -23,28 +23,22 @@ export class MultipleOffscreenBuilder {
             );
         }
 
-        const width = viewer.canvas.width,
-            height = viewer.canvas.height;
+        // prettier-ignore
+        const 
+            width = viewer.canvas.width,
+            height = viewer.canvas.height,
+            container = ApplicationContext.container,
+            renderer = new MultipleOffscreenRenderer();
 
-        let worker: Worker,
-            canvas: HTMLCanvasElement,
-            offscreen: OffscreenCanvas;
-
-        const workerArray = new Array<{
-            worker: Worker;
-            wrapper: Remote<CommandReciver>;
-        }>();
-
-        const container = ApplicationContext.container;
         for (let i = 0; i < this.count; i++) {
-            worker = WorkerFactory.createWorker("CommandReciver");
+            const worker = WorkerFactory.createWorker("CommandReciver");
 
-            canvas = document.createElement("canvas");
+            const canvas = document.createElement("canvas");
             canvas.style.position = "absolute";
 
             container.appendChild(canvas);
 
-            offscreen = canvas.transferControlToOffscreen();
+            const offscreen = canvas.transferControlToOffscreen();
             offscreen.width = width;
             offscreen.height = height;
 
@@ -54,13 +48,12 @@ export class MultipleOffscreenBuilder {
                 { canvas: offscreen },
                 [offscreen]
             );
-
-            workerArray.push({
+            renderer.workerArray.push({
                 worker: worker,
                 wrapper: wrap<CommandReciver>(worker),
             });
         }
 
-        return new MultipleOffscreenRenderer(workerArray);
+        return renderer;
     }
 }

@@ -213,11 +213,10 @@ export namespace RendererContext {
      *
      * 렌더러의 잠김 여부와 관계없이 동작합니다.
      */
-    export const render = () => {
-        syncScreenRect().then(() => {
-            for (const [_, { renderer }] of rendererMap) {
-                renderer.render();
-            }
-        });
+    export const render = async () => {
+        await syncScreenRect();
+        for (const [_, { renderer }] of rendererMap) {
+            renderer.render();
+        }
     };
 }

@@ -22,7 +22,7 @@ export interface IRenderer {
 export interface IRendererTemplate {
     setSize(width: number, height: number, updateStyle: boolean): Promise<this>;
     setCamera(param: PerspectiveCameraInitParam): Promise<this>;
-    render(): Promise<void>;
+    render(): void;
     add(object: THREE.Object3D): Promise<DataAccessor>;
 }
 
@@ -59,20 +59,21 @@ export class BaseRenderer implements IRendererTemplate {
     /**
      * 장면을 렌더링합니다.
      */
-    async render() {
+    render() {
         const viewer = ApplicationContext.viewer;
+
         if (!viewer) return;
         if (!this.renderer) return;
 
-        const cvm = new Float64Array(viewer.camera.viewMatrix),
-            civm = new Float64Array(viewer.camera.inverseViewMatrix),
-            camera = CameraComponent.perspectiveCamera,
-            scene = SceneComponent.scene;
+        // prettier-ignore
+        const 
+            cvm     = new Float64Array(viewer.camera.viewMatrix),
+            civm    = new Float64Array(viewer.camera.inverseViewMatrix),
+            camera  = CameraComponent.perspectiveCamera,
+            scene   = SceneComponent.scene,
+            param   = { civm: civm, cvm: cvm };
 
-        Cesium3Synchronization.syncPerspectiveCamera(camera, {
-            civm: civm,
-            cvm: cvm,
-        });
+        Cesium3Synchronization.syncPerspectiveCamera(camera, param);
 
         if (camera.userData.updated) {
             this.renderer.render(scene, camera);

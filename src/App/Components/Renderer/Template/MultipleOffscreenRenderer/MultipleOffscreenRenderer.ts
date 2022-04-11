@@ -16,12 +16,12 @@ import { THREEUtils } from "../../../../Utils/ThreeUtils";
 import { DataAccessor } from "../../../../Data/Accessor/DataAccessor";
 
 export class MultipleOffscreenRenderer extends BaseRenderer {
-    constructor(
-        private workerArray: {
-            worker: Worker;
-            wrapper: Remote<CommandReciver>;
-        }[]
-    ) {
+    workerArray = new Array<{
+        worker: Worker;
+        wrapper: Remote<CommandReciver>;
+    }>();
+
+    constructor() {
         super();
         this.name = "MultipleOffscreenRenderer";
     }
@@ -40,7 +40,7 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
     }
 
     async setCamera(param: PerspectiveCameraInitParam) {
-        for (let i = 0; i < this.workerArray.length; i++) {
+        for (let i = 0, len = this.workerArray.length; i < len; i++) {
             CoreThreadCommand.excuteAPI(
                 this.workerArray[i].wrapper,
                 "CameraComponentAPI",

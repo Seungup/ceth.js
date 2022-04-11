@@ -131,12 +131,13 @@ export namespace SceneComponent {
                 );
                 let manager =
                     Manager.getClass<InstancedManager>(managerAccessKey);
+
                 if (!manager) {
                     manager = new InstancedManager(
                         {
                             geomtery: original.geometry,
                             material: original.material,
-                            maxCount: 1000000,
+                            maxCount: 100000,
                         },
                         SceneComponent.scene
                     );
@@ -152,6 +153,7 @@ export namespace SceneComponent {
                         wgs84: position.toIWGS84(),
                     }
                 );
+
                 return {
                     managerAccessKey: managerAccessKey,
                     objectId: objectId,

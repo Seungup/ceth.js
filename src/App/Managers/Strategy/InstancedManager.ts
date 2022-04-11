@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { THREEUtils } from "../../Utils/ThreeUtils";
 import { Manager } from "../Manager";
 
 /**
@@ -18,7 +17,6 @@ export class InstancedManager<
 
     private id_counter = 0;
 
-    readonly id: number;
     readonly hash: string;
     constructor(
         param: { geomtery: TGeometry; material: TMaterial; maxCount: number },
@@ -29,6 +27,7 @@ export class InstancedManager<
             param.material,
             param.maxCount
         );
+        this.instancedMesh.count = 0;
 
         this.hash = Manager.getHashByGeometryMaterial(
             this.instancedMesh.geometry,
@@ -36,14 +35,12 @@ export class InstancedManager<
         );
 
         scene.add(this.instancedMesh);
-
-        this.id = this.instancedMesh.id;
     }
 
-    clear() {
-        for (let i = 0, len = this.entityIdArray.length; i < len; i++) {
-            this.delete(this.entityIdArray[i]);
-        }
+    private setMatrixAt(index: number, matrix: THREE.Matrix4) {
+        this.instancedMesh.matrixAutoUpdate = false;
+        this.instancedMesh.setMatrixAt(index, matrix);
+        this.instancedMesh.instanceMatrix.needsUpdate = true;
     }
 
     dispose(): void {
@@ -51,18 +48,18 @@ export class InstancedManager<
         this.instancedMesh.dispose();
     }
 
-    /**
-     * 현재 데이터를 순회합니다.
-     *
-     * @param callback
-     */
+    clear(): void {
+        for (let i = 0, len = this.entityIdArray.length; i < len; i++) {
+            this.delete(this.entityIdArray[i]);
+        }
+    }
+
     traverse(callback: { (matrix: THREE.Matrix4, id: number): void }) {
         const matrix = new THREE.Matrix4();
-
-        for (let i = 0, len = this.entityIdArray.length; i < len; i++) {
-            this.instancedMesh.getMatrixAt(i, matrix);
-            callback(matrix, this.entityIdArray[i]);
-        }
+        this.entityIdArray.forEach((id, index) => {
+            this.instancedMesh.getMatrixAt(index, matrix);
+            callback(matrix, id);
+        });
     }
 
     update(id: number, matrix: THREE.Matrix4): boolean {
@@ -73,33 +70,15 @@ export class InstancedManager<
             return false;
         }
 
-        this._setMatrix(index, matrix);
+        this.setMatrixAt(index, matrix);
+
         return true;
     }
 
-    private _setMatrix(index: number, matrix: THREE.Matrix4) {
-        this.instancedMesh.matrixAutoUpdate = false;
-        this.instancedMesh.setMatrixAt(index, matrix);
-        this.instancedMesh.instanceMatrix.needsUpdate = true;
-    }
-
-    /**
-     * id에 해당하는 유저 데이터를 가져옵니다.
-     * @param id
-     * @returns
-     */
     getUserData(id: number) {
         return this.entityDataMap.get(id);
     }
 
-    /**
-     * 행렬을 추가합니다.
-     *
-     * @param matrix 행렬
-     * @param visible 가시여부
-     * @param userData 추가 데이터
-     * @returns id
-     */
     add(
         matrix: THREE.Matrix4,
         visible: boolean = true,
@@ -111,13 +90,31 @@ export class InstancedManager<
             this.entityDataMap.set(this.id_counter, userData);
         }
 
-        this._setMatrix(this.entityIdArray.length - 1, matrix);
+        this.setMatrixAt(this.entityIdArray.length - 1, matrix);
 
         if (visible) {
             this.instancedMesh.count++;
         }
 
         return this.id_counter;
+    }
+
+    private swapInstances(index1: number, index2: number) {
+        // CACHING
+        const matrix = new THREE.Matrix4(),
+            cachedMatrix = new THREE.Matrix4(),
+            cachedInstanceId = this.entityIdArray[index1];
+        this.instancedMesh.getMatrixAt(index1, cachedMatrix);
+
+        // SWAP
+        this.instancedMesh.getMatrixAt(index2, matrix);
+        this.setMatrixAt(index1, matrix);
+
+        this.entityIdArray[index1] = this.entityIdArray[index2];
+
+        // REPLACE
+        this.setMatrixAt(index2, cachedMatrix);
+        this.entityIdArray[index2] = cachedInstanceId;
     }
 
     delete(id: number): boolean {
@@ -128,15 +125,9 @@ export class InstancedManager<
             return false;
         }
 
-        THREEUtils.swapInstances(
-            this.instancedMesh,
-            this.entityIdArray.length - 1,
-            index,
-            { syncTargetArray: this.entityIdArray }
-        );
+        this.swapInstances(this.entityIdArray.length - 1, index);
 
         this.entityIdArray.pop();
-        this.entityDataMap.delete(id);
 
         if (index < this.instancedMesh.count) {
             this.instancedMesh.count--;
@@ -146,39 +137,27 @@ export class InstancedManager<
     }
 
     setColor(id: number, color: THREE.Color): void {
-        const index = this.entityIdArray.findIndex((el) => el === id);
-        this.instancedMesh.setColorAt(index, color);
+        const n = this.entityIdArray.findIndex((el) => el === id);
+        this.instancedMesh.setColorAt(n, color);
         if (this.instancedMesh.instanceColor) {
             this.instancedMesh.instanceColor.needsUpdate = true;
         }
     }
 
     setVisibiltiy(id: number, visible: boolean): void {
-        const index = this.entityIdArray.findIndex((el) => el === id);
-
-        if (index === -1) {
+        const n = this.entityIdArray.findIndex((el) => el === id);
+        if (n === -1) {
             console.error("cannot found element in current array");
             return;
         }
-
         if (visible) {
-            if (index > this.instancedMesh.count) {
-                THREEUtils.swapInstances(
-                    this.instancedMesh,
-                    this.instancedMesh.count,
-                    index,
-                    { syncTargetArray: this.entityIdArray }
-                );
+            if (n > this.instancedMesh.count) {
+                this.swapInstances(this.instancedMesh.count, n);
                 this.instancedMesh.count++;
             }
         } else {
-            if (index < this.instancedMesh.count) {
-                THREEUtils.swapInstances(
-                    this.instancedMesh,
-                    this.instancedMesh.count - 1,
-                    index,
-                    { syncTargetArray: this.entityIdArray }
-                );
+            if (n < this.instancedMesh.count) {
+                this.swapInstances(this.instancedMesh.count - 1, n);
                 this.instancedMesh.count--;
             }
         }

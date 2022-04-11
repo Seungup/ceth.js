@@ -40,11 +40,11 @@ Cesium3.init(viewer);
 const CANVAS_COUNT = navigator.hardwareConcurrency - 1; // without main thread
 
 {
-    const builder = new MultipleOffscreenBuilder();
+    RendererContext.addRenderer(
+        new MultipleOffscreenBuilder().setCanvasCount(CANVAS_COUNT).build()
+    );
 
-    const renderer = builder.setCanvasCount(CANVAS_COUNT).build();
-
-    RendererContext.addRenderer(renderer);
+    const renderer = RendererContext.getRenderer("MultipleOffscreenRenderer");
 
     for (let i = 0; i < CANVAS_COUNT; i++) {
         renderer.addAt(new THREE.AmbientLight(), i);
