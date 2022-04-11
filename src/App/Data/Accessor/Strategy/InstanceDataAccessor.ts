@@ -9,11 +9,14 @@ export class InstanceDataAccessor implements DataAccessor {
     private readonly wrapper: Remote<CommandReciver>;
     private readonly objectId: number;
     private readonly managerHashKey: string;
+    private isRemoved = false;
+
     constructor(worker: Worker, managerHashKey: string, objectId: number) {
         this.wrapper = wrap(worker);
         this.managerHashKey = managerHashKey;
         this.objectId = objectId;
     }
+
     async setWGS84(wgs84: IWGS84, action: WGS84_ACTION): Promise<void> {
         await CoreThreadCommand.excuteAPI(
             this.wrapper,
@@ -33,7 +36,7 @@ export class InstanceDataAccessor implements DataAccessor {
     async getBox3Max(): Promise<Vector3 | undefined> {
         return;
     }
-    private isRemoved = false;
+
     async remove(): Promise<void> {
         await CoreThreadCommand.excuteAPI(
             this.wrapper,
@@ -43,6 +46,7 @@ export class InstanceDataAccessor implements DataAccessor {
         );
         this.isRemoved = true;
     }
+
     async isExise(): Promise<boolean> {
         return this.isRemoved;
     }

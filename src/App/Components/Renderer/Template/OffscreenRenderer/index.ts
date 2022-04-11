@@ -5,7 +5,6 @@ import { PerspectiveCameraInitParam, BaseRenderer } from "../../BaseRenderer";
 import { CommandReciver, CoreThreadCommands } from "./Core/CommandReciver";
 import { ApplicationContext } from "../../../../Contexts/ApplicationContext";
 import { WorkerFactory } from "../../../../WorkerFactory";
-import { ObjectAPI } from "../../../../Objects/ObjectAPI";
 import { WorkerDataAccessor } from "../../../../Data/Accessor/Strategy/WorkerDataAccessor";
 import { CesiumUtils } from "../../../../Utils/CesiumUtils";
 
@@ -53,7 +52,7 @@ export class OffscreenRenderer extends BaseRenderer {
             [object.toJSON()]
         );
 
-        return new ObjectAPI(id, new WorkerDataAccessor(this.worker, id));
+        return new WorkerDataAccessor(this.worker, id);
     }
 
     private createCanvasElement() {

@@ -1,18 +1,10 @@
-import {
-    Box3,
-    BufferGeometry,
-    Material,
-    Object3D,
-    ObjectLoader,
-    Scene,
-} from "three";
+import { Box3, Object3D, ObjectLoader, Scene } from "three";
 import { CT_WGS84, IWGS84, WGS84_ACTION } from "../../Math";
 import { Cesium3Synchronization } from "../../Utils/Synchronization";
 import { ObjectData } from "../../data/ObjectData";
-import { disposeObject3D } from "../../Utils/Cleaner";
 import { Manager } from "../../Managers/Manager";
 import { InstancedManager } from "../../Managers/Strategy/InstancedManager";
-import { Visibility } from "cesium";
+import { THREEUtils } from "../../Utils/ThreeUtils";
 
 interface IObjectCallbackFunction<T> {
     onSuccess(object: Object3D): T;
@@ -41,11 +33,11 @@ export namespace SceneComponent {
          * @param wgs84
          * @param action
          */
-        export const setObjectPosition = (
+        export function setObjectPosition(
             id: number | Object3D,
             wgs84: IWGS84,
             action: WGS84_ACTION = WGS84_ACTION.NONE
-        ) => {
+        ) {
             let object: Object3D | undefined;
 
             if (typeof id === "number") {
@@ -86,11 +78,6 @@ export namespace SceneComponent {
                     });
                 }
             }
-        };
-
-        interface IObject extends Object3D {
-            geometry: BufferGeometry;
-            material: Material | Material[];
         }
 
         /**
@@ -100,11 +87,11 @@ export namespace SceneComponent {
          * @param action
          * @returns
          */
-        export const add = async (
+        export async function add(
             json: any,
             wgs84?: IWGS84,
             action: WGS84_ACTION = WGS84_ACTION.NONE
-        ) => {
+        ) {
             const object = objectLoader.parse(json);
 
             ObjectData.setBox3ByObject3D(object);
@@ -119,7 +106,7 @@ export namespace SceneComponent {
             scene.add(object);
 
             return object.id;
-        };
+        }
 
         /**
          *
@@ -133,37 +120,43 @@ export namespace SceneComponent {
             action: WGS84_ACTION = WGS84_ACTION.NONE,
             visibility: boolean = true
         ) {
-            const original = objectLoader.parse(json) as unknown as IObject;
-
-            const managerAccessKey = Manager.getManagerAccessKey(
-                original.geometry,
-                original.material
+            const original = THREEUtils.getTypeSafeObject3D(
+                objectLoader.parse(json)
             );
 
-            let manager = Manager.getClass<InstancedManager>(managerAccessKey);
-
-            if (!manager) {
-                manager = new InstancedManager(
-                    {
-                        geomtery: original.geometry,
-                        material: original.material,
-                        maxCount: 1000000,
-                    },
-                    SceneComponent.scene
+            if (original.geometry && original.material) {
+                const managerAccessKey = Manager.getHashByGeometryMaterial(
+                    original.geometry,
+                    original.material
                 );
-                Manager.registClass(manager);
+                let manager =
+                    Manager.getClass<InstancedManager>(managerAccessKey);
+                if (!manager) {
+                    manager = new InstancedManager(
+                        {
+                            geomtery: original.geometry,
+                            material: original.material,
+                            maxCount: 1000000,
+                        },
+                        SceneComponent.scene
+                    );
+                    Manager.registClass(manager);
+                }
+
+                const position = new CT_WGS84(wgs84, action);
+
+                const objectId = manager.add(
+                    position.getMatrix4(),
+                    visibility,
+                    {
+                        wgs84: position.toIWGS84(),
+                    }
+                );
+                return {
+                    managerAccessKey: managerAccessKey,
+                    objectId: objectId,
+                };
             }
-
-            const position = new CT_WGS84(wgs84, action);
-
-            const objectId = manager.add(position.getMatrix4(), visibility, {
-                wgs84: position.toIWGS84(),
-            });
-
-            return {
-                managerAccessKey: managerAccessKey,
-                objectId: objectId,
-            };
         }
 
         export function getDynamicPosition(
@@ -219,7 +212,7 @@ export namespace SceneComponent {
         export function remove(id: number) {
             getObject(id, {
                 onSuccess(object) {
-                    disposeObject3D(object);
+                    THREEUtils.disposeObject3D(object);
                     scene.remove(object);
                 },
             });

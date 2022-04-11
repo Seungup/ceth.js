@@ -1,7 +1,7 @@
 import * as Cesium from "cesium";
 import { ApplicationContext } from "../Contexts/ApplicationContext";
+import { DataAccessor } from "../Data/Accessor/DataAccessor";
 import { CT_WGS84, IWGS84 } from "../Math";
-import { ObjectAPI } from "../Objects/ObjectAPI";
 
 export class CesiumUtils {
     static getCameraPosition() {
@@ -47,9 +47,9 @@ export class CesiumUtils {
         }
     }
 
-    static async flyByObjectAPI(api: ObjectAPI) {
-        const position = await api.getPosition();
-        const box3 = await api.getBox3();
+    static async flyByAccssor(accessor: DataAccessor) {
+        const position = await accessor.getWGS84();
+        const box3 = await accessor.getBox3Max();
         if (position) {
             let radius = undefined;
             if (box3) {

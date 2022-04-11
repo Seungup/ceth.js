@@ -3,8 +3,8 @@ import { CameraComponent } from "../Camera/CameraComponent";
 import { SceneComponent } from "../Scene/SceneComponent";
 import { ApplicationContext } from "../../Contexts/ApplicationContext";
 import { LocalDataAccessor } from "../../Data/Accessor/Strategy/LocalDataAccessor";
-import { ObjectAPI } from "../../Objects/ObjectAPI";
 import { Cesium3Synchronization } from "../../Utils/Synchronization";
+import { DataAccessor } from "../../Data/Accessor/DataAccessor";
 
 export interface PerspectiveCameraInitParam {
     aspect: number;
@@ -23,7 +23,7 @@ export interface IRendererTemplate {
     setSize(width: number, height: number, updateStyle: boolean): Promise<this>;
     setCamera(param: PerspectiveCameraInitParam): Promise<this>;
     render(): Promise<void>;
-    add(...object: THREE.Object3D[]): Promise<ObjectAPI>;
+    add(object: THREE.Object3D): Promise<DataAccessor>;
 }
 
 export class BaseRenderer implements IRendererTemplate {
@@ -83,13 +83,9 @@ export class BaseRenderer implements IRendererTemplate {
      * 장면에 오브젝트를 추가합니다.
      * @param object
      */
-    async add(object: THREE.Object3D) {
+    async add(object: THREE.Object3D): Promise<DataAccessor> {
         const scene = SceneComponent.scene;
         scene.add(object);
-
-        return await new ObjectAPI(
-            object.id,
-            new LocalDataAccessor(scene, object.id)
-        ).updateAll();
+        return new LocalDataAccessor(scene, object.id);
     }
 }

@@ -2,7 +2,6 @@ import { Matrix4 } from "cesium";
 import { Remote, wrap } from "comlink";
 import { Object3D } from "three";
 import { randInt } from "three/src/math/MathUtils";
-import { disposeObject3D } from "../../../Utils/Cleaner";
 import { WorkerFactory } from "../../../WorkerFactory";
 import { CoreThreadCommand } from "./OffscreenRenderer/CoreThreadCommand";
 import {
@@ -12,9 +11,9 @@ import {
 import { BaseRenderer, PerspectiveCameraInitParam } from "../BaseRenderer";
 import { ApplicationContext } from "../../../Contexts/ApplicationContext";
 import { IWGS84, WGS84_ACTION } from "../../../Math";
-import { ObjectAPI } from "../../../Objects/ObjectAPI";
 import { WorkerDataAccessor } from "../../../Data/Accessor/Strategy/WorkerDataAccessor";
 import { InstanceDataAccessor } from "../../../Data/Accessor/Strategy/InstanceDataAccessor";
+import { THREEUtils } from "../../../Utils/ThreeUtils";
 
 export class MultipleOffscreenRenderer extends BaseRenderer {
     constructor() {
@@ -114,7 +113,10 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
     }
 
     async add(object: Object3D) {
-        return this.addAt(object, randInt(0, this._workerArray.length - 1));
+        return await this.addAt(
+            object,
+            randInt(0, this._workerArray.length - 1)
+        );
     }
 
     async dynamicAppend(
@@ -137,16 +139,19 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
             [object.toJSON(), wgs84, action, visibility]
         );
 
-        disposeObject3D(object);
+        if (!result) {
+            throw new Error(
+                `can not append the object on the scene.\ncheck the thread number : ${at}`
+            );
+        }
 
-        return await new ObjectAPI(
-            result.objectId,
-            new InstanceDataAccessor(
-                target.worker,
-                result.managerAccessKey,
-                result.objectId
-            )
-        ).updateAll();
+        THREEUtils.disposeObject3D(object);
+
+        return new InstanceDataAccessor(
+            target.worker,
+            result.managerAccessKey,
+            result.objectId
+        );
     }
 
     async addAt(
@@ -168,12 +173,9 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
             [object.toJSON(), position, action]
         );
 
-        disposeObject3D(object);
+        THREEUtils.disposeObject3D(object);
 
-        return await new ObjectAPI(
-            id,
-            new WorkerDataAccessor(target.worker, id)
-        ).updateAll();
+        return new WorkerDataAccessor(target.worker, id);
     }
 
     async render() {
