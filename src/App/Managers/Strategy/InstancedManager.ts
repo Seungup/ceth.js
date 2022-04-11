@@ -101,20 +101,21 @@ export class InstancedManager<
 
     private swapInstances(index1: number, index2: number) {
         // CACHING
-        const matrix = new THREE.Matrix4(),
-            cachedMatrix = new THREE.Matrix4(),
-            cachedInstanceId = this.entityIdArray[index1];
-        this.instancedMesh.getMatrixAt(index1, cachedMatrix);
+        // prettier-ignore
+        const
+            cachedMatrix1 = new THREE.Matrix4(),
+            cachedMatrix2 = new THREE.Matrix4(),
+            cachedId1 = this.entityIdArray[index1],
+            cachedId2 = this.entityIdArray[index2];
 
-        // SWAP
-        this.instancedMesh.getMatrixAt(index2, matrix);
-        this.setMatrixAt(index1, matrix);
+        this.instancedMesh.getMatrixAt(index1, cachedMatrix1);
+        this.instancedMesh.getMatrixAt(index2, cachedMatrix2);
 
-        this.entityIdArray[index1] = this.entityIdArray[index2];
+        this.setMatrixAt(index1, cachedMatrix2);
+        this.setMatrixAt(index2, cachedMatrix1);
 
-        // REPLACE
-        this.setMatrixAt(index2, cachedMatrix);
-        this.entityIdArray[index2] = cachedInstanceId;
+        this.entityIdArray[index1] = cachedId2;
+        this.entityIdArray[index2] = cachedId1;
     }
 
     delete(id: number): boolean {
@@ -137,27 +138,27 @@ export class InstancedManager<
     }
 
     setColor(id: number, color: THREE.Color): void {
-        const n = this.entityIdArray.findIndex((el) => el === id);
-        this.instancedMesh.setColorAt(n, color);
+        const index = this.entityIdArray.findIndex((el) => el === id);
+        this.instancedMesh.setColorAt(index, color);
         if (this.instancedMesh.instanceColor) {
             this.instancedMesh.instanceColor.needsUpdate = true;
         }
     }
 
     setVisibiltiy(id: number, visible: boolean): void {
-        const n = this.entityIdArray.findIndex((el) => el === id);
-        if (n === -1) {
+        const index = this.entityIdArray.findIndex((el) => el === id);
+        if (index === -1) {
             console.error("cannot found element in current array");
             return;
         }
         if (visible) {
-            if (n > this.instancedMesh.count) {
-                this.swapInstances(this.instancedMesh.count, n);
+            if (index > this.instancedMesh.count) {
+                this.swapInstances(this.instancedMesh.count, index);
                 this.instancedMesh.count++;
             }
         } else {
-            if (n < this.instancedMesh.count) {
-                this.swapInstances(this.instancedMesh.count - 1, n);
+            if (index < this.instancedMesh.count) {
+                this.swapInstances(this.instancedMesh.count - 1, index);
                 this.instancedMesh.count--;
             }
         }
