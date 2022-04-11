@@ -4,6 +4,7 @@ import * as THREE from "three";
 import { ObjectData } from "../../ObjectData";
 import { Cesium3Synchronization } from "../../../Utils/Synchronization";
 import { IWGS84, WGS84_ACTION } from "../../../Math";
+import { THREEUtils } from "../../../Utils/ThreeUtils";
 
 export class LocalDataAccessor implements DataAccessor {
     private readonly scene: THREE.Scene;
@@ -21,6 +22,7 @@ export class LocalDataAccessor implements DataAccessor {
         return new Promise((resolve, reject) => {
             const object = this.scene.getObjectById(this.id);
             if (object) {
+                THREEUtils.disposeObject3D(object);
                 this.scene.remove(object);
                 ObjectData.remove(this.id);
                 resolve();

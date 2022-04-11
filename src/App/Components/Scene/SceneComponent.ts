@@ -1,4 +1,4 @@
-import { Box3, Object3D, ObjectLoader, Scene } from "three";
+import { Box3, Object3D, ObjectLoader, Scene, Vector3 } from "three";
 import { CT_WGS84, IWGS84, WGS84_ACTION } from "../../Math";
 import { Cesium3Synchronization } from "../../Utils/Synchronization";
 import { ObjectData } from "../../data/ObjectData";
@@ -111,8 +111,8 @@ export namespace SceneComponent {
         /**
          *
          * @param json
-         * @param wgs84
-         * @param action
+         * @param option
+         * @returns
          */
         export function dynamicAppend(
             json: any,
@@ -124,14 +124,14 @@ export namespace SceneComponent {
                 visibility?: boolean;
             }
         ) {
-            const original = THREEUtils.getTypeSafeObject3D(
+            const object = THREEUtils.getTypeSafeObject3D(
                 objectLoader.parse(json)
             );
 
-            if (original.geometry && original.material) {
+            if (object.geometry && object.material) {
                 const managerAccessKey = Manager.getHashByGeometryMaterial(
-                        original.geometry,
-                        original.material
+                        object.geometry,
+                        object.material
                     ),
                     writeAbleClass =
                         Manager.getWriteableClass<InstancedManager>(
@@ -142,9 +142,9 @@ export namespace SceneComponent {
                 if (!writeAbleClass) {
                     manager = new InstancedManager(
                         {
-                            geomtery: original.geometry,
-                            material: original.material,
-                            maxCount: 100,
+                            geomtery: object.geometry,
+                            material: object.material,
+                            maxCount: 10000,
                         },
                         SceneComponent.scene
                     );
@@ -155,13 +155,27 @@ export namespace SceneComponent {
                     manager = writeAbleClass.manager;
                 }
 
+                const box3 = new Box3().setFromObject(object);
+                if (option.position.wgs84.height === 0) {
+                    option.position.wgs84.height = box3.max.y;
+                }
+
                 const _wgs84 = new CT_WGS84(
                         option.position.wgs84,
                         option.position.action
                     ),
                     matrix = _wgs84.getMatrix4(),
-                    userData = { wgs84: _wgs84.toIWGS84() },
-                    id = manager.add(matrix, option.visibility, userData);
+                    userData = {
+                        wgs84: _wgs84.toIWGS84(),
+                        box3: box3,
+                        PRS: {
+                            position: object.position.clone(),
+                            rotation: object.rotation.clone(),
+                            scale: object.scale.clone(),
+                        },
+                    };
+
+                const id = manager.add(matrix, option.visibility, userData);
 
                 return {
                     managerAccessKey: manager.hash,
@@ -181,6 +195,17 @@ export namespace SceneComponent {
             }
         }
 
+        export function getDynamicBox3Max(
+            managerAccessKey: string,
+            objectId: number
+        ): Vector3 | undefined {
+            let manager = Manager.getClass<InstancedManager>(managerAccessKey);
+
+            if (manager) {
+                return manager.getUserData(objectId)?.box3.max;
+            }
+        }
+
         export function dynamicUpdate(
             managerAccessKey: string,
             objectId: number,
@@ -189,9 +214,10 @@ export namespace SceneComponent {
         ) {
             let manager = Manager.getClass(managerAccessKey);
             if (manager) {
-                if (manager.delete(objectId)) {
-                    manager.add(new CT_WGS84(wgs84, action).getMatrix4());
-                }
+                return manager.update(
+                    objectId,
+                    new CT_WGS84(wgs84, action).getMatrix4()
+                );
             }
         }
 

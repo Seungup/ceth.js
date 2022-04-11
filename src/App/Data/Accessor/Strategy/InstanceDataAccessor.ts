@@ -1,4 +1,4 @@
-import { Remote, wrap } from "comlink";
+import { Remote } from "comlink";
 import { Vector3 } from "three";
 import { CommandReciver } from "../../../Components/Renderer/Template/OffscreenRenderer/Core/CommandReciver";
 import { CoreThreadCommand } from "../../../Components/Renderer/Template/OffscreenRenderer/CoreThreadCommand";
@@ -38,7 +38,12 @@ export class InstanceDataAccessor implements DataAccessor {
         );
     }
     async getBox3Max(): Promise<Vector3 | undefined> {
-        return;
+        return await CoreThreadCommand.excuteAPI(
+            this.wrapper,
+            "SceneComponentAPI",
+            "getDynamicBox3Max",
+            [this.managerHashKey, this.objectId]
+        );
     }
 
     async remove(): Promise<void> {

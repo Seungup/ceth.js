@@ -2,13 +2,11 @@ import { Viewer } from "cesium";
 import * as THREE from "three";
 import { Cesium3 } from "../../src/App/Cesium3";
 import "./css/main.css";
-import { randInt } from "three/src/math/MathUtils";
 import { initGUI } from "./initGUI";
 import { ObjectEvent } from "../../src/App/Objects/ObjectEvent";
 import { CesiumUtils } from "../../src/App/Utils/CesiumUtils";
 import { RendererContext } from "../../src/App/Contexts/RendererContext";
 import { MultipleOffscreenBuilder } from "../../src/App/Components/Renderer";
-import { WGS84_ACTION } from "../../src/App/Math";
 import { DataAccessor } from "../../src/App/Data/Accessor/DataAccessor";
 
 const constructorOptions: Viewer.ConstructorOptions = {
@@ -52,7 +50,7 @@ const CANVAS_COUNT = navigator.hardwareConcurrency;
     requestAnimationFrame(animation);
 })();
 
-const { API, object, DataAccessorArray } = initGUI();
+const { API, dataAccessorArray, RandomObject } = initGUI();
 
 async function addObject(posiiton: { latitude: number; longitude: number }) {
     const count = API.count;
@@ -69,29 +67,34 @@ async function addObject(posiiton: { latitude: number; longitude: number }) {
                 ).toLocaleString()}%`
             );
         }
-
-        dataAccessor = await renderer.dynamicAppend(
-            object.clone(),
-            i % CANVAS_COUNT,
-            {
-                position: {
-                    wgs84: {
-                        height: 0,
-                        latitude: posiiton.latitude,
-                        longitude: posiiton.longitude,
+        const object = RandomObject.choice();
+        try {
+            dataAccessor = await renderer.dynamicAppend(
+                object,
+                i % CANVAS_COUNT,
+                {
+                    position: {
+                        wgs84: {
+                            height: 0,
+                            latitude: posiiton.latitude,
+                            longitude: posiiton.longitude,
+                        },
                     },
-                },
-                visibility: true,
-            }
-        );
+                    visibility: true,
+                }
+            );
 
-        DataAccessorArray.push(dataAccessor);
+            dataAccessorArray.push(dataAccessor);
 
-        posiiton.latitude += API.latGap;
-        posiiton.longitude += API.lonGap;
+            posiiton.latitude += API.latGap;
+            posiiton.longitude += API.lonGap;
+        } catch (error) {
+            console.error(error, object);
+        }
     }
 }
 
 new ObjectEvent().onContextMenu.subscribe((event) => {
-    addObject(CesiumUtils.getLongitudeLatitudeByMouseEvent(event));
+    const position = CesiumUtils.getLongitudeLatitudeByMouseEvent(event);
+    addObject(position);
 });

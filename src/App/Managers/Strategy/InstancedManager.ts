@@ -1,4 +1,4 @@
-import { Observable, Subject } from "rxjs";
+import { Subject } from "rxjs";
 import * as THREE from "three";
 import { THREEUtils } from "../../Utils/ThreeUtils";
 import { Manager } from "../Manager";
