@@ -1,10 +1,10 @@
-import { Object3D } from 'three';
-import { ObjectAPI } from './ObjectAPI';
-import { CesiumUtils } from '../Utils/CesiumUtils';
-import { WGS84_ACTION } from '../Math';
-import { ApplicationContext } from '../Contexts/ApplicationContext';
-import { RendererContext } from '../Contexts/RendererContext';
-import { RendererMap } from '../Components/Renderer';
+import { Object3D } from "three";
+import { ObjectAPI } from "./ObjectAPI";
+import { CesiumUtils } from "../Utils/CesiumUtils";
+import { WGS84_ACTION } from "../Math";
+import { ApplicationContext } from "../Contexts/ApplicationContext";
+import { RendererContext } from "../Contexts/RendererContext";
+import { RendererMap } from "../Components/Renderer";
 
 export class ObjectPreview {
     private _attachedObjectAPI: ObjectAPI | undefined;
@@ -12,7 +12,10 @@ export class ObjectPreview {
         const context = ApplicationContext.getInstance();
 
         if (context.viewer) {
-            context.viewer.canvas.addEventListener('pointermove', this._onMouseEvent.bind(this));
+            context.viewer.canvas.addEventListener(
+                "pointermove",
+                this._onMouseEvent.bind(this)
+            );
         }
     }
 
@@ -78,7 +81,10 @@ export class ObjectPreview {
         const position = CesiumUtils.getLongitudeLatitudeByMouseEvent(event);
 
         if (position) {
-            this._attachedObjectAPI.setPosition({ ...position, height: 0 }, WGS84_ACTION.NONE);
+            this._attachedObjectAPI.setPosition(
+                { ...position, height: 0 },
+                WGS84_ACTION.NONE
+            );
         }
     }
 }

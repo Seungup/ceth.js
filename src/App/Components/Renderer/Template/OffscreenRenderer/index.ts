@@ -1,20 +1,20 @@
-import { Object3D } from 'three';
-import { CoreThreadCommand } from './CoreThreadCommand';
-import { wrap } from 'comlink';
-import { PerspectiveCameraInitParam, BaseRenderer } from '../../BaseRenderer';
-import { CommandReciver, CoreThreadCommands } from './Core/CommandReciver';
-import { ApplicationContext } from '../../../../Contexts/ApplicationContext';
-import { WorkerFactory } from '../../../../WorkerFactory';
-import { ObjectAPI } from '../../../../Objects/ObjectAPI';
-import { WorkerDataAccessor } from '../../../../Data/Accessor/Strategy/WorkerDataAccessor';
-import { CesiumUtils } from '../../../../Utils/CesiumUtils';
+import { Object3D } from "three";
+import { CoreThreadCommand } from "./CoreThreadCommand";
+import { wrap } from "comlink";
+import { PerspectiveCameraInitParam, BaseRenderer } from "../../BaseRenderer";
+import { CommandReciver, CoreThreadCommands } from "./Core/CommandReciver";
+import { ApplicationContext } from "../../../../Contexts/ApplicationContext";
+import { WorkerFactory } from "../../../../WorkerFactory";
+import { ObjectAPI } from "../../../../Objects/ObjectAPI";
+import { WorkerDataAccessor } from "../../../../Data/Accessor/Strategy/WorkerDataAccessor";
+import { CesiumUtils } from "../../../../Utils/CesiumUtils";
 
 export class OffscreenRenderer extends BaseRenderer {
-    private worker = WorkerFactory.createWorker('CommandReciver');
+    private worker = WorkerFactory.createWorker("CommandReciver");
     private wrapper = wrap<CommandReciver>(this.worker);
     constructor() {
         super();
-        this.name = 'OffscreenRendererProxy';
+        this.name = "OffscreenRendererProxy";
         const canvas = this.createCanvasElement();
         if (canvas) this.setCanvasToOffscreenCanvas(canvas);
     }
@@ -46,9 +46,12 @@ export class OffscreenRenderer extends BaseRenderer {
     }
 
     async add(object: Object3D) {
-        const id = await CoreThreadCommand.excuteAPI(this.wrapper, 'SceneComponentAPI', 'add', [
-            object.toJSON(),
-        ]);
+        const id = await CoreThreadCommand.excuteAPI(
+            this.wrapper,
+            "SceneComponentAPI",
+            "add",
+            [object.toJSON()]
+        );
 
         return new ObjectAPI(id, new WorkerDataAccessor(this.worker, id));
     }
@@ -62,20 +65,20 @@ export class OffscreenRenderer extends BaseRenderer {
             return;
         }
 
-        const canvas = document.createElement('canvas');
+        const canvas = document.createElement("canvas");
 
         context.container.appendChild(canvas);
 
         const root = context.viewer.container.parentElement;
         if (!root) {
-            throw new Error('cannot fond parent element');
+            throw new Error("cannot fond parent element");
         } else {
             root.appendChild(context.container);
         }
 
         if (context.viewer.useDefaultRenderLoop) {
             console.warn(
-                'Please set Cesium viewer.useDefaultRenderLoop = false for syncronize animation frame to this plug-in'
+                "Please set Cesium viewer.useDefaultRenderLoop = false for syncronize animation frame to this plug-in"
             );
         }
 
@@ -83,17 +86,22 @@ export class OffscreenRenderer extends BaseRenderer {
     }
 
     async setSize(width: number, height: number) {
-        await CoreThreadCommand.excuteAPI(this.wrapper, 'RendererComponentAPI', 'setSize', [
-            width,
-            height,
-        ]);
+        await CoreThreadCommand.excuteAPI(
+            this.wrapper,
+            "RendererComponentAPI",
+            "setSize",
+            [width, height]
+        );
         return this;
     }
 
     async setCamera(param: PerspectiveCameraInitParam) {
-        await CoreThreadCommand.excuteAPI(this.wrapper, 'CameraComponentAPI', 'initCamera', [
-            param,
-        ]);
+        await CoreThreadCommand.excuteAPI(
+            this.wrapper,
+            "CameraComponentAPI",
+            "initCamera",
+            [param]
+        );
         return this;
     }
 
@@ -110,8 +118,8 @@ export class OffscreenRenderer extends BaseRenderer {
                 // 내부 오브젝트 포지션 계산을 중지하여, 가까운 물체의 가시성이 삭제되는 현상 보완
                 await CoreThreadCommand.excuteAPI(
                     this.wrapper,
-                    'WorkerRenderer',
-                    'setRenderBehindEarthOfObjects',
+                    "WorkerRenderer",
+                    "setRenderBehindEarthOfObjects",
                     [threadhold]
                 );
             }
@@ -120,7 +128,9 @@ export class OffscreenRenderer extends BaseRenderer {
         // SYNC Camera
         {
             const cvm = new Float64Array(context.viewer.camera.viewMatrix);
-            const civm = new Float64Array(context.viewer.camera.inverseViewMatrix);
+            const civm = new Float64Array(
+                context.viewer.camera.inverseViewMatrix
+            );
 
             const args = { cvm: cvm, civm: civm };
             const transfer = [cvm.buffer, civm.buffer];
@@ -134,6 +144,9 @@ export class OffscreenRenderer extends BaseRenderer {
         }
 
         // Render Request
-        await CoreThreadCommand.excuteCommand(this.worker, CoreThreadCommands.RENDER);
+        await CoreThreadCommand.excuteCommand(
+            this.worker,
+            CoreThreadCommands.RENDER
+        );
     }
 }

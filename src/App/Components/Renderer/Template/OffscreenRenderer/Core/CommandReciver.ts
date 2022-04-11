@@ -1,11 +1,11 @@
-import { expose } from 'comlink';
-import { Cesium3Synchronization } from '../../../../../Utils/Synchronization';
-import { WorkerRenderSyncer } from './WorkerRenderSyncer';
-import { ObjectData } from '../../../../../Data/ObjectData';
-import { CameraComponent } from '../../../../Camera/CameraComponent';
-import { SceneComponent } from '../../../../Scene/SceneComponent';
-import { WebGLRendererComponent } from '../../WebGLRenderer';
-import { WorkerRenderer } from './WorkerRenderer';
+import { expose } from "comlink";
+import { Cesium3Synchronization } from "../../../../../Utils/Synchronization";
+import { WorkerRenderSyncer } from "./WorkerRenderSyncer";
+import { ObjectData } from "../../../../../Data/ObjectData";
+import { CameraComponent } from "../../../../Camera/CameraComponent";
+import { SceneComponent } from "../../../../Scene/SceneComponent";
+import { WebGLRendererComponent } from "../../WebGLRenderer";
+import { WorkerRenderer } from "./WorkerRenderer";
 
 export const API_MAP = {
     CameraComponentAPI: CameraComponent.API,
@@ -17,7 +17,8 @@ export const API_MAP = {
 
 export type API_MAP_Spec = typeof API_MAP;
 export type API_MAP_APIKeys = keyof API_MAP_Spec;
-export type API_MAP_APIFunctions<K extends API_MAP_APIKeys> = keyof API_MAP_Spec[K];
+export type API_MAP_APIFunctions<K extends API_MAP_APIKeys> =
+    keyof API_MAP_Spec[K];
 
 export type API_MAP_APIFuntion<
     K extends API_MAP_APIKeys,
@@ -27,12 +28,16 @@ export type API_MAP_APIFuntion<
 export type API_MAP_APIFunctionArgs<
     K extends API_MAP_APIKeys,
     V extends API_MAP_APIFunctions<K>
-> = API_MAP_APIFuntion<K, V> extends (...args: infer argsType) => any ? argsType : never;
+> = API_MAP_APIFuntion<K, V> extends (...args: infer argsType) => any
+    ? argsType
+    : never;
 
 export type API_MAP_APIFuntionReturnType<
     K extends API_MAP_APIKeys,
     V extends API_MAP_APIFunctions<K>
-> = API_MAP_APIFuntion<K, V> extends (...args: any) => infer returnType ? returnType : any;
+> = API_MAP_APIFuntion<K, V> extends (...args: any) => infer returnType
+    ? returnType
+    : any;
 
 export enum CoreThreadCommands {
     RENDER,
@@ -41,7 +46,7 @@ export enum CoreThreadCommands {
 }
 
 function isCoreThreadCommand(object: any): object is ICoreThreadCommand {
-    return typeof (<ICoreThreadCommand>object).runCommand === 'number';
+    return typeof (<ICoreThreadCommand>object).runCommand === "number";
 }
 
 export interface ICoreThreadCommand {

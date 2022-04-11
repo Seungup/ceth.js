@@ -1,10 +1,10 @@
-import { EARTH_RADIUS_METER } from '../../Constant';
+import { EARTH_RADIUS_METER } from "../../Constant";
 
-export * from './Cartesian3';
-export * from './Ellipsoid';
-export * from './Quration';
-export * from './Transforms';
-export * from './WGS84';
+export * from "./Cartesian3";
+export * from "./Ellipsoid";
+export * from "./Quration";
+export * from "./Transforms";
+export * from "./WGS84";
 
 export const EPSILON_01 = 0.1;
 export const EPSILON_02 = 0.01;
@@ -50,7 +50,12 @@ export function randomOffset(epsilon: number = EPSILON_06) {
  * @param lon2
  * @returns
  */
-export function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
+export function haversine(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+) {
     const R = EARTH_RADIUS_METER; // metres
     const DEG2RAD = Math.PI / 180;
     const φ1 = lat1 * DEG2RAD; // φ, λ in radians
@@ -106,7 +111,9 @@ export function equalsEpsilon(
 ) {
     const absDiff = Math.abs(left - right);
     if (absDiff <= absoluteEpsilon) return true;
-    return absDiff <= relativeEpsilon * Math.max(Math.abs(left), Math.abs(right));
+    return (
+        absDiff <= relativeEpsilon * Math.max(Math.abs(left), Math.abs(right))
+    );
 }
 
 /**

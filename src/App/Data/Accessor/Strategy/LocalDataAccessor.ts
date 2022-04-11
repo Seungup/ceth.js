@@ -1,9 +1,9 @@
-import { DataAccessor } from '../DataAccessor';
+import { DataAccessor } from "../DataAccessor";
 
-import * as THREE from 'three';
-import { ObjectData } from '../../ObjectData';
-import { Cesium3Synchronization } from '../../../Utils/Synchronization';
-import { IWGS84, WGS84_ACTION } from '../../../Math';
+import * as THREE from "three";
+import { ObjectData } from "../../ObjectData";
+import { Cesium3Synchronization } from "../../../Utils/Synchronization";
+import { IWGS84, WGS84_ACTION } from "../../../Math";
 
 export class LocalDataAccessor implements DataAccessor {
     private readonly scene: THREE.Scene;
@@ -30,12 +30,19 @@ export class LocalDataAccessor implements DataAccessor {
         });
     }
 
-    setWGS84(wgs84: IWGS84, action: WGS84_ACTION = WGS84_ACTION.NONE): Promise<void> {
+    setWGS84(
+        wgs84: IWGS84,
+        action: WGS84_ACTION = WGS84_ACTION.NONE
+    ): Promise<void> {
         return new Promise((resolve, reject) => {
             const object = this.scene.getObjectById(this.id);
             if (object) {
                 ObjectData.setPositionRotationScaleByObject3D(object);
-                Cesium3Synchronization.syncObject3DPosition(object, wgs84, action);
+                Cesium3Synchronization.syncObject3DPosition(
+                    object,
+                    wgs84,
+                    action
+                );
                 resolve();
             } else {
                 reject();

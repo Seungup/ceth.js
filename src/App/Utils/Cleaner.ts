@@ -1,4 +1,4 @@
-import { Object3D } from 'three';
+import { Object3D } from "three";
 
 export function disposeObject3D(obj: Object3D) {
     while (obj.children.length > 0) {
@@ -19,7 +19,7 @@ export function disposeObject3D(obj: Object3D) {
                 // @ts-ignore
                 obj.material[prop] !== null &&
                 // @ts-ignore
-                typeof obj.material[prop].dispose === 'function'
+                typeof obj.material[prop].dispose === "function"
             ) {
                 // @ts-ignore
                 obj.material[prop].dispose();

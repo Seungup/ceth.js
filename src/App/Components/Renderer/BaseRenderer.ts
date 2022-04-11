@@ -1,10 +1,10 @@
-import * as THREE from 'three';
-import { CameraComponent } from '../Camera/CameraComponent';
-import { SceneComponent } from '../Scene/SceneComponent';
-import { ApplicationContext } from '../../Contexts/ApplicationContext';
-import { LocalDataAccessor } from '../../Data/Accessor/Strategy/LocalDataAccessor';
-import { ObjectAPI } from '../../Objects/ObjectAPI';
-import { Cesium3Synchronization } from '../../Utils/Synchronization';
+import * as THREE from "three";
+import { CameraComponent } from "../Camera/CameraComponent";
+import { SceneComponent } from "../Scene/SceneComponent";
+import { ApplicationContext } from "../../Contexts/ApplicationContext";
+import { LocalDataAccessor } from "../../Data/Accessor/Strategy/LocalDataAccessor";
+import { ObjectAPI } from "../../Objects/ObjectAPI";
+import { Cesium3Synchronization } from "../../Utils/Synchronization";
 
 export interface PerspectiveCameraInitParam {
     aspect: number;
@@ -27,7 +27,7 @@ export interface IRendererTemplate {
 }
 
 export class BaseRenderer implements IRendererTemplate {
-    name: string = 'RendererTemplate';
+    name: string = "RendererTemplate";
     protected renderer: IRenderer | undefined;
 
     /**
@@ -87,6 +87,9 @@ export class BaseRenderer implements IRendererTemplate {
         const scene = SceneComponent.scene;
         scene.add(object);
 
-        return await new ObjectAPI(object.id, new LocalDataAccessor(scene, object.id)).updateAll();
+        return await new ObjectAPI(
+            object.id,
+            new LocalDataAccessor(scene, object.id)
+        ).updateAll();
     }
 }

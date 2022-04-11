@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from "three";
 
 export namespace Manager {
     const managerMap = new Map<string, Interface>();
@@ -12,7 +12,9 @@ export namespace Manager {
         }
     };
 
-    export const getClass = <T extends Interface>(hashKey: string): T | undefined => {
+    export const getClass = <T extends Interface>(
+        hashKey: string
+    ): T | undefined => {
         const manager = managerMap.get(hashKey);
         if (manager) {
             return manager as T;
@@ -21,12 +23,14 @@ export namespace Manager {
 
     export const getManagerAccessKey = <
         TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
-        TMaterial extends THREE.Material | THREE.Material[] = THREE.Material | THREE.Material[]
+        TMaterial extends THREE.Material | THREE.Material[] =
+            | THREE.Material
+            | THREE.Material[]
     >(
         geometry: TGeometry,
         material: TMaterial
     ) => {
-        let matrialType: string = '';
+        let matrialType: string = "";
 
         if (material instanceof THREE.Material) {
             matrialType = material.type;
@@ -41,7 +45,9 @@ export namespace Manager {
 
     export interface Interface<
         TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
-        TMaterial extends THREE.Material | THREE.Material[] = THREE.Material | THREE.Material[]
+        TMaterial extends THREE.Material | THREE.Material[] =
+            | THREE.Material
+            | THREE.Material[]
     > {
         geometry: TGeometry;
         material: TMaterial;

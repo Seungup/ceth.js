@@ -1,7 +1,7 @@
-import { Viewer } from 'cesium';
-import { ApplicationContext } from './Contexts/ApplicationContext';
-import { RendererContext } from './Contexts/RendererContext';
-import { RendererMap } from './Components/Renderer';
+import { Viewer } from "cesium";
+import { ApplicationContext } from "./Contexts/ApplicationContext";
+import { RendererContext } from "./Contexts/RendererContext";
+import { RendererMap } from "./Components/Renderer";
 
 export namespace Cesium3 {
     let isInit = false;

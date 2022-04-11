@@ -1,12 +1,12 @@
-import { wrap, Remote } from 'comlink';
-import type { CommandReciver } from './Components/Renderer/Template/OffscreenRenderer/Core/CommandReciver';
+import { wrap, Remote } from "comlink";
+import type { CommandReciver } from "./Components/Renderer/Template/OffscreenRenderer/Core/CommandReciver";
 
 interface WorkerMap {
     CommandReciver: CommandReciver;
 }
 const WorkerURL = {
     CommandReciver: new URL(
-        './Components/Renderer/Template/OffscreenRenderer/Core/CommandReciver',
+        "./Components/Renderer/Template/OffscreenRenderer/Core/CommandReciver",
         import.meta.url
     ),
 } as const;
@@ -20,7 +20,7 @@ export class WorkerFactory {
      * @returns
      */
     static createWorker<T extends keyof WorkerMap>(workerClassName: T): Worker {
-        return new Worker(WorkerURL[workerClassName], { type: 'module' });
+        return new Worker(WorkerURL[workerClassName], { type: "module" });
     }
 
     /**

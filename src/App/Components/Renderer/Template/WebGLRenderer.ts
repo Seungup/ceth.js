@@ -1,4 +1,4 @@
-import { sRGBEncoding, WebGLRenderer, WebGLRendererParameters } from 'three';
+import { sRGBEncoding, WebGLRenderer, WebGLRendererParameters } from "three";
 
 export namespace WebGLRendererComponent {
     export let renderer: WebGLRenderer | undefined;
@@ -13,12 +13,12 @@ export namespace WebGLRendererComponent {
      */
     export const initRenderer = (param: InitParameter) => {
         if (renderer) {
-            console.warn('The initialized Render has been reinitialized.');
+            console.warn("The initialized Render has been reinitialized.");
         }
 
         const params: WebGLRendererParameters = {
             canvas: param.canvas,
-            powerPreference: 'high-performance',
+            powerPreference: "high-performance",
             alpha: true,
             logarithmicDepthBuffer: true,
             depth: false,
@@ -27,7 +27,7 @@ export namespace WebGLRendererComponent {
             premultipliedAlpha: false,
         };
 
-        const context = param.canvas.getContext('webgl2');
+        const context = param.canvas.getContext("webgl2");
         if (context) {
             params.context = context;
         }
@@ -49,7 +49,9 @@ export namespace WebGLRendererComponent {
             if (renderer) {
                 renderer.setSize(width, height, false);
             } else {
-                console.warn('setRenderSize was called without Render initialization.');
+                console.warn(
+                    "setRenderSize was called without Render initialization."
+                );
             }
         };
     }

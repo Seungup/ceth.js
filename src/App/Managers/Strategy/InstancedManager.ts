@@ -1,12 +1,14 @@
-import * as THREE from 'three';
-import { Manager } from '../Manager';
+import * as THREE from "three";
+import { Manager } from "../Manager";
 
 /**
  * 인스턴스 메시의 관리를 위한 메니저 클래스입니다.
  */
 export class InstancedManager<
     TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
-    TMaterial extends THREE.Material | THREE.Material[] = THREE.Material | THREE.Material[]
+    TMaterial extends THREE.Material | THREE.Material[] =
+        | THREE.Material
+        | THREE.Material[]
 > implements Manager.Interface
 {
     private readonly instancedMesh: THREE.InstancedMesh<TGeometry, TMaterial>;
@@ -36,7 +38,9 @@ export class InstancedManager<
         scene.add(this.instancedMesh);
     }
 
-    traverse(callback: { (matrix: THREE.Matrix4, position: THREE.Vector3, id: number): void }) {
+    traverse(callback: {
+        (matrix: THREE.Matrix4, position: THREE.Vector3, id: number): void;
+    }) {
         const matrix = new THREE.Matrix4();
         const position = new THREE.Vector3();
         this.entityIdArray.forEach((id, index) => {
@@ -50,7 +54,7 @@ export class InstancedManager<
         const index = this.entityIdArray.findIndex((el) => el === id);
 
         if (index === -1) {
-            console.error('cannot found element in current array.');
+            console.error("cannot found element in current array.");
             return false;
         }
 
@@ -59,7 +63,7 @@ export class InstancedManager<
     }
 
     getHash(): string {
-        let matrialType: string = '';
+        let matrialType: string = "";
 
         if (this.instancedMesh.material instanceof THREE.Material) {
             matrialType = this.instancedMesh.material.type;
@@ -82,7 +86,11 @@ export class InstancedManager<
         return this.entityDataMap.get(id);
     }
 
-    add(matrix: THREE.Matrix4, visible: boolean = true, userData?: { [key: string]: any }): number {
+    add(
+        matrix: THREE.Matrix4,
+        visible: boolean = true,
+        userData?: { [key: string]: any }
+    ): number {
         this.entityIdArray.push(++this.id_counter);
         if (userData) {
             this.entityDataMap.set(this.id_counter, userData);
@@ -117,7 +125,7 @@ export class InstancedManager<
         const index = this.entityIdArray.findIndex((el) => el === id);
 
         if (index === -1) {
-            console.error('cannot found element in current array.');
+            console.error("cannot found element in current array.");
             return false;
         }
 
@@ -143,7 +151,7 @@ export class InstancedManager<
     setVisibiltiy(id: number, visible: boolean): void {
         const n = this.entityIdArray.findIndex((el) => el === id);
         if (n === -1) {
-            console.error('cannot found element in current array');
+            console.error("cannot found element in current array");
             return;
         }
         if (visible) {

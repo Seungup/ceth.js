@@ -1,8 +1,10 @@
-import { CameraComponent } from '../../Camera/CameraComponent';
-import { ObjectPositionCheckStrategy } from './ObjectPositionChecker';
-import * as THREE from 'three';
+import { CameraComponent } from "../../Camera/CameraComponent";
+import { ObjectPositionCheckStrategy } from "./ObjectPositionChecker";
+import * as THREE from "three";
 
-export class DefaultObjectPositionChecker implements ObjectPositionCheckStrategy {
+export class DefaultObjectPositionChecker
+    implements ObjectPositionCheckStrategy
+{
     protected _camera = CameraComponent.perspectiveCamera;
 
     protected cameraToPoint = new THREE.Vector3();

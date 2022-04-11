@@ -1,5 +1,5 @@
-import { Matrix4 } from 'three';
-import { Cartesian3, Transforms } from '.';
+import { Matrix4 } from "three";
+import { Cartesian3, Transforms } from ".";
 
 export interface IWGS84 {
     latitude: number;
@@ -48,11 +48,13 @@ export class CT_WGS84 {
 
     toString() {
         const atl = this.position.height / 1000;
-        let str = '';
+        let str = "";
         if (atl > 1) {
             str = `${Number(atl.toFixed(1)).toLocaleString()}km`;
         } else {
-            str = `${Number(this.position.height.toFixed(1)).toLocaleString()}m`;
+            str = `${Number(
+                this.position.height.toFixed(1)
+            ).toLocaleString()}m`;
         }
         return `Lat: ${this.position.latitude}\nLon: ${this.position.longitude}\nAlt: ${str}`;
     }

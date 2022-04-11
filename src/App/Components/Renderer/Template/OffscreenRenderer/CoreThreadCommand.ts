@@ -5,8 +5,8 @@ import {
     API_MAP_APIKeys,
     CommandReciver,
     CoreThreadCommands,
-} from './Core/CommandReciver';
-import { Remote } from 'comlink';
+} from "./Core/CommandReciver";
+import { Remote } from "comlink";
 
 export namespace CoreThreadCommand {
     /**

@@ -1,6 +1,6 @@
-import { Vector3 } from 'three';
-import { CT_WGS84, IWGS84, WGS84_ACTION } from '../Math';
-import { DataAccessor } from '../Data/Accessor/DataAccessor';
+import { Vector3 } from "three";
+import { CT_WGS84, IWGS84, WGS84_ACTION } from "../Math";
+import { DataAccessor } from "../Data/Accessor/DataAccessor";
 
 // TODO : Context에 맞게 수정될 수 있도록 변경해야함.
 export class ObjectAPI {

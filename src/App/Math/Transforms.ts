@@ -1,6 +1,6 @@
-import { Matrix4 } from 'three';
-import { Ellipsoid } from './Ellipsoid';
-import { Cartesian3 } from './Cartesian3';
+import { Matrix4 } from "three";
+import { Ellipsoid } from "./Ellipsoid";
+import { Cartesian3 } from "./Cartesian3";
 
 export class Transforms {
     private static scratchFirstCartesian: Cartesian3;
@@ -12,13 +12,18 @@ export class Transforms {
         up: new Cartesian3(),
     };
 
-    static eastNorthUpToFixedFrame(origin: Cartesian3, result: Matrix4 = new Matrix4()) {
+    static eastNorthUpToFixedFrame(
+        origin: Cartesian3,
+        result: Matrix4 = new Matrix4()
+    ) {
         Ellipsoid.getDefaultWGS84RadiiSquaredGeodticSurfaceNormal(
             origin,
             this.scratchCalculateCartesian.up
         );
 
-        this.scratchCalculateCartesian.east.set(-origin.y, origin.x, 0.0).normalizeByMagnitude();
+        this.scratchCalculateCartesian.east
+            .set(-origin.y, origin.x, 0.0)
+            .normalizeByMagnitude();
 
         this.scratchCalculateCartesian.north
             .copy(this.scratchCalculateCartesian.up)
@@ -42,6 +47,8 @@ export class Transforms {
         matrix: Matrix4 = new Matrix4(),
         result: Matrix4 = new Matrix4()
     ) {
-        return result.copy(this.eastNorthUpToFixedFrame(origin)).multiply(matrix);
+        return result
+            .copy(this.eastNorthUpToFixedFrame(origin))
+            .multiply(matrix);
     }
 }

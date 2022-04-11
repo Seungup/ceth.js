@@ -1,5 +1,5 @@
-import { Box3, Euler, Object3D, Vector3 } from 'three';
-import { IWGS84 } from '../Math';
+import { Box3, Euler, Object3D, Vector3 } from "three";
+import { IWGS84 } from "../Math";
 
 export namespace ObjectData {
     interface PositionRotationScale {

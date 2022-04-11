@@ -1,11 +1,18 @@
-import { Box3, BufferGeometry, Material, Object3D, ObjectLoader, Scene } from 'three';
-import { CT_WGS84, IWGS84, WGS84_ACTION } from '../../Math';
-import { Cesium3Synchronization } from '../../Utils/Synchronization';
-import { ObjectData } from '../../data/ObjectData';
-import { disposeObject3D } from '../../Utils/Cleaner';
-import { Manager } from '../../Managers/Manager';
-import { InstancedManager } from '../../Managers/Strategy/InstancedManager';
-import { Visibility } from 'cesium';
+import {
+    Box3,
+    BufferGeometry,
+    Material,
+    Object3D,
+    ObjectLoader,
+    Scene,
+} from "three";
+import { CT_WGS84, IWGS84, WGS84_ACTION } from "../../Math";
+import { Cesium3Synchronization } from "../../Utils/Synchronization";
+import { ObjectData } from "../../data/ObjectData";
+import { disposeObject3D } from "../../Utils/Cleaner";
+import { Manager } from "../../Managers/Manager";
+import { InstancedManager } from "../../Managers/Strategy/InstancedManager";
+import { Visibility } from "cesium";
 
 interface IObjectCallbackFunction<T> {
     onSuccess(object: Object3D): T;
@@ -41,7 +48,7 @@ export namespace SceneComponent {
         ) => {
             let object: Object3D | undefined;
 
-            if (typeof id === 'number') {
+            if (typeof id === "number") {
                 getObject(id, {
                     onSuccess(result) {
                         object = result;
@@ -70,11 +77,13 @@ export namespace SceneComponent {
                     object.rotation.copy(rps.rotation);
                     object.scale.copy(rps.scale);
 
-                    Cesium3Synchronization.syncObject3DPosition(object, wgs84, action).then(
-                        (result) => {
-                            ObjectData.setWGS84(result.object.id, result.wgs84);
-                        }
-                    );
+                    Cesium3Synchronization.syncObject3DPosition(
+                        object,
+                        wgs84,
+                        action
+                    ).then((result) => {
+                        ObjectData.setWGS84(result.object.id, result.wgs84);
+                    });
                 }
             }
         };
@@ -182,14 +191,21 @@ export namespace SceneComponent {
             }
         }
 
-        export function dynamicDelete(managerAccessKey: string, objectId: number) {
+        export function dynamicDelete(
+            managerAccessKey: string,
+            objectId: number
+        ) {
             let manager = Manager.getClass(managerAccessKey);
             if (manager) {
                 manager.delete(objectId);
             }
         }
 
-        export function dynamicVisible(managerAccessKey: string, id: number, visible: boolean) {
+        export function dynamicVisible(
+            managerAccessKey: string,
+            id: number,
+            visible: boolean
+        ) {
             let manager = Manager.getClass(managerAccessKey);
             if (manager) {
                 manager.setVisibiltiy(id, visible);

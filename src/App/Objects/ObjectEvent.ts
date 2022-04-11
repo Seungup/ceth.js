@@ -1,5 +1,5 @@
-import { Subject } from 'rxjs';
-import { ApplicationContext } from '../Contexts/ApplicationContext';
+import { Subject } from "rxjs";
+import { ApplicationContext } from "../Contexts/ApplicationContext";
 
 export class ObjectEvent {
     private readonly onKeyDownSubject = new Subject<KeyboardEvent>();
@@ -12,17 +12,18 @@ export class ObjectEvent {
     readonly onContextMenu = this.onContextMenuSubject.pipe();
 
     constructor() {
-        const root = ApplicationContext.getInstance().viewer?.container.parentElement;
-        root?.addEventListener('keydown', (event) => {
+        const root =
+            ApplicationContext.getInstance().viewer?.container.parentElement;
+        root?.addEventListener("keydown", (event) => {
             this.onKeyDownSubject.next(event);
         });
-        root?.addEventListener('pointermove', (event) => {
+        root?.addEventListener("pointermove", (event) => {
             this.onPointerMoveSubject.next(event);
         });
-        root?.addEventListener('contextmenu', (event) => {
+        root?.addEventListener("contextmenu", (event) => {
             this.onContextMenuSubject.next(event);
         });
-        root?.addEventListener('dblclick', (event) => {
+        root?.addEventListener("dblclick", (event) => {
             this.onDblclickSubject.next(event);
         });
     }

@@ -1,6 +1,6 @@
-import { ApplicationContext } from './ApplicationContext';
-import * as Cesium from 'cesium';
-import { RendererMap, RendererTemplate } from '../Components/Renderer';
+import { ApplicationContext } from "./ApplicationContext";
+import * as Cesium from "cesium";
+import { RendererMap, RendererTemplate } from "../Components/Renderer";
 
 interface RendererState {
     lock: boolean;

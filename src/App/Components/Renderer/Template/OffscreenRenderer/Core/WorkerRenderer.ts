@@ -1,9 +1,9 @@
-import { Object3D, Scene, Vector3 } from 'three';
-import { CameraComponent } from '../../../../Camera/CameraComponent';
-import { WebGLRendererComponent } from '../../WebGLRenderer';
-import { SceneComponent } from '../../../../Scene/SceneComponent';
-import { DefaultObjectPositionChecker } from '../../../Strategy/DefaultObjectRender';
-import { ObjectPositionChecker } from '../../../Strategy/ObjectPositionChecker';
+import { Object3D, Scene, Vector3 } from "three";
+import { CameraComponent } from "../../../../Camera/CameraComponent";
+import { WebGLRendererComponent } from "../../WebGLRenderer";
+import { SceneComponent } from "../../../../Scene/SceneComponent";
+import { DefaultObjectPositionChecker } from "../../../Strategy/DefaultObjectRender";
+import { ObjectPositionChecker } from "../../../Strategy/ObjectPositionChecker";
 
 export namespace WorkerRenderer {
     // 지구 뒷편 오브젝트 렌더링 여부
@@ -32,7 +32,7 @@ export namespace WorkerRenderer {
             }
 
             if (
-                (typeof camera.userData.updated === 'boolean' &&
+                (typeof camera.userData.updated === "boolean" &&
                     camera.userData.updated === true) ||
                 skipedFrame >= MAXIUM_SKIBBLE_FRAME_COUNT
             ) {
