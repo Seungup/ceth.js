@@ -13,6 +13,7 @@ import { IWGS84, WGS84_ACTION } from "../../../../Math";
 import { WorkerDataAccessor } from "../../../../Data/Accessor/Strategy/WorkerDataAccessor";
 import { InstanceDataAccessor } from "../../../../Data/Accessor/Strategy/InstanceDataAccessor";
 import { THREEUtils } from "../../../../Utils/ThreeUtils";
+import { DataAccessor } from "../../../../Data/Accessor/DataAccessor";
 
 export class MultipleOffscreenRenderer extends BaseRenderer {
     constructor(
@@ -64,7 +65,7 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         wgs84: IWGS84,
         action?: WGS84_ACTION,
         visibility: boolean = true
-    ) {
+    ): Promise<DataAccessor> {
         if (this.workerArray.length <= at || at < 0) {
             throw new Error(`BufferFlowError : cannot access at ${at} `);
         }
@@ -98,7 +99,7 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         at: number,
         position?: IWGS84,
         action?: WGS84_ACTION
-    ) {
+    ): Promise<DataAccessor> {
         if (this.workerArray.length <= at || at < 0) {
             throw new Error(`BufferFlowError : cannot access at ${at} `);
         }

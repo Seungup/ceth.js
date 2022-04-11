@@ -8,7 +8,7 @@ export namespace Cesium3 {
 
     export const init = (viewer: Viewer) => {
         if (!isInit) {
-            ApplicationContext.getInstance().setViewer(viewer);
+            ApplicationContext.setViewer(viewer);
             isInit = true;
         }
     };
@@ -20,12 +20,7 @@ export namespace Cesium3 {
 
     export const Renderers = RendererMap;
 
-    let rendererContext: RendererContext | undefined = undefined;
-
     export const render = () => {
-        if (!rendererContext) {
-            rendererContext = RendererContext.getInstance();
-        }
-        rendererContext.render();
+        RendererContext.render();
     };
 }

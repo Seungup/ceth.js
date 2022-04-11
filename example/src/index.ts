@@ -61,11 +61,13 @@ const { API, object, DataAccessorArray } = initGUI();
 
 async function addObject(posiiton: { latitude: number; longitude: number }) {
     const count = API.count;
+
+    const renderer = RendererContext.getRenderer("MultipleOffscreenRenderer");
+
     let dataAccessor: DataAccessor;
+
     for (let i = 0; i < count; i++) {
-        dataAccessor = await RendererContext.getRenderer(
-            "MultipleOffscreenRenderer"
-        ).dynamicAppend(
+        dataAccessor = await renderer.dynamicAppend(
             object.clone(),
             randInt(0, CANVAS_COUNT - 1),
             {
@@ -84,8 +86,6 @@ async function addObject(posiiton: { latitude: number; longitude: number }) {
     }
 }
 
-new ObjectEvent().onContextMenu.subscribe(async (event) => {
-    console.time("ADD");
-    await addObject(CesiumUtils.getLongitudeLatitudeByMouseEvent(event));
-    console.timeEnd("ADD");
+new ObjectEvent().onContextMenu.subscribe((event) => {
+    addObject(CesiumUtils.getLongitudeLatitudeByMouseEvent(event));
 });
