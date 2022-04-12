@@ -15,7 +15,7 @@ export namespace SceneComponent {
     export const scene = new Scene();
     const objectLoader = new ObjectLoader();
 
-    function getObject<T>(id: number, cb: IObjectCallbackFunction<T>) {
+    const getObject = <T>(id: number, cb: IObjectCallbackFunction<T>) => {
         const object = scene.getObjectById(id);
         if (object) {
             return cb.onSuccess(object);
@@ -24,7 +24,7 @@ export namespace SceneComponent {
                 cb.onError();
             }
         }
-    }
+    };
 
     export namespace API {
         /**
@@ -33,11 +33,11 @@ export namespace SceneComponent {
          * @param wgs84
          * @param action
          */
-        export function setObjectPosition(
+        export const setObjectPosition = (
             id: number | Object3D,
             wgs84: IWGS84,
             action: WGS84_ACTION = WGS84_ACTION.NONE
-        ) {
+        ) => {
             let object: Object3D | undefined;
 
             if (typeof id === "number") {
@@ -78,7 +78,7 @@ export namespace SceneComponent {
                     });
                 }
             }
-        }
+        };
 
         /**
          * 오브젝트를 추가합니다.
@@ -87,11 +87,11 @@ export namespace SceneComponent {
          * @param action
          * @returns
          */
-        export async function add(
+        export const add = async (
             json: any,
             wgs84?: IWGS84,
             action: WGS84_ACTION = WGS84_ACTION.NONE
-        ) {
+        ) => {
             const object = objectLoader.parse(json);
 
             ObjectData.setBox3ByObject3D(object);
@@ -106,7 +106,7 @@ export namespace SceneComponent {
             scene.add(object);
 
             return object.id;
-        }
+        };
 
         /**
          *
@@ -114,7 +114,7 @@ export namespace SceneComponent {
          * @param option
          * @returns
          */
-        export function dynamicAppend(
+        export const dynamicAppend = (
             json: any,
             option: {
                 position: {
@@ -123,7 +123,7 @@ export namespace SceneComponent {
                 };
                 visibility?: boolean;
             }
-        ) {
+        ) => {
             const object = THREEUtils.getTypeSafeObject3D(
                 objectLoader.parse(json)
             );
@@ -182,36 +182,36 @@ export namespace SceneComponent {
                     objectId: id,
                 };
             }
-        }
+        };
 
-        export function getDynamicPosition(
+        export const getDynamicPosition = (
             managerAccessKey: string,
             objectId: number
-        ): IWGS84 | undefined {
+        ): IWGS84 | undefined => {
             let manager = Manager.getClass<InstancedManager>(managerAccessKey);
 
             if (manager) {
                 return manager.getUserData(objectId)?.wgs84;
             }
-        }
+        };
 
-        export function getDynamicBox3Max(
+        export const getDynamicBox3Max = (
             managerAccessKey: string,
             objectId: number
-        ): Vector3 | undefined {
+        ): Vector3 | undefined => {
             let manager = Manager.getClass<InstancedManager>(managerAccessKey);
 
             if (manager) {
                 return manager.getUserData(objectId)?.box3.max;
             }
-        }
+        };
 
-        export function dynamicUpdate(
+        export const dynamicUpdate = (
             managerAccessKey: string,
             objectId: number,
             wgs84: IWGS84,
             action: WGS84_ACTION = WGS84_ACTION.NONE
-        ) {
+        ) => {
             let manager = Manager.getClass(managerAccessKey);
             if (manager) {
                 return manager.update(
@@ -219,12 +219,12 @@ export namespace SceneComponent {
                     new CT_WGS84(wgs84, action).getMatrix4()
                 );
             }
-        }
+        };
 
-        export function dynamicDelete(
+        export const dynamicDelete = (
             managerAccessKey: string,
             objectId: number
-        ) {
+        ) => {
             let manager = Manager.getClass<InstancedManager>(managerAccessKey);
             if (manager) {
                 manager.delete(objectId);
@@ -232,34 +232,34 @@ export namespace SceneComponent {
                     manager.dispose();
                 }
             }
-        }
+        };
 
-        export function dynamicVisible(
+        export const dynamicVisible = (
             managerAccessKey: string,
             id: number,
             visible: boolean
-        ) {
+        ) => {
             let manager = Manager.getClass(managerAccessKey);
             if (manager) {
                 manager.setVisibiltiy(id, visible);
             }
-        }
+        };
 
         /**
          * 오브젝트를 제거합니다.
          * @param id
          */
-        export function remove(id: number) {
+        export const remove = (id: number) => {
             getObject(id, {
                 onSuccess(object) {
                     THREEUtils.disposeObject3D(object);
                     scene.remove(object);
                 },
             });
-        }
+        };
 
-        export function isExistObject(id: number) {
+        export const isExistObject = (id: number) => {
             return !!scene.getObjectById(id);
-        }
+        };
     }
 }

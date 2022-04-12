@@ -15,7 +15,7 @@ export namespace WorkerRenderer {
     /**
      * 장면을 렌더링합니다.
      */
-    export function render() {
+    export const render = () => {
         /**
          * 렌더링 전략
          *
@@ -41,7 +41,7 @@ export namespace WorkerRenderer {
             }
             camera.userData.updated = false;
         }
-    }
+    };
 
     export namespace API {
         /**
@@ -49,9 +49,9 @@ export namespace WorkerRenderer {
          *
          * @param visible 가시 여부
          */
-        export function setRenderBehindEarthOfObjects(visible: boolean) {
+        export const setRenderBehindEarthOfObjects = (visible: boolean) => {
             renderBehindEarthOfObjects = visible;
-        }
+        };
 
         /**
          * 최대 스킵 가능한 프레임의 개수를 설정합니다.
@@ -59,8 +59,8 @@ export namespace WorkerRenderer {
          * @default 60
          * @param count
          */
-        export function setMaxiumSkibbleFrameCount(count: number) {
+        export const setMaxiumSkibbleFrameCount = (count: number) => {
             MAXIUM_SKIBBLE_FRAME_COUNT = -1 > count ? 0 : count;
-        }
+        };
     }
 }

@@ -4,11 +4,11 @@ import { Observable } from "rxjs";
 export namespace Manager {
     const managerMap = new Map<string, Interface>();
 
-    function onDispose(manager: Interface) {
+    const onDispose = (manager: Interface) => {
         managerMap.delete(manager.hash);
-    }
+    };
 
-    export function registClass(_this: Interface) {
+    export const registClass = (_this: Interface) => {
         if (!getClass(_this.hash)) {
             _this.$dispose.subscribe(onDispose);
 
@@ -16,16 +16,16 @@ export namespace Manager {
         } else {
             console.error(`${_this.hash} manager already exist`);
         }
-    }
+    };
 
-    export function getClass<T extends Interface>(hashKey: string) {
+    export const getClass = <T extends Interface>(hashKey: string) => {
         const manager = managerMap.get(hashKey);
         if (manager) {
             return manager as T;
         }
-    }
+    };
 
-    export function getAllClass<T extends Interface>(baseKey: string) {
+    export const getAllClass = <T extends Interface>(baseKey: string) => {
         const result = new Array<{ manager: T; accessKey: string }>();
 
         for (let [key, manager] of managerMap) {
@@ -36,23 +36,27 @@ export namespace Manager {
         }
 
         return result;
-    }
+    };
 
-    export function getWriteableClass<T extends Interface>(baseKey: string) {
+    export const getWriteableClass = <T extends Interface>(baseKey: string) => {
         for (let [key, manager] of managerMap) {
             const _baseKey = manager.hash.split(`_$`)[0];
             if (_baseKey === baseKey && manager.isAddble()) {
                 return { manager: manager as T, accessKey: key };
             }
         }
-    }
+    };
 
-    export function getHashByGeometryMaterial<
+    export const getHashByGeometryMaterial = <
         TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
         TMaterial extends THREE.Material | THREE.Material[] =
             | THREE.Material
             | THREE.Material[]
-    >(geometry: TGeometry, material: TMaterial, id?: number) {
+    >(
+        geometry: TGeometry,
+        material: TMaterial,
+        id?: number
+    ) => {
         let hash: string = geometry.type;
 
         if (material instanceof THREE.Material) {
@@ -68,7 +72,7 @@ export namespace Manager {
         }
 
         return hash;
-    }
+    };
 
     export interface Interface<
         TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,

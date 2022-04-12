@@ -13,42 +13,42 @@ export namespace ObjectData {
     const wgs84Map = new Map<number, IWGS84>();
 
     export namespace API {
-        export function getPositionRotationScale(id: number) {
+        export const getPositionRotationScale = (id: number) => {
             return RPSMap.get(id);
-        }
+        };
 
-        export function getBox3Max(id: number) {
+        export const getBox3Max = (id: number) => {
             return box3Map.get(id)?.max;
-        }
+        };
 
-        export function getWGS84(id: number) {
+        export const getWGS84 = (id: number) => {
             return wgs84Map.get(id);
-        }
+        };
     }
 
-    export function remove(id: number) {
+    export const remove = (id: number) => {
         RPSMap.delete(id);
         box3Map.delete(id);
         wgs84Map.delete(id);
-    }
+    };
 
-    export function setPositionRotationScaleByObject3D(object: Object3D) {
+    export const setPositionRotationScaleByObject3D = (object: Object3D) => {
         RPSMap.set(object.id, {
             position: object.position.clone(),
             rotation: object.rotation.clone(),
             scale: object.scale.clone(),
         });
-    }
+    };
 
-    export function setBox3ByObject3D(object: Object3D) {
+    export const setBox3ByObject3D = (object: Object3D) => {
         box3Map.set(object.id, new Box3().setFromObject(object));
-    }
+    };
 
-    export function setBox3(id: number, box3: Box3) {
+    export const setBox3 = (id: number, box3: Box3) => {
         box3Map.set(id, box3);
-    }
+    };
 
-    export function setWGS84(id: number, wgs84: IWGS84) {
+    export const setWGS84 = (id: number, wgs84: IWGS84) => {
         wgs84Map.set(id, wgs84);
-    }
+    };
 }

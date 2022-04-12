@@ -16,11 +16,11 @@ export namespace RendererContext {
     /**
      * 모든 사용가능한 렌더러를 잠금니다.
      */
-    export function rockAll() {
+    export const rockAll = () => {
         rendererMap.forEach((data) => {
             data.state.lock = true;
         });
-    }
+    };
 
     /**
      * 모든 사용 가능한 렌더러의 상태를 저장한 후,
@@ -29,7 +29,7 @@ export namespace RendererContext {
      * 콜백 처리가 완료되면, 저장된 상태로 렌더러를 되돌립니다.
      * @param callback
      */
-    export async function safeRun(callback: { (): void | Promise<void> }) {
+    export const safeRun = async (callback: { (): void | Promise<void> }) => {
         try {
             RendererContext.commit();
             RendererContext.rockAll();
@@ -38,8 +38,9 @@ export namespace RendererContext {
             console.error(error);
         } finally {
             RendererContext.rollback();
+            RendererContext.clearCommitedData();
         }
-    }
+    };
 
     /**
      * 렌더러의 상태값을 저장하는 논리맵
@@ -48,24 +49,24 @@ export namespace RendererContext {
     /**
      * 현재 렌더러들의 상태를 저장합니다.
      */
-    export function commit() {
+    export const commit = () => {
         commitedState.clear();
         rendererMap.forEach((value, key) => {
             commitedState.set(key, value.state);
         });
-    }
+    };
 
     /**
      * 저장된 렌더러들의 상태를 초기화합니다.
      */
-    export function clearCommitedData() {
+    export const clearCommitedData = () => {
         commitedState.clear();
-    }
+    };
 
     /**
      * 저장된 상태로 렌더러의 상태를 되돌립니다.
      */
-    export function rollback() {
+    export const rollback = () => {
         let data: RendererValue | undefined;
         commitedState.forEach((value, key) => {
             data = rendererMap.get(key);
@@ -73,25 +74,25 @@ export namespace RendererContext {
                 data.state = value;
             }
         });
-    }
+    };
 
     /**
      * 사용 가능한 모든 렌더러의 잠금을 해제합니다.
      */
-    export function unlockAll() {
+    export const unlockAll = () => {
         rendererMap.forEach((data) => {
             data.state.lock = false;
         });
-    }
+    };
 
     /**
      * 렌더러를 추가합니다.
      * @param renderers
      * @returns
      */
-    export function addRenderer(
+    export const addRenderer = (
         ...renderers: typeof RendererTemplate[] | RendererTemplate[]
-    ) {
+    ) => {
         let renderer: RendererTemplate;
         let data: typeof RendererTemplate | RendererTemplate;
 
@@ -111,7 +112,7 @@ export namespace RendererContext {
         }
 
         return RendererContext;
-    }
+    };
 
     /**
      * 렌더러를 가져옵니다.
@@ -119,60 +120,60 @@ export namespace RendererContext {
      * @throws
      * @returns
      */
-    export function getRenderer<T extends keyof RendererMap>(target: T) {
+    export const getRenderer = <T extends keyof RendererMap>(target: T) => {
         const result = rendererMap.get(target);
         if (result && !result.state.lock) {
             return result.renderer as RendererMap[typeof target];
         }
-    }
+    };
 
     /**
      * 렌더러를 잠급니다.
      * @param target
      */
-    export function lockRenderer<T extends keyof RendererMap>(target: T) {
+    export const lockRenderer = <T extends keyof RendererMap>(target: T) => {
         const result = rendererMap.get(target);
         if (result) {
             result.state.lock = true;
         }
-    }
+    };
 
     /**
      * 잠궈진 렌더러인지 확인합니다.
      * @param target
      * @returns
      */
-    export function isLocked<T extends keyof RendererMap>(target: T) {
+    export const isLocked = <T extends keyof RendererMap>(target: T) => {
         const result = rendererMap.get(target);
         if (result) {
             return result.state.lock;
         }
-    }
+    };
 
     /**
      * 렌더러를 잠금 해제합니다.
      * @param target
      */
-    export function unlockRenderer<T extends keyof RendererMap>(target: T) {
+    export const unlockRenderer = <T extends keyof RendererMap>(target: T) => {
         const result = rendererMap.get(target);
         if (result) {
             result.state.lock = false;
         }
-    }
+    };
 
     /**
      * 렌더러를 삭제합니다.
      * @param target
      * @returns
      */
-    export function removeRenderer<T extends keyof RendererMap>(target: T) {
+    export const removeRenderer = <T extends keyof RendererMap>(target: T) => {
         const data = rendererMap.get(target);
         if (data) {
             data.renderer;
         }
 
         return rendererMap.delete(target);
-    }
+    };
 
     let _oldWidth: number | undefined;
     let _oldHeight: number | undefined;
@@ -181,7 +182,7 @@ export namespace RendererContext {
      * 화면의 크기에 맞춰 렌더러들을 동기화합니다.
      * @returns
      */
-    async function syncScreenRect() {
+    const syncScreenRect = async () => {
         const viewer = ApplicationContext.viewer;
         if (!viewer) return;
 
@@ -206,17 +207,17 @@ export namespace RendererContext {
 
         _oldWidth = width;
         _oldHeight = height;
-    }
+    };
 
     /**
      * 장면을 렌더합니다.
      *
      * 렌더러의 잠김 여부와 관계없이 동작합니다.
      */
-    export async function render() {
+    export const render = async () => {
         await syncScreenRect();
         for (const [_, { renderer }] of rendererMap) {
             renderer.render();
         }
-    }
+    };
 }

@@ -17,7 +17,7 @@ export namespace ApplicationContext {
         container.style.pointerEvents = "none";
     }
 
-    export function setViewer(cesiumViewer: Viewer) {
+    export const setViewer = (cesiumViewer: Viewer) => {
         viewer = cesiumViewer;
 
         const root = viewer.container.parentElement;
@@ -33,5 +33,5 @@ export namespace ApplicationContext {
         }
 
         root.appendChild(container);
-    }
+    };
 }

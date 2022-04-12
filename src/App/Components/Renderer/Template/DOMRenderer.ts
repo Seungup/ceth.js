@@ -18,17 +18,17 @@ export class DOMRenderer extends BaseRenderer {
         super();
         this.name = "DOMRenderer";
         this.renderer = new CSS2DRenderer();
-        const context = ApplicationContext.getInstance();
-        if (context.viewer) {
-            this.renderer.setSize(
-                context.viewer.canvas.width,
-                context.viewer.canvas.height
-            );
+
+        if (ApplicationContext.viewer) {
+            const width = ApplicationContext.viewer.canvas.width,
+                height = ApplicationContext.viewer.canvas.height;
+            this.renderer.setSize(width, height);
         }
+
         this.renderer.domElement.style.position = "absolute";
         this.renderer.domElement.style.top = "0px";
 
-        context.container.appendChild(this.renderer.domElement);
+        ApplicationContext.container.appendChild(this.renderer.domElement);
     }
 
     async addText(

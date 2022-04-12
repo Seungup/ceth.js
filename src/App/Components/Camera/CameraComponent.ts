@@ -9,12 +9,12 @@ export namespace CameraComponent {
          * 카메라를 초기화합니다.
          * @param param
          */
-        export function initCamera(param: PerspectiveCameraInitParam) {
+        export const initCamera = (param: PerspectiveCameraInitParam) => {
             perspectiveCamera.aspect = param.aspect;
             perspectiveCamera.far = param.far;
             perspectiveCamera.near = param.near;
             perspectiveCamera.fov = param.fov;
             perspectiveCamera.updateProjectionMatrix();
-        }
+        };
     }
 }

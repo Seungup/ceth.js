@@ -9,7 +9,7 @@ export interface ObjectPositionCheckStrategy {
 export namespace ObjectPositionChecker {
     const DEFAULT = new DefaultObjectPositionChecker();
     const INSTANCE = new InstanceObjectPositionChecker();
-    export function check(scene: THREE.Scene) {
+    export const check = (scene: THREE.Scene) => {
         scene.traverse((object) => {
             switch (object.type) {
                 case "Mesh":
@@ -29,5 +29,5 @@ export namespace ObjectPositionChecker {
                     break;
             }
         });
-    }
+    };
 }
