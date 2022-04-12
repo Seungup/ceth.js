@@ -1,5 +1,5 @@
-import { wrap, Remote } from "comlink";
-import type { CommandReciver } from "./Components/Renderer/Template/OffscreenRenderer/Core/CommandReciver";
+import { wrap, Remote, releaseProxy } from "comlink";
+import { CommandReciver } from "./Components/Renderer/Template/OffscreenRenderer/Core/CommandReciver";
 
 interface WorkerMap {
     CommandReciver: CommandReciver;
@@ -13,6 +13,34 @@ const WorkerURL = {
 
 type WorkerURL = typeof WorkerURL[keyof typeof WorkerURL];
 
+export namespace WorkerWrapperMap {
+    const workerMap = new WeakMap<Worker, Remote<CommandReciver>>();
+
+    export const setWrapper = (
+        worker: Worker,
+        wrapper?: Remote<CommandReciver>
+    ) => {
+        if (!wrapper) {
+            wrapper = wrap<CommandReciver>(worker);
+        }
+        workerMap.set(worker, wrapper);
+    };
+
+    export const getWrapper = (worker: Worker) => {
+        return workerMap.get(worker);
+    };
+
+    export const removeWorker = (worker: Worker) => {
+        if (workerMap.has(worker)) {
+            workerMap.get(worker)?.[releaseProxy]();
+            worker.terminate();
+            workerMap.delete(worker);
+            return true;
+        }
+        return false;
+    };
+}
+
 export class WorkerFactory {
     /**
      * 웹 워커를 생성합니다.
@@ -20,7 +48,11 @@ export class WorkerFactory {
      * @returns
      */
     static createWorker<T extends keyof WorkerMap>(workerClassName: T): Worker {
-        return new Worker(WorkerURL[workerClassName], { type: "module" });
+        const worker = new Worker(WorkerURL[workerClassName], {
+            type: "module",
+        });
+        WorkerWrapperMap.setWrapper(worker);
+        return worker;
     }
 
     /**
@@ -32,6 +64,8 @@ export class WorkerFactory {
         workerClassName: T
     ): Remote<WorkerMap[T]> {
         const worker = WorkerFactory.createWorker(workerClassName);
-        return wrap<WorkerMap[T]>(worker);
+        const wrapper = wrap<WorkerMap[T]>(worker);
+        WorkerWrapperMap.setWrapper(worker, wrapper);
+        return wrapper;
     }
 }

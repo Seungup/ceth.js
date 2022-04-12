@@ -9,11 +9,15 @@ import {
 } from "../OffscreenRenderer/Core/CommandReciver";
 import { BaseRenderer, PerspectiveCameraInitParam } from "../../BaseRenderer";
 import { ApplicationContext } from "../../../../Contexts/ApplicationContext";
-import { IWGS84, WGS84_ACTION } from "../../../../Math";
+import {
+    HeadingPitchRoll,
+    IWGS84,
+    Position,
+    WGS84_ACTION,
+} from "../../../../Math";
 import { WorkerDataAccessor } from "../../../../Data/Accessor/Strategy/WorkerDataAccessor";
 import { InstanceDataAccessor } from "../../../../Data/Accessor/Strategy/InstanceDataAccessor";
 import { THREEUtils } from "../../../../Utils/ThreeUtils";
-import { DataAccessor } from "../../../../Data/Accessor/DataAccessor";
 
 export class MultipleOffscreenRenderer extends BaseRenderer {
     /**
@@ -56,36 +60,38 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
     }
 
     async add(object: Object3D) {
-        return await this.addAt(
+        const data = await this.addAt(
             object,
             randInt(0, this.workerArray.length - 1)
         );
+        const accessor = new data.constructor();
+        const { id, worker } = data.param;
+        accessor.setId(id);
+        accessor.setWorker(worker);
+        return accessor;
     }
 
     async dynamicAppend(
         object: Object3D,
         workerIndex: number,
         option: {
-            position: {
-                wgs84: IWGS84;
-                action?: WGS84_ACTION;
-            };
+            position: Position;
+            headingPitchRoll: HeadingPitchRoll;
             visibility: boolean;
         }
-    ): Promise<DataAccessor> {
+    ) {
         if (this.workerArray.length <= workerIndex || workerIndex < 0) {
             throw new Error(
                 `BufferFlowError : cannot access at ${workerIndex} `
             );
         }
-
         const target = this.workerArray[workerIndex];
 
         const result = await CoreThreadCommand.excuteAPI(
             target.wrapper,
             "SceneComponentAPI",
             "dynamicAppend",
-            [object.toJSON(), option]
+            [object.toJSON(), { ...option }]
         );
 
         if (!result) {
@@ -96,19 +102,17 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
 
         THREEUtils.disposeObject3D(object);
 
-        return new InstanceDataAccessor(
-            target.wrapper,
-            result.managerAccessKey,
-            result.objectId
-        );
+        return {
+            constructor: InstanceDataAccessor,
+            param: {
+                worker: target.worker,
+                accessKey: result.managerAccessKey,
+                id: result.objectId,
+            },
+        };
     }
 
-    async addAt(
-        object: Object3D,
-        at: number,
-        position?: IWGS84,
-        action?: WGS84_ACTION
-    ): Promise<DataAccessor> {
+    async addAt(object: Object3D, at: number, position?: Position) {
         if (this.workerArray.length <= at || at < 0) {
             throw new Error(`BufferFlowError : cannot access at ${at} `);
         }
@@ -119,12 +123,17 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
             target.wrapper,
             "SceneComponentAPI",
             "add",
-            [object.toJSON(), position, action]
+            [object.toJSON(), position]
         );
 
         THREEUtils.disposeObject3D(object);
-
-        return new WorkerDataAccessor(target.worker, id);
+        return {
+            constructor: WorkerDataAccessor,
+            param: {
+                worker: target.worker,
+                id: id,
+            },
+        };
     }
 
     async render() {

@@ -1,9 +1,9 @@
 import { Box3, Object3D, ObjectLoader, Scene, Vector3 } from "three";
-import { CT_WGS84, IWGS84, WGS84_ACTION } from "../../Math";
+import { CT_WGS84, HeadingPitchRoll, IWGS84, Position } from "../../Math";
 import { Cesium3Synchronization } from "../../Utils/Synchronization";
 import { ObjectData } from "../../data/ObjectData";
 import { Manager } from "../Object/Manager";
-import { InstancedManager } from "../Object/Strategy/InstancedManager";
+import { InstancedObjectManager } from "../Object/Strategy/InstancedObjectManager";
 import { THREEUtils } from "../../Utils/ThreeUtils";
 
 interface IObjectCallbackFunction<T> {
@@ -27,16 +27,9 @@ export namespace SceneComponent {
     };
 
     export namespace API {
-        /**
-         * 오브젝트의 포지션을 설정합니다.
-         * @param id
-         * @param wgs84
-         * @param action
-         */
         export const setObjectPosition = (
             id: number | Object3D,
-            wgs84: IWGS84,
-            action: WGS84_ACTION = WGS84_ACTION.NONE
+            position: Position
         ) => {
             let object: Object3D | undefined;
 
@@ -54,6 +47,7 @@ export namespace SceneComponent {
                 const rps = ObjectData.API.getPositionRotationScale(object.id);
 
                 if (rps) {
+                    const { wgs84, action } = position;
                     if (wgs84.height === 0) {
                         let max = ObjectData.API.getBox3Max(object.id);
                         if (!max) {
@@ -80,27 +74,16 @@ export namespace SceneComponent {
             }
         };
 
-        /**
-         * 오브젝트를 추가합니다.
-         * @param json
-         * @param wgs84
-         * @param action
-         * @returns
-         */
-        export const add = async (
-            json: any,
-            wgs84?: IWGS84,
-            action: WGS84_ACTION = WGS84_ACTION.NONE
-        ) => {
+        export const add = async (json: any, position?: Position) => {
             const object = objectLoader.parse(json);
 
             ObjectData.setBox3ByObject3D(object);
             ObjectData.setPositionRotationScaleByObject3D(object);
 
-            if (wgs84) {
-                const position = new CT_WGS84(wgs84, action);
-                ObjectData.setWGS84(object.id, position.toIWGS84());
-                setObjectPosition(object, wgs84, action);
+            if (position) {
+                const pos = new CT_WGS84(position);
+                ObjectData.setWGS84(object.id, pos.toIWGS84());
+                setObjectPosition(object, position);
             }
 
             scene.add(object);
@@ -117,13 +100,12 @@ export namespace SceneComponent {
         export const dynamicAppend = (
             json: any,
             option: {
-                position: {
-                    wgs84: IWGS84;
-                    action?: WGS84_ACTION;
-                };
+                position: Position;
+                headingPitchRoll: HeadingPitchRoll;
                 visibility?: boolean;
             }
         ) => {
+            const { headingPitchRoll, position, visibility } = option;
             const object = THREEUtils.getTypeSafeObject3D(
                 objectLoader.parse(json)
             );
@@ -134,17 +116,17 @@ export namespace SceneComponent {
                         object.material
                     ),
                     writeAbleClass =
-                        Manager.getWriteableClass<InstancedManager>(
+                        Manager.getWriteableClass<InstancedObjectManager>(
                             managerAccessKey
                         );
 
-                let manager: InstancedManager;
+                let manager: InstancedObjectManager;
                 if (!writeAbleClass) {
-                    manager = new InstancedManager(
+                    manager = new InstancedObjectManager(
                         {
                             geomtery: object.geometry,
                             material: object.material,
-                            maxCount: 10000,
+                            maxCount: 1000,
                         },
                         SceneComponent.scene
                     );
@@ -156,15 +138,12 @@ export namespace SceneComponent {
                 }
 
                 const box3 = new Box3().setFromObject(object);
-                if (option.position.wgs84.height === 0) {
-                    option.position.wgs84.height = box3.max.y;
+                if (position.wgs84.height === 0) {
+                    position.wgs84.height = box3.max.y;
                 }
 
-                const _wgs84 = new CT_WGS84(
-                        option.position.wgs84,
-                        option.position.action
-                    ),
-                    matrix = _wgs84.getMatrix4(),
+                const _wgs84 = new CT_WGS84(position),
+                    matrix = _wgs84.getMatrix4(headingPitchRoll),
                     userData = {
                         wgs84: _wgs84.toIWGS84(),
                         box3: box3,
@@ -175,10 +154,11 @@ export namespace SceneComponent {
                         },
                     };
 
-                const id = manager.add(matrix, option.visibility, userData);
+                const id = manager.add(matrix, visibility, userData);
 
                 return {
                     managerAccessKey: manager.hash,
+                    managerId: manager.id,
                     objectId: id,
                 };
             }
@@ -188,7 +168,8 @@ export namespace SceneComponent {
             managerAccessKey: string,
             objectId: number
         ): IWGS84 | undefined => {
-            let manager = Manager.getClass<InstancedManager>(managerAccessKey);
+            let manager =
+                Manager.getClass<InstancedObjectManager>(managerAccessKey);
 
             if (manager) {
                 return manager.getUserData(objectId)?.wgs84;
@@ -199,7 +180,8 @@ export namespace SceneComponent {
             managerAccessKey: string,
             objectId: number
         ): Vector3 | undefined => {
-            let manager = Manager.getClass<InstancedManager>(managerAccessKey);
+            let manager =
+                Manager.getClass<InstancedObjectManager>(managerAccessKey);
 
             if (manager) {
                 return manager.getUserData(objectId)?.box3.max;
@@ -209,14 +191,17 @@ export namespace SceneComponent {
         export const dynamicUpdate = (
             managerAccessKey: string,
             objectId: number,
-            wgs84: IWGS84,
-            action: WGS84_ACTION = WGS84_ACTION.NONE
+            option: {
+                position: Position;
+                headingPitchRoll: HeadingPitchRoll;
+            }
         ) => {
             let manager = Manager.getClass(managerAccessKey);
             if (manager) {
+                const { position, headingPitchRoll } = option;
                 return manager.update(
                     objectId,
-                    new CT_WGS84(wgs84, action).getMatrix4()
+                    new CT_WGS84(position).getMatrix4(headingPitchRoll)
                 );
             }
         };
@@ -225,7 +210,8 @@ export namespace SceneComponent {
             managerAccessKey: string,
             objectId: number
         ) => {
-            let manager = Manager.getClass<InstancedManager>(managerAccessKey);
+            let manager =
+                Manager.getClass<InstancedObjectManager>(managerAccessKey);
             if (manager) {
                 manager.delete(objectId);
                 if (manager.isEmpty()) {

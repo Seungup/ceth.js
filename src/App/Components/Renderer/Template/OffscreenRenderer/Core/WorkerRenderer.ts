@@ -10,7 +10,7 @@ export namespace WorkerRenderer {
     /**
      * 최대 스킵 가능한 프레임 개수입니다.
      */
-    let MAXIUM_SKIBBLE_FRAME_COUNT = 30;
+    let MAXIUM_SKIBBLE_FRAME_COUNT = 60;
     let skipedFrame = 0;
     /**
      * 장면을 렌더링합니다.
@@ -56,11 +56,11 @@ export namespace WorkerRenderer {
         /**
          * 최대 스킵 가능한 프레임의 개수를 설정합니다.
          *
-         * @default 60
          * @param count
          */
         export const setMaxiumSkibbleFrameCount = (count: number) => {
-            MAXIUM_SKIBBLE_FRAME_COUNT = -1 > count ? 0 : count;
+            MAXIUM_SKIBBLE_FRAME_COUNT =
+                -1 > count ? MAXIUM_SKIBBLE_FRAME_COUNT : count;
         };
     }
 }

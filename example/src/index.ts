@@ -7,7 +7,7 @@ import { ObjectEvent } from "../../src/App/Objects/ObjectEvent";
 import { CesiumUtils } from "../../src/App/Utils/CesiumUtils";
 import { RendererContext } from "../../src/App/Contexts/RendererContext";
 import { MultipleOffscreenBuilder } from "../../src/App/Components/Renderer";
-import { DataAccessor } from "../../src/App/Data/Accessor/DataAccessor";
+import { randInt } from "three/src/math/MathUtils";
 
 const constructorOptions: Viewer.ConstructorOptions = {
     useDefaultRenderLoop: false,
@@ -57,10 +57,10 @@ async function addObject(posiiton: { latitude: number; longitude: number }) {
 
     const renderer = RendererContext.getRenderer("MultipleOffscreenRenderer");
 
-    let dataAccessor: DataAccessor;
-
     for (let i = 1; i <= count; i++) {
-        if (i % 100 === 0) {
+        if (i % 10 === 0) {
+            API.latGap = Math.random();
+            API.lonGap = Math.random();
             console.log(
                 `${i.toLocaleString()} / ${count.toLocaleString()} ${Number(
                     ((i / count) * 100).toFixed(10)
@@ -69,9 +69,9 @@ async function addObject(posiiton: { latitude: number; longitude: number }) {
         }
         const object = RandomObject.choice();
         try {
-            dataAccessor = await renderer.dynamicAppend(
+            const dataAccessorParam = await renderer.dynamicAppend(
                 object,
-                i % CANVAS_COUNT,
+                randInt(0, CANVAS_COUNT - 1),
                 {
                     position: {
                         wgs84: {
@@ -80,11 +80,16 @@ async function addObject(posiiton: { latitude: number; longitude: number }) {
                             longitude: posiiton.longitude,
                         },
                     },
+                    headingPitchRoll: {
+                        heading: 0,
+                        pitch: 0,
+                        roll: 0,
+                    },
                     visibility: true,
                 }
             );
 
-            dataAccessorArray.push(dataAccessor);
+            dataAccessorArray.push(dataAccessorParam);
 
             posiiton.latitude += API.latGap;
             posiiton.longitude += API.lonGap;

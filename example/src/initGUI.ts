@@ -1,6 +1,6 @@
 import GUI from "lil-gui";
 import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
-import { API, setRemoveAllController, dataAccessorArray } from "./API";
+import { API, setRemoveAllController, dataAccessorArray } from "./api";
 import { RandomObject } from "./randomObject";
 
 export function initGUI() {
@@ -14,10 +14,8 @@ export function initGUI() {
 
     document.body.appendChild(gui.domElement);
 
-    gui.add(API, "count", 1, 1_000_000, 1000);
-    gui.add(API, "latGap", 0, 1, 0.001);
-    gui.add(API, "lonGap", 0, 1, 0.001);
-    gui.add(API, "scale", 1, 100, 1);
+    gui.add(API, "count", 1000, 1_000_000, 1000);
+
     setRemoveAllController(gui.add(API, "removeAll"));
 
     gui.add(API, "help");

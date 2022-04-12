@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { DefaultObjectPositionChecker } from "./DefaultObjectRender";
-import { InstanceObjectPositionChecker } from "./InstanceObjectRender";
+import { InstancedObjectPositionChecker } from "./InstancedObjectRender";
 
 export interface ObjectPositionCheckStrategy {
     checkPosition(object: THREE.Object3D): void;
@@ -8,7 +8,7 @@ export interface ObjectPositionCheckStrategy {
 
 export namespace ObjectPositionChecker {
     const DEFAULT = new DefaultObjectPositionChecker();
-    const INSTANCE = new InstanceObjectPositionChecker();
+    const INSTANCE = new InstancedObjectPositionChecker();
     export const check = (scene: THREE.Scene) => {
         scene.traverse((object) => {
             switch (object.type) {

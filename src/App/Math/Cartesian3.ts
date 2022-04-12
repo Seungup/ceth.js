@@ -48,11 +48,15 @@ export class Cartesian3 extends Vector3 {
         return cartesian.multiplyScalar(height).add(WGS84_RADII_SQUARED);
     }
 
-    static fromDegree(longitude: number, latitude: number, height: number) {
+    static fromDegree(position: {
+        longitude: number;
+        latitude: number;
+        height: number;
+    }) {
         return this.fromRadians(
-            MathUtils.degToRad(longitude),
-            MathUtils.degToRad(latitude),
-            height
+            MathUtils.degToRad(position.longitude),
+            MathUtils.degToRad(position.latitude),
+            position.height
         );
     }
 

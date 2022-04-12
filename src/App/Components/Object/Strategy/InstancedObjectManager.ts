@@ -6,7 +6,7 @@ import { Manager } from "../Manager";
 /**
  * 인스턴스 메시의 관리를 위한 메니저 클래스입니다.
  */
-export class InstancedManager<
+export class InstancedObjectManager<
     TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
     TMaterial extends THREE.Material | THREE.Material[] =
         | THREE.Material
@@ -17,6 +17,7 @@ export class InstancedManager<
     private readonly entityDataMap = new Map<number, { [key: string]: any }>();
     private readonly entityIdArray = new Array<number>();
 
+    private index: number | undefined;
     private id_counter = 0;
     private readonly MAX_COUNT: number;
 
@@ -27,13 +28,16 @@ export class InstancedManager<
         param: { geomtery: TGeometry; material: TMaterial; maxCount: number },
         public readonly scene: THREE.Scene
     ) {
-        this.MAX_COUNT = param.maxCount;
+        const { geomtery, material, maxCount } = param;
+
+        this.MAX_COUNT = maxCount;
 
         this.instancedMesh = new THREE.InstancedMesh(
-            param.geomtery,
-            param.material,
-            param.maxCount
+            geomtery,
+            material,
+            maxCount
         );
+
         this.id = this.instancedMesh.id;
         this.instancedMesh.count = 0;
 
@@ -83,23 +87,23 @@ export class InstancedManager<
         }
     }
 
+    private matrix = new THREE.Matrix4();
     traverse(callback: { (matrix: THREE.Matrix4, id: number): void }) {
-        const matrix = new THREE.Matrix4();
         this.entityIdArray.forEach((id, index) => {
-            this.instancedMesh.getMatrixAt(index, matrix);
-            callback(matrix, id);
+            this.instancedMesh.getMatrixAt(index, this.matrix);
+            callback(this.matrix, id);
         });
     }
 
     update(id: number, matrix: THREE.Matrix4): boolean {
-        const index = this.entityIdArray.findIndex((el) => el === id);
+        this.index = this.entityIdArray.findIndex((el) => el === id);
 
-        if (index === -1) {
+        if (this.index === -1) {
             console.error("cannot found element in current array.");
             return false;
         }
 
-        this.setMatrixAt(index, matrix);
+        this.setMatrixAt(this.index, matrix);
 
         return true;
     }
@@ -136,38 +140,38 @@ export class InstancedManager<
         return this.id_counter;
     }
 
+    private cachedMatrix1 = new THREE.Matrix4();
+    private cachedMatrix2 = new THREE.Matrix4();
+
     private swapInstances(index1: number, index2: number) {
-        // CACHING
+        this.instancedMesh.getMatrixAt(index1, this.cachedMatrix1);
+        this.instancedMesh.getMatrixAt(index2, this.cachedMatrix2);
+        this.setMatrixAt(index1, this.cachedMatrix2);
+        this.setMatrixAt(index2, this.cachedMatrix1);
+
         // prettier-ignore
-        const
-            cachedMatrix1 = new THREE.Matrix4(),
-            cachedMatrix2 = new THREE.Matrix4(),
-            cachedId1 = this.entityIdArray[index1],
-            cachedId2 = this.entityIdArray[index2];
-
-        this.instancedMesh.getMatrixAt(index1, cachedMatrix1);
-        this.instancedMesh.getMatrixAt(index2, cachedMatrix2);
-
-        this.setMatrixAt(index1, cachedMatrix2);
-        this.setMatrixAt(index2, cachedMatrix1);
-
-        this.entityIdArray[index1] = cachedId2;
-        this.entityIdArray[index2] = cachedId1;
+        [
+            this.entityIdArray[index1], 
+            this.entityIdArray[index2]
+        ] = [
+            this.entityIdArray[index2],
+            this.entityIdArray[index1],
+        ];
     }
 
     delete(id: number): boolean {
-        const index = this.entityIdArray.findIndex((el) => el === id);
+        this.index = this.entityIdArray.findIndex((el) => el === id);
 
-        if (index === -1) {
+        if (this.index === -1) {
             console.error("cannot found element in current array.");
             return false;
         }
 
-        this.swapInstances(this.entityIdArray.length - 1, index);
+        this.swapInstances(this.entityIdArray.length - 1, this.index);
 
         this.entityIdArray.pop();
 
-        if (index < this.instancedMesh.count) {
+        if (this.index < this.instancedMesh.count) {
             this.instancedMesh.count--;
         }
 
@@ -175,27 +179,27 @@ export class InstancedManager<
     }
 
     setColor(id: number, color: THREE.Color): void {
-        const index = this.entityIdArray.findIndex((el) => el === id);
-        this.instancedMesh.setColorAt(index, color);
+        this.index = this.entityIdArray.findIndex((el) => el === id);
+        this.instancedMesh.setColorAt(this.index, color);
         if (this.instancedMesh.instanceColor) {
             this.instancedMesh.instanceColor.needsUpdate = true;
         }
     }
 
     setVisibiltiy(id: number, visible: boolean): void {
-        const index = this.entityIdArray.findIndex((el) => el === id);
-        if (index === -1) {
+        this.index = this.entityIdArray.findIndex((el) => el === id);
+        if (this.index === -1) {
             console.error("cannot found element in current array");
             return;
         }
         if (visible) {
-            if (index > this.instancedMesh.count) {
-                this.swapInstances(this.instancedMesh.count, index);
+            if (this.index > this.instancedMesh.count) {
+                this.swapInstances(this.instancedMesh.count, this.index);
                 this.instancedMesh.count++;
             }
         } else {
-            if (index < this.instancedMesh.count) {
-                this.swapInstances(this.instancedMesh.count - 1, index);
+            if (this.index < this.instancedMesh.count) {
+                this.swapInstances(this.instancedMesh.count - 1, this.index);
                 this.instancedMesh.count--;
             }
         }
