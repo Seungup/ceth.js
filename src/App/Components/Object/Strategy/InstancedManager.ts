@@ -1,12 +1,7 @@
 import { Subject } from "rxjs";
 import * as THREE from "three";
-import { THREEUtils } from "../../Utils/ThreeUtils";
+import { THREEUtils } from "../../../Utils/ThreeUtils";
 import { Manager } from "../Manager";
-
-export const ERROR_CODE = {
-    SUCCESS: 0,
-    MAXIUM_INSTANCE: 1,
-} as const;
 
 /**
  * 인스턴스 메시의 관리를 위한 메니저 클래스입니다.

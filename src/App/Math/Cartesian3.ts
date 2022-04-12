@@ -1,5 +1,4 @@
 import { MathUtils, Vector3 } from "three";
-import { EPSILON_14, equalsEpsilon } from ".";
 import {
     EARTH_RADIUS_X_SQURAE,
     EARTH_RADIUS_Y_SQURAE,
@@ -57,24 +56,8 @@ export class Cartesian3 extends Vector3 {
         );
     }
 
-    static equalsEpsilon(
-        left: Cartesian3,
-        right: Cartesian3,
-        relativeEpsilon: number = EPSILON_14,
-        absoluteEpsilon: number = EPSILON_14
-    ) {
-        if (left.equals(right)) {
-            return true;
-        }
-        return (
-            equalsEpsilon(left.x, right.x, relativeEpsilon, absoluteEpsilon) &&
-            equalsEpsilon(left.y, right.y, relativeEpsilon, absoluteEpsilon) &&
-            equalsEpsilon(left.z, right.z, relativeEpsilon, absoluteEpsilon)
-        );
-    }
-
     isZero() {
-        return Cartesian3.equalsEpsilon(this, Cartesian3.ZERO);
+        return this.equals(Cartesian3.ZERO);
     }
 
     static unpack(

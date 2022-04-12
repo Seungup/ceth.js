@@ -2,8 +2,8 @@ import { Box3, Object3D, ObjectLoader, Scene, Vector3 } from "three";
 import { CT_WGS84, IWGS84, WGS84_ACTION } from "../../Math";
 import { Cesium3Synchronization } from "../../Utils/Synchronization";
 import { ObjectData } from "../../data/ObjectData";
-import { Manager } from "../../Managers/Manager";
-import { InstancedManager } from "../../Managers/Strategy/InstancedManager";
+import { Manager } from "../Object/Manager";
+import { InstancedManager } from "../Object/Strategy/InstancedManager";
 import { THREEUtils } from "../../Utils/ThreeUtils";
 
 interface IObjectCallbackFunction<T> {

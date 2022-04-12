@@ -39,17 +39,12 @@ export namespace Manager {
     }
 
     export function getWriteableClass<T extends Interface>(baseKey: string) {
-        let result: { manager: T; accessKey: string } | undefined;
-
         for (let [key, manager] of managerMap) {
             const _baseKey = manager.hash.split(`_$`)[0];
             if (_baseKey === baseKey && manager.isAddble()) {
-                result = { manager: manager as T, accessKey: key };
-                break;
+                return { manager: manager as T, accessKey: key };
             }
         }
-
-        return result;
     }
 
     export function getHashByGeometryMaterial<

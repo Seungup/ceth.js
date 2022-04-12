@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import { Manager } from "../../../Managers/Manager";
-import { InstancedManager } from "../../../Managers/Strategy/InstancedManager";
+import { Manager } from "../../Object/Manager";
+import { InstancedManager } from "../../Object/Strategy/InstancedManager";
 import { DefaultObjectPositionChecker } from "./DefaultObjectRender";
 export class InstanceObjectPositionChecker extends DefaultObjectPositionChecker {
     private _position = new THREE.Vector3();
