@@ -115,12 +115,3 @@ export function equalsEpsilon(
         absDiff <= relativeEpsilon * Math.max(Math.abs(left), Math.abs(right))
     );
 }
-
-/**
- * 벡터의 크기를 계산합니다.
- * @param vec
- * @returns
- */
-export function magnitude(vec: { x: number; y: number; z: number }) {
-    return Math.sqrt(vec.x ** 2 + vec.y ** 2 + vec.z ** 2);
-}

@@ -23,7 +23,7 @@ export class Transforms {
 
         this.scratchCalculateCartesian.east
             .set(-origin.y, origin.x, 0.0)
-            .normalizeByMagnitude();
+            .normalize();
 
         this.scratchCalculateCartesian.north
             .copy(this.scratchCalculateCartesian.up)

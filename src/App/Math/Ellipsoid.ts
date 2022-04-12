@@ -29,7 +29,7 @@ export class Ellipsoid extends Vector3 {
         return result
             .copy(cartesian)
             .multiply(this.DEFAULT_WGS84_RADII_SQUARED)
-            .normalizeByMagnitude();
+            .normalize();
     }
 
     geodeticSurfaceNormal(
@@ -40,6 +40,6 @@ export class Ellipsoid extends Vector3 {
         return result
             .copy(cartesian)
             .multiply(this._oneOverRadiiSquared)
-            .normalizeByMagnitude();
+            .normalize();
     }
 }

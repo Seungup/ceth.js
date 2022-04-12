@@ -15,7 +15,7 @@ export namespace ObjectPositionChecker {
                 case "Mesh":
                     if (object instanceof THREE.InstancedMesh) {
                         INSTANCE.setNormalMatrix();
-                        INSTANCE.checkPosition(object as THREE.InstancedMesh);
+                        INSTANCE.checkPosition(object);
                     } else {
                         DEFAULT.setNormalMatrix();
                         DEFAULT.checkPosition(object);

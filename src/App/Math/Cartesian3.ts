@@ -1,5 +1,5 @@
 import { MathUtils, Vector3 } from "three";
-import { EPSILON_14, equalsEpsilon, magnitude } from ".";
+import { EPSILON_14, equalsEpsilon } from ".";
 import {
     EARTH_RADIUS_X_SQURAE,
     EARTH_RADIUS_Y_SQURAE,
@@ -34,17 +34,16 @@ export class Cartesian3 extends Vector3 {
     static fromRadians(longitude: number, latitude: number, height: number) {
         const cosLatitude = Math.cos(latitude);
 
-        const cartesian = new Cartesian3(
+        const cartesian = Cartesian3.ZERO.set(
             cosLatitude * Math.cos(longitude),
             cosLatitude * Math.sin(longitude),
             Math.sin(latitude)
-        ).normalizeByMagnitude();
+        ).normalize();
 
-        const WGS84_RADII_SQUARED =
-            Cartesian3.WGS84_RADII_SQUARED.multiply(cartesian);
+        const WGS84_RADII_SQUARED = Cartesian3.WGS84_RADII_SQUARED;
+        WGS84_RADII_SQUARED.multiply(cartesian);
 
         const gamma = Math.sqrt(WGS84_RADII_SQUARED.dot(cartesian));
-
         WGS84_RADII_SQUARED.divideScalar(gamma);
 
         return cartesian.multiplyScalar(height).add(WGS84_RADII_SQUARED);
@@ -64,16 +63,14 @@ export class Cartesian3 extends Vector3 {
         relativeEpsilon: number = EPSILON_14,
         absoluteEpsilon: number = EPSILON_14
     ) {
-        if (left.equals(right)) return true;
+        if (left.equals(right)) {
+            return true;
+        }
         return (
             equalsEpsilon(left.x, right.x, relativeEpsilon, absoluteEpsilon) &&
             equalsEpsilon(left.y, right.y, relativeEpsilon, absoluteEpsilon) &&
             equalsEpsilon(left.z, right.z, relativeEpsilon, absoluteEpsilon)
         );
-    }
-
-    normalizeByMagnitude() {
-        return this.divideScalar(magnitude(this));
     }
 
     isZero() {
