@@ -1,5 +1,6 @@
-import { wrap, Remote, releaseProxy } from "comlink";
+import { wrap, Remote } from "comlink";
 import { CommandReciver } from "./Components/Renderer/Template/OffscreenRenderer/Core/CommandReciver";
+import { CommandReciverCacheRegister } from "./Components/Renderer/Template/OffscreenRenderer/Core/CommandReciverCacheRegister";
 
 interface WorkerMap {
     CommandReciver: CommandReciver;
@@ -13,59 +14,47 @@ const WorkerURL = {
 
 type WorkerURL = typeof WorkerURL[keyof typeof WorkerURL];
 
-export namespace WorkerWrapperMap {
-    const workerMap = new WeakMap<Worker, Remote<CommandReciver>>();
-
-    export const setWrapper = (
-        worker: Worker,
-        wrapper?: Remote<CommandReciver>
-    ) => {
-        if (!wrapper) {
-            wrapper = wrap<CommandReciver>(worker);
-        }
-        workerMap.set(worker, wrapper);
-    };
-
-    export const getWrapper = (worker: Worker) => {
-        return workerMap.get(worker);
-    };
-
-    export const removeWorker = (worker: Worker) => {
-        if (workerMap.has(worker)) {
-            workerMap.get(worker)?.[releaseProxy]();
-            worker.terminate();
-            workerMap.delete(worker);
-            return true;
-        }
-        return false;
-    };
-}
-
-export class WorkerFactory {
+export namespace WorkerFactory {
     /**
      * 웹 워커를 생성합니다.
      * @param workerClassName
      * @returns
      */
-    static createWorker<T extends keyof WorkerMap>(workerClassName: T): Worker {
+    export const createWorker = <T extends keyof WorkerMap>(
+        workerClassName: T
+    ): Worker => {
         const worker = new Worker(WorkerURL[workerClassName], {
             type: "module",
         });
-        WorkerWrapperMap.setWrapper(worker);
+        registCache(workerClassName, worker);
         return worker;
-    }
+    };
 
     /**
      * 웹 워커의 Warpper 를 생성합니다.
      * @param workerClassName
      * @returns
      */
-    static createWorkerWrapper<T extends keyof WorkerMap>(
+    export const createWorkerWrapper = <T extends keyof WorkerMap>(
         workerClassName: T
-    ): Remote<WorkerMap[T]> {
+    ): Remote<WorkerMap[T]> => {
         const worker = WorkerFactory.createWorker(workerClassName);
         const wrapper = wrap<WorkerMap[T]>(worker);
-        WorkerWrapperMap.setWrapper(worker, wrapper);
+        registCache(workerClassName, worker, wrapper);
         return wrapper;
-    }
+    };
+
+    const registCache = <T extends keyof WorkerMap>(
+        className: T,
+        worker: Worker,
+        wrapper?: Remote<WorkerMap[T]>
+    ) => {
+        switch (className) {
+            case "CommandReciver":
+                CommandReciverCacheRegister.regist(worker, wrapper);
+                break;
+            default:
+                break;
+        }
+    };
 }

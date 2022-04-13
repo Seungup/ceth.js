@@ -1,10 +1,6 @@
-import { wrap } from "comlink";
 import { ApplicationContext } from "../../../../Contexts/ApplicationContext";
 import { WorkerFactory } from "../../../../WorkerFactory";
-import {
-    CommandReciver,
-    CoreThreadCommands,
-} from "../OffscreenRenderer/Core/CommandReciver";
+import { CoreThreadCommands } from "../OffscreenRenderer/Core/CommandReciver";
 import { CoreThreadCommand } from "../OffscreenRenderer/CoreThreadCommand";
 import { MultipleOffscreenRenderer } from "./MultipleOffscreenRenderer";
 
@@ -48,10 +44,8 @@ export class MultipleOffscreenBuilder {
                 { canvas: offscreen },
                 [offscreen]
             );
-            renderer.workerArray.push({
-                worker: worker,
-                wrapper: wrap<CommandReciver>(worker),
-            });
+
+            renderer.workerArray.push(worker);
         }
 
         return renderer;

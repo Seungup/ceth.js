@@ -139,7 +139,7 @@ export namespace SceneComponent {
 
                 const box3 = new Box3().setFromObject(object);
                 if (position.wgs84.height === 0) {
-                    position.wgs84.height = box3.max.y;
+                    position.wgs84.height = box3.max.z;
                 }
 
                 const _wgs84 = new CT_WGS84(position),
@@ -193,15 +193,18 @@ export namespace SceneComponent {
             objectId: number,
             option: {
                 position: Position;
+                scale: Vector3;
                 headingPitchRoll: HeadingPitchRoll;
             }
         ) => {
             let manager = Manager.getClass(managerAccessKey);
             if (manager) {
-                const { position, headingPitchRoll } = option;
+                const { position, headingPitchRoll, scale } = option;
                 return manager.update(
                     objectId,
-                    new CT_WGS84(position).getMatrix4(headingPitchRoll)
+                    new CT_WGS84(position)
+                        .getMatrix4(headingPitchRoll)
+                        .scale(scale)
                 );
             }
         };

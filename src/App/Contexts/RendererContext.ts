@@ -8,18 +8,19 @@ interface RendererState {
 interface RendererValue {
     renderer: RendererTemplate;
     state: RendererState;
+    commitedState: RendererState;
 }
 
 export namespace RendererContext {
-    const rendererMap = new Map<string, RendererValue>();
+    const rendererArray = new Array<RendererValue>();
 
     /**
      * 모든 사용가능한 렌더러를 잠금니다.
      */
     export const rockAll = () => {
-        rendererMap.forEach((data) => {
-            data.state.lock = true;
-        });
+        for (const { state } of rendererArray) {
+            state.lock = true;
+        }
     };
 
     /**
@@ -30,59 +31,42 @@ export namespace RendererContext {
      * @param callback
      */
     export const safeRun = async (callback: { (): void | Promise<void> }) => {
+        RendererContext.commit();
         try {
-            RendererContext.commit();
             RendererContext.rockAll();
             await callback();
         } catch (error) {
             console.error(error);
         } finally {
-            RendererContext.rollback();
-            RendererContext.clearCommitedData();
         }
+        RendererContext.rollback();
     };
 
-    /**
-     * 렌더러의 상태값을 저장하는 논리맵
-     */
-    const commitedState = new Map<string, RendererState>();
     /**
      * 현재 렌더러들의 상태를 저장합니다.
      */
     export const commit = () => {
-        commitedState.clear();
-        rendererMap.forEach((value, key) => {
-            commitedState.set(key, value.state);
-        });
-    };
-
-    /**
-     * 저장된 렌더러들의 상태를 초기화합니다.
-     */
-    export const clearCommitedData = () => {
-        commitedState.clear();
+        for (const { commitedState, state } of rendererArray) {
+            commitedState.lock = state.lock;
+        }
     };
 
     /**
      * 저장된 상태로 렌더러의 상태를 되돌립니다.
      */
     export const rollback = () => {
-        let data: RendererValue | undefined;
-        commitedState.forEach((value, key) => {
-            data = rendererMap.get(key);
-            if (data) {
-                data.state = value;
-            }
-        });
+        for (const { commitedState, state } of rendererArray) {
+            state.lock = commitedState.lock;
+        }
     };
 
     /**
      * 사용 가능한 모든 렌더러의 잠금을 해제합니다.
      */
     export const unlockAll = () => {
-        rendererMap.forEach((data) => {
-            data.state.lock = false;
-        });
+        for (const { state } of rendererArray) {
+            state.lock = false;
+        }
     };
 
     /**
@@ -105,9 +89,10 @@ export namespace RendererContext {
                 renderer = data;
             }
 
-            rendererMap.set(renderer.name, {
+            rendererArray.push({
                 renderer: renderer,
                 state: { lock: false },
+                commitedState: { lock: false },
             });
         }
 
@@ -121,9 +106,10 @@ export namespace RendererContext {
      * @returns
      */
     export const getRenderer = <T extends keyof RendererMap>(target: T) => {
-        const result = rendererMap.get(target);
-        if (result && !result.state.lock) {
-            return result.renderer as RendererMap[typeof target];
+        for (const { renderer } of rendererArray) {
+            if (renderer.name === target) {
+                return renderer as RendererMap[T];
+            }
         }
     };
 
@@ -132,9 +118,11 @@ export namespace RendererContext {
      * @param target
      */
     export const lockRenderer = <T extends keyof RendererMap>(target: T) => {
-        const result = rendererMap.get(target);
-        if (result) {
-            result.state.lock = true;
+        for (const { renderer, state } of rendererArray) {
+            if (renderer.name === target) {
+                state.lock = true;
+                break;
+            }
         }
     };
 
@@ -144,9 +132,10 @@ export namespace RendererContext {
      * @returns
      */
     export const isLocked = <T extends keyof RendererMap>(target: T) => {
-        const result = rendererMap.get(target);
-        if (result) {
-            return result.state.lock;
+        for (const { renderer, state } of rendererArray) {
+            if (renderer.name === target) {
+                return state.lock;
+            }
         }
     };
 
@@ -155,9 +144,11 @@ export namespace RendererContext {
      * @param target
      */
     export const unlockRenderer = <T extends keyof RendererMap>(target: T) => {
-        const result = rendererMap.get(target);
-        if (result) {
-            result.state.lock = false;
+        for (const { renderer, state } of rendererArray) {
+            if (renderer.name === target) {
+                state.lock = false;
+                break;
+            }
         }
     };
 
@@ -167,12 +158,21 @@ export namespace RendererContext {
      * @returns
      */
     export const removeRenderer = <T extends keyof RendererMap>(target: T) => {
-        const data = rendererMap.get(target);
-        if (data) {
-            data.renderer;
-        }
+        const index = rendererArray.findIndex(({ renderer }) => {
+            return renderer.name === target;
+        });
 
-        return rendererMap.delete(target);
+        if (index !== -1) {
+            // prettier-ignore
+            [
+                rendererArray[index], 
+                rendererArray[rendererArray.length - 1]
+            ] = [
+                rendererArray[rendererArray.length - 1],
+                rendererArray[index],
+            ];
+            rendererArray.pop();
+        }
     };
 
     let _oldWidth: number | undefined;
@@ -183,11 +183,14 @@ export namespace RendererContext {
      * @returns
      */
     const syncScreenRect = async () => {
-        const viewer = ApplicationContext.viewer;
+        const { viewer } = ApplicationContext;
+
         if (!viewer) return;
 
-        const width = viewer.canvas.clientWidth;
-        const height = viewer.canvas.clientHeight;
+        const [width, height] = [
+            viewer.canvas.clientWidth,
+            viewer.canvas.clientHeight,
+        ];
 
         if (_oldHeight !== height || _oldWidth !== width) {
             const param = {
@@ -198,15 +201,13 @@ export namespace RendererContext {
                 far: viewer.camera.frustum.far,
                 aspect: width / height,
             };
-
-            for (const [_, data] of rendererMap) {
-                await data.renderer.setCamera(param);
-                await data.renderer.setSize(width, height);
+            for (const { renderer } of rendererArray) {
+                await renderer.setCamera(param);
+                await renderer.setSize(width, height);
             }
         }
 
-        _oldWidth = width;
-        _oldHeight = height;
+        [_oldWidth, _oldHeight] = [width, height];
     };
 
     /**
@@ -216,7 +217,7 @@ export namespace RendererContext {
      */
     export const render = async () => {
         await syncScreenRect();
-        for (const [_, { renderer }] of rendererMap) {
+        for (const { renderer } of rendererArray) {
             renderer.render();
         }
     };

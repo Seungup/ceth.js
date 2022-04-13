@@ -1,32 +1,21 @@
 import { Matrix4 } from "cesium";
-import { Remote } from "comlink";
 import { Object3D } from "three";
 import { randInt } from "three/src/math/MathUtils";
 import { CoreThreadCommand } from "../OffscreenRenderer/CoreThreadCommand";
-import {
-    CommandReciver,
-    CoreThreadCommands,
-} from "../OffscreenRenderer/Core/CommandReciver";
+import { CoreThreadCommands } from "../OffscreenRenderer/Core/CommandReciver";
 import { BaseRenderer, PerspectiveCameraInitParam } from "../../BaseRenderer";
 import { ApplicationContext } from "../../../../Contexts/ApplicationContext";
-import {
-    HeadingPitchRoll,
-    IWGS84,
-    Position,
-    WGS84_ACTION,
-} from "../../../../Math";
+import { HeadingPitchRoll, Position } from "../../../../Math";
 import { WorkerDataAccessor } from "../../../../Data/Accessor/Strategy/WorkerDataAccessor";
 import { InstanceDataAccessor } from "../../../../Data/Accessor/Strategy/InstanceDataAccessor";
 import { THREEUtils } from "../../../../Utils/ThreeUtils";
+import { DataAccessorBuildData } from "../../../../Data/DataAccessorFactory";
 
 export class MultipleOffscreenRenderer extends BaseRenderer {
     /**
      * 워커의 배열입니다. 해당 배열에 존재하는 스레드를 바탕으로 장면이 그려집니다.
      */
-    workerArray = new Array<{
-        worker: Worker;
-        wrapper: Remote<CommandReciver>;
-    }>();
+    workerArray = new Array<Worker>();
 
     constructor() {
         super();
@@ -34,9 +23,9 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
     }
 
     async setSize(width: number, height: number) {
-        for (let i = 0; i < this.workerArray.length; i++) {
+        for (let i = 0, len = this.workerArray.length; i < len; i++) {
             await CoreThreadCommand.excuteAPI(
-                this.workerArray[i].wrapper,
+                this.workerArray[i],
                 "RendererComponentAPI",
                 "setSize",
                 [width, height]
@@ -46,10 +35,21 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         return this;
     }
 
+    async setMaxiumSkibbleFrameCount(count: number) {
+        for (let i = 0, len = this.workerArray.length; i < len; i++) {
+            await CoreThreadCommand.excuteAPI(
+                this.workerArray[i],
+                "WorkerRenderer",
+                "setMaxiumSkibbleFrameCount",
+                [count]
+            );
+        }
+    }
+
     async setCamera(param: PerspectiveCameraInitParam) {
         for (let i = 0, len = this.workerArray.length; i < len; i++) {
             CoreThreadCommand.excuteAPI(
-                this.workerArray[i].wrapper,
+                this.workerArray[i],
                 "CameraComponentAPI",
                 "initCamera",
                 [param]
@@ -64,11 +64,8 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
             object,
             randInt(0, this.workerArray.length - 1)
         );
-        const accessor = new data.constructor();
-        const { id, worker } = data.param;
-        accessor.setId(id);
-        accessor.setWorker(worker);
-        return accessor;
+
+        return data.create();
     }
 
     async dynamicAppend(
@@ -76,19 +73,19 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         workerIndex: number,
         option: {
             position: Position;
-            headingPitchRoll: HeadingPitchRoll;
             visibility: boolean;
+            headingPitchRoll: HeadingPitchRoll;
         }
-    ) {
+    ): Promise<DataAccessorBuildData<InstanceDataAccessor>> {
         if (this.workerArray.length <= workerIndex || workerIndex < 0) {
             throw new Error(
                 `BufferFlowError : cannot access at ${workerIndex} `
             );
         }
-        const target = this.workerArray[workerIndex];
+        const worker = this.workerArray[workerIndex];
 
         const result = await CoreThreadCommand.excuteAPI(
-            target.wrapper,
+            worker,
             "SceneComponentAPI",
             "dynamicAppend",
             [object.toJSON(), { ...option }]
@@ -103,37 +100,44 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         THREEUtils.disposeObject3D(object);
 
         return {
-            constructor: InstanceDataAccessor,
-            param: {
-                worker: target.worker,
-                accessKey: result.managerAccessKey,
-                id: result.objectId,
+            type: InstanceDataAccessor,
+            create: () => new InstanceDataAccessor(),
+            update: (data) => {
+                data.setWorker(worker);
+                data.setAccessKey(result.managerAccessKey);
+                data.setId(result.objectId);
             },
-        };
+        } as const;
     }
 
-    async addAt(object: Object3D, at: number, position?: Position) {
+    async addAt(
+        object: Object3D,
+        at: number,
+        position?: Position
+    ): Promise<DataAccessorBuildData<WorkerDataAccessor>> {
         if (this.workerArray.length <= at || at < 0) {
             throw new Error(`BufferFlowError : cannot access at ${at} `);
         }
 
-        const target = this.workerArray[at];
+        const worker = this.workerArray[at];
 
         const id = await CoreThreadCommand.excuteAPI(
-            target.wrapper,
+            worker,
             "SceneComponentAPI",
             "add",
             [object.toJSON(), position]
         );
 
         THREEUtils.disposeObject3D(object);
+
         return {
-            constructor: WorkerDataAccessor,
-            param: {
-                worker: target.worker,
-                id: id,
+            type: WorkerDataAccessor,
+            create: () => new WorkerDataAccessor(),
+            update: (accessor) => {
+                accessor.setWorker(worker);
+                accessor.setId(id);
             },
-        };
+        } as const;
     }
 
     async render() {
@@ -143,9 +147,9 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         const viewMatrix = viewer.camera.viewMatrix;
         const inverseViewMatrix = viewer.camera.inverseViewMatrix;
 
-        for (let i = 0; i < this.workerArray.length; i++) {
+        for (let i = 0, len = this.workerArray.length; i < len; i++) {
             this.sendRenderRequest(
-                this.workerArray[i].worker,
+                this.workerArray[i],
                 viewMatrix,
                 inverseViewMatrix
             );

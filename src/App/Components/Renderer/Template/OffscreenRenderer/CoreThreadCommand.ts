@@ -3,10 +3,9 @@ import {
     API_MAP_APIFunctions,
     API_MAP_APIFuntionReturnType,
     API_MAP_APIKeys,
-    CommandReciver,
     CoreThreadCommands,
 } from "./Core/CommandReciver";
-import { Remote } from "comlink";
+import { CommandReciverCacheRegister } from "./Core/CommandReciverCacheRegister";
 
 export namespace CoreThreadCommand {
     /**
@@ -21,14 +20,14 @@ export namespace CoreThreadCommand {
         API_METHOD extends API_MAP_APIFunctions<API_NAME>,
         API_ARGS extends API_MAP_APIFunctionArgs<API_NAME, API_METHOD>
     >(
-        wrapper: Remote<CommandReciver>,
+        worker: Worker,
         apiName: API_NAME,
         apiMethod: API_METHOD,
         args: API_ARGS
     ): Promise<API_MAP_APIFuntionReturnType<API_NAME, API_METHOD>> => {
-        // @ts-ignore
         // prettier-ignore
-        return wrapper.excuteAPI(apiName, apiMethod, args);
+        // @ts-ignore
+        return CommandReciverCacheRegister.getRemote(worker).excuteAPI(apiName, apiMethod, args);
     };
 
     /**

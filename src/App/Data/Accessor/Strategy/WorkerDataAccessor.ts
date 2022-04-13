@@ -1,76 +1,70 @@
-import { Remote } from "comlink";
-import { CommandReciver } from "../../../Components/Renderer/Template/OffscreenRenderer/Core/CommandReciver";
 import { CoreThreadCommand } from "../../../Components/Renderer/Template/OffscreenRenderer/CoreThreadCommand";
 import { IWGS84, WGS84_ACTION } from "../../../Math";
-import { WorkerWrapperMap } from "../../../WorkerFactory";
 import { DataAccessor } from "../DataAccessor";
 
 export class WorkerDataAccessor implements DataAccessor {
-    private wrapper?: Remote<CommandReciver>;
-    private id?: number;
+    private worker?: Worker;
+    private objectId?: number;
 
     setId(id: number) {
-        this.id = id;
+        this.objectId = id;
     }
 
     setWorker(worker: Worker) {
-        const wrapper = WorkerWrapperMap.getWrapper(worker);
-        if (wrapper) {
-            this.wrapper = wrapper;
-        }
+        this.worker = worker;
     }
 
     async isExise(): Promise<boolean> {
-        if (this.wrapper && this.id) {
+        if (this.worker && this.objectId) {
             return CoreThreadCommand.excuteAPI(
-                this.wrapper,
+                this.worker,
                 "SceneComponentAPI",
                 "isExistObject",
-                [this.id]
+                [this.objectId]
             );
         }
         return false;
     }
     async remove(): Promise<void> {
-        if (this.wrapper && this.id) {
+        if (this.worker && this.objectId) {
             await CoreThreadCommand.excuteAPI(
-                this.wrapper,
+                this.worker,
                 "SceneComponentAPI",
                 "remove",
-                [this.id]
+                [this.objectId]
             );
         }
     }
 
     async setWGS84(wgs84: IWGS84, action: WGS84_ACTION = WGS84_ACTION.NONE) {
-        if (this.wrapper && this.id) {
+        if (this.worker && this.objectId) {
             return CoreThreadCommand.excuteAPI(
-                this.wrapper,
+                this.worker,
                 "SceneComponentAPI",
                 "setObjectPosition",
-                [this.id, { wgs84, action }]
+                [this.objectId, { wgs84, action }]
             );
         }
     }
 
     async getBox3Max(): Promise<any> {
-        if (this.wrapper && this.id) {
+        if (this.worker && this.objectId) {
             return CoreThreadCommand.excuteAPI(
-                this.wrapper,
+                this.worker,
                 "ObjectDataAPI",
                 "getBox3Max",
-                [this.id]
+                [this.objectId]
             );
         }
     }
 
     async getWGS84(): Promise<IWGS84 | undefined> {
-        if (this.wrapper && this.id) {
+        if (this.worker && this.objectId) {
             return CoreThreadCommand.excuteAPI(
-                this.wrapper,
+                this.worker,
                 "ObjectDataAPI",
                 "getWGS84",
-                [this.id]
+                [this.objectId]
             );
         }
     }

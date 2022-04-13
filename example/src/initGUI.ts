@@ -1,12 +1,23 @@
 import GUI from "lil-gui";
 import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
-import { API, setRemoveAllController, dataAccessorArray } from "./api";
-import { RandomObject } from "./randomObject";
+import { MultipleOffscreenRenderer } from "../../src/App/Components/Renderer";
+import { RendererContext } from "../../src/App/Contexts/RendererContext";
+import {
+    API,
+    setAddController,
+    setRemoveAllController,
+    setUpdateRandomPositionController,
+} from "./api";
 
 export function initGUI() {
     const CSS2DObjectArray = new Array<CSS2DObject>();
 
     const gui = new GUI({ autoPlace: false });
+
+    const objectFolder = gui.addFolder("Object");
+    objectFolder.add(API, "width", 1, 50000, 1);
+    objectFolder.add(API, "hegith", 1, 50000, 1);
+    objectFolder.add(API, "depth", 1, 50000, 1);
 
     gui.domElement.style.position = "absolute";
     gui.domElement.style.top = "2px";
@@ -14,16 +25,30 @@ export function initGUI() {
 
     document.body.appendChild(gui.domElement);
 
+    gui.add(API, "maxRandomLat", 0, 100, 0.0001);
+    gui.add(API, "maxRandomLon", 0, 100, 0.0001);
+
     gui.add(API, "count", 1000, 1_000_000, 1000);
 
-    setRemoveAllController(gui.add(API, "removeAll"));
+    const renderFolder = gui.addFolder("Render");
+    renderFolder
+        .add(API, "skibbleFameCount", 0, 60, 1)
+        .onFinishChange(async () => {
+            await RendererContext.getRenderer(
+                "MultipleOffscreenRenderer"
+            ).setMaxiumSkibbleFrameCount(API.skibbleFameCount);
+        });
 
-    gui.add(API, "help");
+    const actionFolder = gui.addFolder("Action");
+
+    setAddController(actionFolder.add(API, "add"));
+    setUpdateRandomPositionController(
+        actionFolder.add(API, "updateRandomPosition")
+    );
+    setRemoveAllController(actionFolder.add(API, "removeAll"));
 
     return {
         API,
-        dataAccessorArray,
         CSS2DObjectArray,
-        RandomObject: new RandomObject(),
     };
 }
