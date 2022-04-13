@@ -126,7 +126,7 @@ export namespace SceneComponent {
                         {
                             geomtery: object.geometry,
                             material: object.material,
-                            maxCount: 1000,
+                            maxCount: 500,
                         },
                         SceneComponent.scene
                     );

@@ -6,8 +6,16 @@ export namespace Manager {
 
     const onDispose = (manager: Interface) => {
         for (let i = 0, len = managerArray.length; i < len; i++) {
-            if (managerArray[i].hash === manager.hash) {
-                delete managerArray[i];
+            if (managerArray[i] && managerArray[i].hash === manager.hash) {
+                // prettier-ignore
+                [
+                    managerArray[i],
+                    managerArray[managerArray.length - 1]
+                ] = [
+                    managerArray[managerArray.length - 1],
+                    managerArray[i],
+                ]
+                managerArray.pop();
                 return;
             }
         }
@@ -35,6 +43,7 @@ export namespace Manager {
 
         for (let i = 0, len = managerArray.length; i < len; i++) {
             if (
+                managerArray[i] &&
                 managerArray[i].hash.split(`_$`)[0] === baseKey &&
                 managerArray[i].isAddble()
             ) {
@@ -48,6 +57,7 @@ export namespace Manager {
     export const getWriteableClass = <T extends Interface>(baseKey: string) => {
         for (let i = 0, len = managerArray.length; i < len; i++) {
             if (
+                managerArray[i] &&
                 managerArray[i].hash.split(`_$`)[0] === baseKey &&
                 managerArray[i].isAddble()
             ) {
@@ -83,12 +93,7 @@ export namespace Manager {
         return hash;
     };
 
-    export interface Interface<
-        TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
-        TMaterial extends THREE.Material | THREE.Material[] =
-            | THREE.Material
-            | THREE.Material[]
-    > {
+    export interface Interface {
         readonly hash: string;
 
         /**

@@ -192,9 +192,9 @@ export namespace RendererContext {
                 far: viewer.camera.frustum.far,
                 aspect: width / height,
             };
-            for (const { renderer } of rendererArray) {
-                await renderer.setCamera(param);
-                await renderer.setSize(width, height);
+            for (let i = 0, len = rendererArray.length; i < len; i++) {
+                await rendererArray[i].renderer.setCamera(param);
+                await rendererArray[i].renderer.setSize(width, height);
             }
         }
 

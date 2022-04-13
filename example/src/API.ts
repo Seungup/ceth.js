@@ -36,19 +36,18 @@ export const API = {
     depth: 1,
     count: 1_000,
     skibbleFameCount: 0,
-    maxRandomLat: 50,
-    maxRandomLon: 50,
+    maxRandomLat: THREE.MathUtils.randInt(0, 50),
+    maxRandomLon: THREE.MathUtils.randInt(0, 50),
     add: async () => {
         addController?.disable();
-        const renderer = RendererContext.getRenderer(
-            "MultipleOffscreenRenderer"
-        );
+        try {
+            const renderer = RendererContext.getRenderer(
+                "MultipleOffscreenRenderer"
+            );
+            const [mlat, mlon] = [API.maxRandomLat, API.maxRandomLon];
 
-        const mlat = API.maxRandomLat,
-            mlon = API.maxRandomLon;
-        for (let i = 0, len = API.count; i < len; i++) {
-            dataAccessorArray.push(
-                await renderer.dynamicAppend(
+            for (let i = 0, len = API.count; i < len; i++) {
+                const buildData = await renderer.dynamicAppend(
                     new THREE.Mesh(
                         new THREE.BoxBufferGeometry(
                             API.width,
@@ -76,43 +75,56 @@ export const API = {
                         },
                         visibility: true,
                     }
-                )
-            );
+                );
+
+                dataAccessorArray.push(buildData);
+            }
+        } catch (error) {
+        } finally {
+            addController?.enable();
         }
-        addController?.enable();
     },
     updateRandomPosition: async () => {
         updateRandomPositionController?.disable();
+        try {
+            const mlat = API.maxRandomLat,
+                mlon = API.maxRandomLon;
 
-        const mlat = API.maxRandomLat,
-            mlon = API.maxRandomLon;
-
-        for (let i = 0, len = dataAccessorArray.length; i < len; i++) {
-            await DataAccessorFactory.getCachedAccessor(
-                dataAccessorArray[i]
-            )?.setWGS84(
-                {
-                    height: 0,
-                    latitude: randFloat(0, mlat),
-                    longitude: randFloat(0, mlon),
-                },
-                WGS84_ACTION.NONE
-            );
+            for (let i = 0, len = dataAccessorArray.length; i < len; i++) {
+                await DataAccessorFactory.getCachedAccessor(
+                    dataAccessorArray[i]
+                )?.setWGS84(
+                    {
+                        height: 0,
+                        latitude: randFloat(0, mlat),
+                        longitude: randFloat(0, mlon),
+                    },
+                    WGS84_ACTION.NONE
+                );
+            }
+        } catch (error) {
+        } finally {
+            updateRandomPositionController?.enable();
         }
-        updateRandomPositionController?.enable();
     },
     removeAll: async () => {
         removeAllController?.disable();
-        console.time("delete");
-        while (dataAccessorArray.length) {
-            DataAccessorFactory.getCachedAccessor(dataAccessorArray.pop());
-
-            await DataAccessorFactory.getCachedAccessor(
-                dataAccessorArray.pop()
-            ).remove();
+        try {
+            console.time("delete");
+            while (dataAccessorArray.length) {
+                try {
+                    await DataAccessorFactory.getCachedAccessor(
+                        dataAccessorArray.pop()
+                    ).remove();
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+            console.timeEnd("delete");
+        } catch (error) {
+        } finally {
+            removeAllController?.enable();
         }
-        console.timeEnd("delete");
-        removeAllController?.enable();
     },
     lonGap: Math.random(),
     latGap: Math.random(),

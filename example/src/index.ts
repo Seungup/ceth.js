@@ -1,13 +1,10 @@
 import { Viewer } from "cesium";
-import * as THREE from "three";
-import { Cesium3 } from "../../src/App/Cesium3";
 import "./css/main.css";
+
+import { Cesium3 } from "../../src/App/Cesium3";
 import { initGUI } from "./initGUI";
-import { ObjectEvent } from "../../src/App/Objects/ObjectEvent";
-import { CesiumUtils } from "../../src/App/Utils/CesiumUtils";
 import { RendererContext } from "../../src/App/Contexts/RendererContext";
 import { MultipleOffscreenBuilder } from "../../src/App/Components/Renderer";
-import { randInt } from "three/src/math/MathUtils";
 
 const constructorOptions: Viewer.ConstructorOptions = {
     useDefaultRenderLoop: false,

@@ -11,18 +11,26 @@ export interface DataAccessorBuildData<T extends DataAccessor = Accessor> {
 }
 
 export class DataAccessorFactory {
-    private static flyweights = new WeakMap<AccessorClass, DataAccessor>();
+    private static flyweights = new Array<DataAccessor>();
 
     static getCachedAccessor<T extends DataAccessor>(
         data: DataAccessorBuildData<T>
     ): T {
-        if (!DataAccessorFactory.flyweights.has(data.type)) {
-            DataAccessorFactory.flyweights.set(data.type, data.create());
+        let accessor: T,
+            i = 0,
+            len = DataAccessorFactory.flyweights.length;
+
+        for (; i < len; i++) {
+            if (DataAccessorFactory.flyweights[i] instanceof data.type) {
+                accessor = <T>DataAccessorFactory.flyweights[i];
+                data.update(accessor);
+                return accessor;
+            }
         }
 
-        const accessor = DataAccessorFactory.flyweights.get(data.type)! as T;
+        accessor = data.create();
+        DataAccessorFactory.flyweights.push(accessor);
         data.update(accessor);
-
         return accessor;
     }
 }
