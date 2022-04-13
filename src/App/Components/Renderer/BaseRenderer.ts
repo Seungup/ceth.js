@@ -4,7 +4,8 @@ import { SceneComponent } from "../Scene/SceneComponent";
 import { ApplicationContext } from "../../Contexts/ApplicationContext";
 import { LocalDataAccessor } from "../../Data/Accessor/Strategy/LocalDataAccessor";
 import { Cesium3Synchronization } from "../../Utils/Synchronization";
-import { DataAccessor } from "../../Data/Accessor/DataAccessor";
+import { DataAccessorBuildData } from "../../Data/DataAccessorFactory";
+import { Accessor } from "../../Data/Accessor/DataAccessor";
 
 export interface PerspectiveCameraInitParam {
     aspect: number;
@@ -23,7 +24,7 @@ export interface IRendererTemplate {
     setSize(width: number, height: number, updateStyle: boolean): Promise<this>;
     setCamera(param: PerspectiveCameraInitParam): Promise<this>;
     render(): void;
-    add(object: THREE.Object3D): Promise<DataAccessor>;
+    add(object: THREE.Object3D): Promise<DataAccessorBuildData>;
 }
 
 export class BaseRenderer implements IRendererTemplate {
@@ -84,9 +85,18 @@ export class BaseRenderer implements IRendererTemplate {
      * 장면에 오브젝트를 추가합니다.
      * @param object
      */
-    async add(object: THREE.Object3D): Promise<DataAccessor> {
+    async add(object: THREE.Object3D): Promise<DataAccessorBuildData> {
         const scene = SceneComponent.scene;
         scene.add(object);
-        return new LocalDataAccessor(scene, object.id);
+        return {
+            type: LocalDataAccessor,
+            create: () => new LocalDataAccessor(),
+            update: (accessor) => {
+                if (accessor instanceof LocalDataAccessor) {
+                    accessor.setScene(scene);
+                    accessor.setId(object.id);
+                }
+            },
+        };
     }
 }

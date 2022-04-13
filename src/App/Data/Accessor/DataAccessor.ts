@@ -4,10 +4,15 @@ import { InstanceDataAccessor } from "./Strategy/InstanceDataAccessor";
 import { LocalDataAccessor } from "./Strategy/LocalDataAccessor";
 import { WorkerDataAccessor } from "./Strategy/WorkerDataAccessor";
 
-export type Accessor =
+export type AccessorClass =
     | typeof InstanceDataAccessor
     | typeof LocalDataAccessor
     | typeof WorkerDataAccessor;
+
+export type Accessor =
+    | InstanceDataAccessor
+    | LocalDataAccessor
+    | WorkerDataAccessor;
 
 export interface DataAccessor {
     setWGS84(wgs84: IWGS84, action: WGS84_ACTION): Promise<void>;

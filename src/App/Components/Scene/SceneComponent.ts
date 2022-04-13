@@ -134,7 +134,7 @@ export namespace SceneComponent {
                     // don't for regist manager class
                     Manager.registClass(manager);
                 } else {
-                    manager = writeAbleClass.manager;
+                    manager = writeAbleClass;
                 }
 
                 const box3 = new Box3().setFromObject(object);

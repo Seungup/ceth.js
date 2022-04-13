@@ -18,8 +18,8 @@ export namespace RendererContext {
      * 모든 사용가능한 렌더러를 잠금니다.
      */
     export const rockAll = () => {
-        for (const { state } of rendererArray) {
-            state.lock = true;
+        for (let i = 0, len = rendererArray.length; i < len; i++) {
+            rendererArray[i].state.lock = true;
         }
     };
 
@@ -46,8 +46,8 @@ export namespace RendererContext {
      * 현재 렌더러들의 상태를 저장합니다.
      */
     export const commit = () => {
-        for (const { commitedState, state } of rendererArray) {
-            commitedState.lock = state.lock;
+        for (let i = 0, len = rendererArray.length; i < len; i++) {
+            rendererArray[i].commitedState.lock = rendererArray[i].state.lock;
         }
     };
 
@@ -55,8 +55,8 @@ export namespace RendererContext {
      * 저장된 상태로 렌더러의 상태를 되돌립니다.
      */
     export const rollback = () => {
-        for (const { commitedState, state } of rendererArray) {
-            state.lock = commitedState.lock;
+        for (let i = 0, len = rendererArray.length; i < len; i++) {
+            rendererArray[i].state.lock = rendererArray[i].commitedState.lock;
         }
     };
 
@@ -64,8 +64,8 @@ export namespace RendererContext {
      * 사용 가능한 모든 렌더러의 잠금을 해제합니다.
      */
     export const unlockAll = () => {
-        for (const { state } of rendererArray) {
-            state.lock = false;
+        for (let i = 0, len = rendererArray.length; i < len; i++) {
+            rendererArray[i].state.lock = false;
         }
     };
 
@@ -106,9 +106,9 @@ export namespace RendererContext {
      * @returns
      */
     export const getRenderer = <T extends keyof RendererMap>(target: T) => {
-        for (const { renderer } of rendererArray) {
-            if (renderer.name === target) {
-                return renderer as RendererMap[T];
+        for (let i = 0, len = rendererArray.length; i < len; i++) {
+            if (rendererArray[i].renderer.name === target) {
+                return rendererArray[i].renderer as RendererMap[T];
             }
         }
     };
@@ -118,9 +118,9 @@ export namespace RendererContext {
      * @param target
      */
     export const lockRenderer = <T extends keyof RendererMap>(target: T) => {
-        for (const { renderer, state } of rendererArray) {
-            if (renderer.name === target) {
-                state.lock = true;
+        for (let i = 0, len = rendererArray.length; i < len; i++) {
+            if (rendererArray[i].renderer.name === target) {
+                rendererArray[i].state.lock = true;
                 break;
             }
         }
@@ -132,9 +132,9 @@ export namespace RendererContext {
      * @returns
      */
     export const isLocked = <T extends keyof RendererMap>(target: T) => {
-        for (const { renderer, state } of rendererArray) {
-            if (renderer.name === target) {
-                return state.lock;
+        for (let i = 0, len = rendererArray.length; i < len; i++) {
+            if (rendererArray[i].renderer.name === target) {
+                return rendererArray[i].state.lock;
             }
         }
     };
@@ -144,10 +144,10 @@ export namespace RendererContext {
      * @param target
      */
     export const unlockRenderer = <T extends keyof RendererMap>(target: T) => {
-        for (const { renderer, state } of rendererArray) {
-            if (renderer.name === target) {
-                state.lock = false;
-                break;
+        for (let i = 0, len = rendererArray.length; i < len; i++) {
+            if (rendererArray[i].renderer.name === target) {
+                rendererArray[i].state.lock = false;
+                return;
             }
         }
     };
@@ -158,20 +158,11 @@ export namespace RendererContext {
      * @returns
      */
     export const removeRenderer = <T extends keyof RendererMap>(target: T) => {
-        const index = rendererArray.findIndex(({ renderer }) => {
-            return renderer.name === target;
-        });
-
-        if (index !== -1) {
-            // prettier-ignore
-            [
-                rendererArray[index], 
-                rendererArray[rendererArray.length - 1]
-            ] = [
-                rendererArray[rendererArray.length - 1],
-                rendererArray[index],
-            ];
-            rendererArray.pop();
+        for (let i = 0, len = rendererArray.length; i < len; i++) {
+            if (rendererArray[i].renderer.name === target) {
+                delete rendererArray[i];
+                return;
+            }
         }
     };
 
@@ -217,8 +208,8 @@ export namespace RendererContext {
      */
     export const render = async () => {
         await syncScreenRect();
-        for (const { renderer } of rendererArray) {
-            renderer.render();
+        for (let i = 0, len = rendererArray.length; i < len; i++) {
+            rendererArray[i].renderer.render();
         }
     };
 }

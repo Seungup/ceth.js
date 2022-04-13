@@ -7,8 +7,9 @@ import {
 } from "../../src/App/Data/DataAccessorFactory";
 import { WGS84_ACTION } from "../../src/App/Math";
 import * as THREE from "three";
+import type { Accessor } from "../../src/App/Data/Accessor/DataAccessor";
 
-const dataAccessorArray = new Array<DataAccessorBuildData>();
+const dataAccessorArray = new Array<DataAccessorBuildData<Accessor>>();
 
 let removeAllController: Controller | undefined;
 let updateRandomPositionController: Controller | undefined;
@@ -89,7 +90,7 @@ export const API = {
         for (let i = 0, len = dataAccessorArray.length; i < len; i++) {
             await DataAccessorFactory.getCachedAccessor(
                 dataAccessorArray[i]
-            ).setWGS84(
+            )?.setWGS84(
                 {
                     height: 0,
                     latitude: randFloat(0, mlat),
@@ -104,6 +105,8 @@ export const API = {
         removeAllController?.disable();
         console.time("delete");
         while (dataAccessorArray.length) {
+            DataAccessorFactory.getCachedAccessor(dataAccessorArray.pop());
+
             await DataAccessorFactory.getCachedAccessor(
                 dataAccessorArray.pop()
             ).remove();

@@ -68,7 +68,7 @@ export class CesiumUtils {
             }
 
             return CesiumUtils.flyByWGS84(
-                new CT_WGS84(position).toIWGS84(),
+                new CT_WGS84({ wgs84: position }).toIWGS84(),
                 radius
             );
         }

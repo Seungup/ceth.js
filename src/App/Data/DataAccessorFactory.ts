@@ -1,14 +1,17 @@
-import { DataAccessor } from "./Accessor/DataAccessor";
-import type { Accessor } from "./Accessor/DataAccessor";
+import type {
+    AccessorClass,
+    Accessor,
+    DataAccessor,
+} from "./Accessor/DataAccessor";
 
-export interface DataAccessorBuildData<T extends DataAccessor = any> {
-    type: Accessor;
+export interface DataAccessorBuildData<T extends DataAccessor = Accessor> {
+    type: AccessorClass;
     create: () => T;
     update: (accessor: T) => void;
 }
 
 export class DataAccessorFactory {
-    private static flyweights = new WeakMap<Accessor, DataAccessor>();
+    private static flyweights = new WeakMap<AccessorClass, DataAccessor>();
 
     static getCachedAccessor<T extends DataAccessor>(
         data: DataAccessorBuildData<T>

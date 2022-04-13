@@ -20,9 +20,9 @@ export namespace ApplicationContext {
     export const setViewer = (cesiumViewer: Viewer) => {
         viewer = cesiumViewer;
 
-        const root = viewer.container.parentElement;
+        const { parentElement } = viewer.container;
 
-        if (!root) {
+        if (!parentElement) {
             throw new Error("cannot fond parent element");
         }
 
@@ -32,6 +32,6 @@ export namespace ApplicationContext {
             );
         }
 
-        root.appendChild(container);
+        parentElement.appendChild(container);
     };
 }

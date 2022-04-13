@@ -86,7 +86,13 @@ export namespace Cesium3Synchronization {
         wgs84: IWGS84,
         action: WGS84_ACTION = WGS84_ACTION.NONE
     ) {
-        object.applyMatrix4(new CT_WGS84(wgs84, action).getMatrix4());
+        object.applyMatrix4(
+            new CT_WGS84({ wgs84, action }).getMatrix4({
+                heading: 0,
+                pitch: 0,
+                roll: 0,
+            })
+        );
         return { object: object, wgs84: wgs84 };
     }
 }

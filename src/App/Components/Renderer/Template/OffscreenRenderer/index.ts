@@ -1,16 +1,15 @@
 import { Object3D } from "three";
 import { CoreThreadCommand } from "./CoreThreadCommand";
-import { wrap } from "comlink";
 import { PerspectiveCameraInitParam, BaseRenderer } from "../../BaseRenderer";
-import { CommandReciver, CoreThreadCommands } from "./Core/CommandReciver";
+import { CoreThreadCommands } from "./Core/CommandReciver";
 import { ApplicationContext } from "../../../../Contexts/ApplicationContext";
 import { WorkerFactory } from "../../../../WorkerFactory";
 import { WorkerDataAccessor } from "../../../../Data/Accessor/Strategy/WorkerDataAccessor";
 import { CesiumUtils } from "../../../../Utils/CesiumUtils";
+import { DataAccessorBuildData } from "../../../../Data/DataAccessorFactory";
 
 export class OffscreenRenderer extends BaseRenderer {
     private worker = WorkerFactory.createWorker("CommandReciver");
-    private wrapper = wrap<CommandReciver>(this.worker);
     constructor() {
         super();
         this.name = "OffscreenRendererProxy";
@@ -44,15 +43,23 @@ export class OffscreenRenderer extends BaseRenderer {
         }
     }
 
-    async add(object: Object3D) {
+    async add(object: Object3D): Promise<DataAccessorBuildData> {
         const id = await CoreThreadCommand.excuteAPI(
-            this.wrapper,
+            this.worker,
             "SceneComponentAPI",
             "add",
             [object.toJSON()]
         );
-
-        return new WorkerDataAccessor(this.worker, id);
+        return {
+            type: WorkerDataAccessor,
+            create: () => new WorkerDataAccessor(),
+            update: (accessor) => {
+                if (accessor instanceof WorkerDataAccessor) {
+                    accessor.setId(id);
+                    accessor.setWorker(this.worker);
+                }
+            },
+        };
     }
 
     private createCanvasElement() {
@@ -87,7 +94,7 @@ export class OffscreenRenderer extends BaseRenderer {
 
     async setSize(width: number, height: number) {
         await CoreThreadCommand.excuteAPI(
-            this.wrapper,
+            this.worker,
             "RendererComponentAPI",
             "setSize",
             [width, height]
@@ -97,7 +104,7 @@ export class OffscreenRenderer extends BaseRenderer {
 
     async setCamera(param: PerspectiveCameraInitParam) {
         await CoreThreadCommand.excuteAPI(
-            this.wrapper,
+            this.worker,
             "CameraComponentAPI",
             "initCamera",
             [param]
@@ -117,7 +124,7 @@ export class OffscreenRenderer extends BaseRenderer {
                 // 카메라의 높이가 50km 보다 낮을 경우,
                 // 내부 오브젝트 포지션 계산을 중지하여, 가까운 물체의 가시성이 삭제되는 현상 보완
                 await CoreThreadCommand.excuteAPI(
-                    this.wrapper,
+                    this.worker,
                     "WorkerRenderer",
                     "setRenderBehindEarthOfObjects",
                     [threadhold]

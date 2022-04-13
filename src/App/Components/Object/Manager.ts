@@ -2,36 +2,43 @@ import * as THREE from "three";
 import { Observable } from "rxjs";
 
 export namespace Manager {
-    const managerMap = new Map<string, Interface>();
+    const managerArray = new Array<Interface>();
 
     const onDispose = (manager: Interface) => {
-        managerMap.delete(manager.hash);
+        for (let i = 0, len = managerArray.length; i < len; i++) {
+            if (managerArray[i].hash === manager.hash) {
+                delete managerArray[i];
+                return;
+            }
+        }
     };
 
     export const registClass = (_this: Interface) => {
         if (!getClass(_this.hash)) {
             _this.$dispose.subscribe(onDispose);
-
-            managerMap.set(_this.hash, _this);
+            managerArray.push(_this);
         } else {
             console.error(`${_this.hash} manager already exist`);
         }
     };
 
     export const getClass = <T extends Interface>(hashKey: string) => {
-        const manager = managerMap.get(hashKey);
-        if (manager) {
-            return manager as T;
+        for (let i = 0, len = managerArray.length; i < len; i++) {
+            if (managerArray[i].hash === hashKey) {
+                return managerArray[i] as T;
+            }
         }
     };
 
     export const getAllClass = <T extends Interface>(baseKey: string) => {
-        const result = new Array<{ manager: T; accessKey: string }>();
+        const result = new Array<T>();
 
-        for (let [key, manager] of managerMap) {
-            const _baseKey = manager.hash.split(`_$`)[0];
-            if (_baseKey === baseKey && manager.isAddble()) {
-                result.push({ manager: manager as T, accessKey: key });
+        for (let i = 0, len = managerArray.length; i < len; i++) {
+            if (
+                managerArray[i].hash.split(`_$`)[0] === baseKey &&
+                managerArray[i].isAddble()
+            ) {
+                result.push(managerArray[i] as T);
             }
         }
 
@@ -39,10 +46,12 @@ export namespace Manager {
     };
 
     export const getWriteableClass = <T extends Interface>(baseKey: string) => {
-        for (let [key, manager] of managerMap) {
-            const _baseKey = manager.hash.split(`_$`)[0];
-            if (_baseKey === baseKey && manager.isAddble()) {
-                return { manager: manager as T, accessKey: key };
+        for (let i = 0, len = managerArray.length; i < len; i++) {
+            if (
+                managerArray[i].hash.split(`_$`)[0] === baseKey &&
+                managerArray[i].isAddble()
+            ) {
+                return managerArray[i] as T;
             }
         }
     };

@@ -1,6 +1,6 @@
-import { Matrix4 } from "cesium";
-import { Object3D } from "three";
-import { randInt } from "three/src/math/MathUtils";
+import type { Matrix4 } from "cesium";
+import type { DataAccessorBuildData } from "../../../../Data/DataAccessorFactory";
+import * as THREE from "three";
 import { CoreThreadCommand } from "../OffscreenRenderer/CoreThreadCommand";
 import { CoreThreadCommands } from "../OffscreenRenderer/Core/CommandReciver";
 import { BaseRenderer, PerspectiveCameraInitParam } from "../../BaseRenderer";
@@ -9,7 +9,6 @@ import { HeadingPitchRoll, Position } from "../../../../Math";
 import { WorkerDataAccessor } from "../../../../Data/Accessor/Strategy/WorkerDataAccessor";
 import { InstanceDataAccessor } from "../../../../Data/Accessor/Strategy/InstanceDataAccessor";
 import { THREEUtils } from "../../../../Utils/ThreeUtils";
-import { DataAccessorBuildData } from "../../../../Data/DataAccessorFactory";
 
 export class MultipleOffscreenRenderer extends BaseRenderer {
     /**
@@ -48,7 +47,7 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
 
     async setCamera(param: PerspectiveCameraInitParam) {
         for (let i = 0, len = this.workerArray.length; i < len; i++) {
-            CoreThreadCommand.excuteAPI(
+            await CoreThreadCommand.excuteAPI(
                 this.workerArray[i],
                 "CameraComponentAPI",
                 "initCamera",
@@ -59,24 +58,22 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         return this;
     }
 
-    async add(object: Object3D) {
-        const data = await this.addAt(
+    async add(object: THREE.Object3D) {
+        return await this.addAt(
             object,
-            randInt(0, this.workerArray.length - 1)
+            THREE.MathUtils.randInt(0, this.workerArray.length - 1)
         );
-
-        return data.create();
     }
 
     async dynamicAppend(
-        object: Object3D,
+        object: THREE.Object3D,
         workerIndex: number,
         option: {
             position: Position;
             visibility: boolean;
             headingPitchRoll: HeadingPitchRoll;
         }
-    ): Promise<DataAccessorBuildData<InstanceDataAccessor>> {
+    ): Promise<DataAccessorBuildData> {
         if (this.workerArray.length <= workerIndex || workerIndex < 0) {
             throw new Error(
                 `BufferFlowError : cannot access at ${workerIndex} `
@@ -103,18 +100,20 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
             type: InstanceDataAccessor,
             create: () => new InstanceDataAccessor(),
             update: (data) => {
-                data.setWorker(worker);
-                data.setAccessKey(result.managerAccessKey);
-                data.setId(result.objectId);
+                if (data instanceof InstanceDataAccessor) {
+                    data.setWorker(worker);
+                    data.setAccessKey(result.managerAccessKey);
+                    data.setId(result.objectId);
+                }
             },
         } as const;
     }
 
     async addAt(
-        object: Object3D,
+        object: THREE.Object3D,
         at: number,
         position?: Position
-    ): Promise<DataAccessorBuildData<WorkerDataAccessor>> {
+    ): Promise<DataAccessorBuildData> {
         if (this.workerArray.length <= at || at < 0) {
             throw new Error(`BufferFlowError : cannot access at ${at} `);
         }
@@ -134,18 +133,23 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
             type: WorkerDataAccessor,
             create: () => new WorkerDataAccessor(),
             update: (accessor) => {
-                accessor.setWorker(worker);
-                accessor.setId(id);
+                if (accessor instanceof WorkerDataAccessor) {
+                    accessor.setWorker(worker);
+                    accessor.setId(id);
+                }
             },
         } as const;
     }
 
     async render() {
-        const viewer = ApplicationContext.viewer;
+        const { viewer } = ApplicationContext;
+
         if (!viewer) return;
 
-        const viewMatrix = viewer.camera.viewMatrix;
-        const inverseViewMatrix = viewer.camera.inverseViewMatrix;
+        const [viewMatrix, inverseViewMatrix] = [
+            viewer.camera.viewMatrix,
+            viewer.camera.inverseViewMatrix,
+        ];
 
         for (let i = 0, len = this.workerArray.length; i < len; i++) {
             this.sendRenderRequest(
@@ -162,8 +166,10 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         inverseViewMatrix: Matrix4
     ) {
         {
-            const cvm = new Float64Array(viewMatrix);
-            const civm = new Float64Array(inverseViewMatrix);
+            const [cvm, civm] = [
+                new Float64Array(viewMatrix),
+                new Float64Array(inverseViewMatrix),
+            ];
 
             CoreThreadCommand.excuteCommand(
                 target,
