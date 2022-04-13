@@ -81,9 +81,9 @@ export namespace Manager {
         if (material instanceof THREE.Material) {
             hash = hash.concat(material.type);
         } else {
-            material.forEach((m) => {
-                hash = hash.concat(m.type);
-            });
+            for (let i = 0, len = material.length; i < len; i++) {
+                hash = hash.concat(material[i].type);
+            }
         }
 
         if (id) {

@@ -25,8 +25,8 @@ export function initGUI() {
 
     document.body.appendChild(gui.domElement);
 
-    gui.add(API, "maxRandomLat", 0, 100, 0.0001);
-    gui.add(API, "maxRandomLon", 0, 100, 0.0001);
+    gui.add(API, "maxRandomLat", 0, 100, 1);
+    gui.add(API, "maxRandomLon", 0, 100, 1);
 
     gui.add(API, "count", 1000, 1_000_000, 1000);
 

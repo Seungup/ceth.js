@@ -89,10 +89,10 @@ export class InstancedObjectManager<
 
     private matrix = new THREE.Matrix4();
     traverse(callback: { (matrix: THREE.Matrix4, id: number): void }) {
-        this.entityIdArray.forEach((id, index) => {
-            this.instancedMesh.getMatrixAt(index, this.matrix);
-            callback(this.matrix, id);
-        });
+        for (let i = 0, len = this.entityIdArray.length; i < len; i++) {
+            this.instancedMesh.getMatrixAt(i, this.matrix);
+            callback(this.matrix, i);
+        }
     }
 
     update(id: number, matrix: THREE.Matrix4): boolean {
