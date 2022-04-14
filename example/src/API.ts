@@ -59,7 +59,7 @@ export const API = {
                             color: 0xffffff * Math.random(),
                         })
                     ),
-                    randInt(0, renderer.workerArray.length - 1),
+                    randInt(0, renderer.length - 1),
                     {
                         position: {
                             wgs84: {

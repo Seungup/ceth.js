@@ -6,21 +6,25 @@ import { WorkerRenderer } from "./WorkerRenderer";
 export namespace WorkerRenderSyncer {
     let isRequestRender: boolean = false;
 
+    export const isBusy = () => {
+        return isRequestRender;
+    };
+
     /**
      * 다음 장면을 그립니다.
      */
-    const render = () => {
+    const render = async () => {
         WorkerRenderer.render();
-        isRequestRender = false;
     };
 
     /**
      * 다음 장면을 요청합니다.
      */
-    export const requestRender = () => {
+    export const requestRender = async () => {
         if (!isRequestRender) {
             isRequestRender = true;
-            render();
+            await render();
+            isRequestRender = false;
         }
     };
 }

@@ -9,7 +9,7 @@ import { CesiumUtils } from "../../../../Utils/CesiumUtils";
 import { DataAccessorBuildData } from "../../../../Data/DataAccessorFactory";
 
 export class OffscreenRenderer extends BaseRenderer {
-    private worker = WorkerFactory.createWorker("CommandReciver");
+    readonly worker = WorkerFactory.createWorker("CommandReciver");
     constructor() {
         super();
         this.name = "OffscreenRendererProxy";

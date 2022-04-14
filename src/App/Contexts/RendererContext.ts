@@ -75,22 +75,11 @@ export namespace RendererContext {
      * @returns
      */
     export const addRenderer = (
-        ...renderers: typeof RendererTemplate[] | RendererTemplate[]
+        ...renderers: (new () => RendererTemplate)[]
     ) => {
-        let renderer: RendererTemplate;
-        let data: typeof RendererTemplate | RendererTemplate;
-
         for (let i = 0, len = renderers.length; i < len; i++) {
-            data = renderers[i];
-
-            if (typeof data === "function") {
-                renderer = new data();
-            } else {
-                renderer = data;
-            }
-
             rendererArray.push({
-                renderer: renderer,
+                renderer: new renderers[i](),
                 state: { lock: false },
                 commitedState: { lock: false },
             });

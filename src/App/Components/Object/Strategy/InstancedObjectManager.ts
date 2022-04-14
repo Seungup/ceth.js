@@ -91,7 +91,7 @@ export class InstancedObjectManager<
     traverse(callback: { (matrix: THREE.Matrix4, id: number): void }) {
         for (let i = 0, len = this.entityIdArray.length; i < len; i++) {
             this.instancedMesh.getMatrixAt(i, this.matrix);
-            callback(this.matrix, i);
+            callback(this.matrix, this.entityIdArray[i]);
         }
     }
 

@@ -56,19 +56,19 @@ export interface ICoreThreadCommand {
 
 export class CommandReciver {
     constructor() {
-        self.onmessage = (e: MessageEvent) => {
+        self.onmessage = async (e: MessageEvent) => {
             const message = e.data;
             if (isCoreThreadCommand(message)) {
-                this.excuteCommand(message);
+                await this.excuteCommand(message);
             }
         };
     }
 
-    excuteCommand(data: ICoreThreadCommand) {
+    async excuteCommand(data: ICoreThreadCommand) {
         const param = data.param;
         switch (data.runCommand) {
             case CoreThreadCommands.RENDER:
-                WorkerRenderSyncer.requestRender();
+                await WorkerRenderSyncer.requestRender();
                 break;
             case CoreThreadCommands.INIT:
                 WebGLRendererComponent.initRenderer(param);

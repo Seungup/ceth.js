@@ -4,7 +4,7 @@ import "./css/main.css";
 import { Cesium3 } from "../../src/App/Cesium3";
 import { initGUI } from "./initGUI";
 import { RendererContext } from "../../src/App/Contexts/RendererContext";
-import { MultipleOffscreenBuilder } from "../../src/App/Components/Renderer";
+import { MultipleOffscreenRenderer } from "../../src/App/Components/Renderer";
 
 const constructorOptions: Viewer.ConstructorOptions = {
     useDefaultRenderLoop: false,
@@ -29,11 +29,7 @@ Cesium3.init(viewer);
 
 initGUI();
 
-RendererContext.addRenderer(
-    new MultipleOffscreenBuilder()
-        .setCanvasCount(navigator.hardwareConcurrency)
-        .build()
-);
+RendererContext.addRenderer(MultipleOffscreenRenderer);
 
 (async function animation() {
     RendererContext.render();

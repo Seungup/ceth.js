@@ -4,8 +4,7 @@ import { OffscreenRenderer } from "./Template/OffscreenRenderer";
 
 export * from "./Template/DOMRenderer";
 export * from "./Template/OffscreenRenderer";
-export type { MultipleOffscreenRenderer } from "./Template/MultipleOffscreenRenderer/MultipleOffscreenRenderer";
-export * from "./Template/MultipleOffscreenRenderer/MultipleOffscreenBuilder";
+export * from "./Template/MultipleOffscreenRenderer/MultipleOffscreenRenderer";
 export interface RendererMap {
     DOMRenderer: DOMRenderer;
     OffscreenRenderer: OffscreenRenderer;
