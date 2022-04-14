@@ -9,16 +9,30 @@ import { HeadingPitchRoll, Position } from "../../../../Math";
 import { WorkerDataAccessor } from "../../../../Data/Accessor/Strategy/WorkerDataAccessor";
 import { InstanceDataAccessor } from "../../../../Data/Accessor/Strategy/InstanceDataAccessor";
 import { THREEUtils } from "../../../../Utils/ThreeUtils";
+import { OffscreenRenderer } from "../OffscreenRenderer";
 
 export class MultipleOffscreenRenderer extends BaseRenderer {
     /**
      * 워커의 배열입니다. 해당 배열에 존재하는 스레드를 바탕으로 장면이 그려집니다.
      */
-    workerArray = new Array<Worker>();
+    private readonly workerArray = new Array<Worker>();
 
     constructor() {
         super();
         this.name = "MultipleOffscreenRenderer";
+        this.increaseRenderer();
+    }
+
+    get length() {
+        return this.workerArray.length;
+    }
+
+    increaseRenderer() {
+        const worker = new OffscreenRenderer().worker;
+
+        worker.onmessage = (ev) => {};
+
+        this.workerArray.push(worker);
     }
 
     async setSize(width: number, height: number) {

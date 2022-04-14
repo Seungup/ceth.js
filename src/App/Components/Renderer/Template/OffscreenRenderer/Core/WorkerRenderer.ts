@@ -39,6 +39,7 @@ export namespace WorkerRenderer {
             } else {
                 skipedFrame++;
             }
+
             camera.userData.updated = false;
         }
     };
