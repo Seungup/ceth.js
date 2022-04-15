@@ -1,6 +1,6 @@
 import { expose } from "comlink";
 import { Cesium3Synchronization } from "../../../../../Utils/Synchronization";
-import { OffscreenRenderSyncer } from "./OffscreenRenderSyncer";
+import { RenderTaskManager } from "./RenderTaskManager";
 import { ObjectData } from "../../../../../Data/ObjectData";
 import { CameraComponent } from "../../../../Camera/CameraComponent";
 import { SceneComponent } from "../../../../Scene/SceneComponent";
@@ -55,12 +55,15 @@ export interface ICoreThreadCommand {
 }
 
 export class CommandReciver {
+    private readonly renderTask = new RenderTaskManager();
+
     constructor() {
-        self.onmessage = async (e: MessageEvent) => {
+        self.onmessage = (e: MessageEvent) => {
             const message = e.data;
-            if (isCoreThreadCommand(message)) {
-                await this.excuteCommand(message);
+            if (!isCoreThreadCommand(message)) {
+                return;
             }
+            this.excuteCommand(message);
         };
     }
 
@@ -68,7 +71,9 @@ export class CommandReciver {
         const param = data.param;
         switch (data.runCommand) {
             case CoreThreadCommands.RENDER:
-                OffscreenRenderSyncer.requestRender();
+                this.renderTask.setTaskAndStartIfIDLEState(
+                    OffscreenRenderer.render
+                );
                 break;
             case CoreThreadCommands.INIT:
                 WebGLRendererComponent.initRenderer(param);

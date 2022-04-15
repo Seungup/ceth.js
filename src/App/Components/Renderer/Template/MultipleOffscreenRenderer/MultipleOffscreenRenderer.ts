@@ -20,10 +20,9 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
     constructor() {
         super();
         this.name = "MultipleOffscreenRenderer";
-        this.rendererArray.push(
-            new OffscreenRendererProxy(),
-            new OffscreenRendererProxy()
-        );
+        for (let i = 0, len = navigator.hardwareConcurrency; i < len; i++) {
+            this.rendererArray.push(new OffscreenRendererProxy());
+        }
     }
 
     get length() {

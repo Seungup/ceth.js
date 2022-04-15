@@ -43,11 +43,14 @@ export const API = {
             const renderer = RendererContext.getRenderer(
                 "MultipleOffscreenRenderer"
             );
-
+            const start = Date.now();
             for (let i = 0, len = API.count; i < len; i++) {
                 guiStatsEl.innerHTML = [
                     "<i>Add calls</i>: " + (i + 1) + "/" + len,
-                ].join("\n");
+                    "<i>Percent</i>:   " +
+                        (((i + 1) / len) * 100).toFixed(2) +
+                        "%",
+                ].join("<br><br>");
 
                 const buildData = await renderer.dynamicAppend(
                     new THREE.Mesh(
@@ -80,6 +83,23 @@ export const API = {
 
                 dataAccessorArray.push(buildData);
             }
+            const end = Date.now();
+            guiStatsEl.innerHTML +=
+                "<br><br>" +
+                [
+                    `----RESULT----`,
+                    `<i>Total<i>: ~` +
+                        Number(
+                            ((end - start) / 1000).toFixed(2)
+                        ).toLocaleString() +
+                        " sec",
+                    `<i>Performance<i>: ~` +
+                        (~~(
+                            (API.count / (end - start)) *
+                            1000
+                        )).toLocaleString() +
+                        ` items/sec`,
+                ].join("<br><br>");
         } catch (error) {
         } finally {
             addController?.enable();
@@ -91,7 +111,14 @@ export const API = {
             const mlat = API.maxRandomLat,
                 mlon = API.maxRandomLon;
 
+            const start = Date.now();
             for (let i = 0, len = dataAccessorArray.length; i < len; i++) {
+                guiStatsEl.innerHTML = [
+                    "<i>Update calls</i>: " + (i + 1) + "/" + len,
+                    "<i>Percent</i>: " +
+                        (((i + 1) / len) * 100).toFixed(2) +
+                        "%",
+                ].join("<br><br>");
                 await DataAccessorFactory.getCachedAccessor(
                     dataAccessorArray[i]
                 )?.setWGS84(
@@ -103,6 +130,23 @@ export const API = {
                     WGS84_ACTION.NONE
                 );
             }
+            const end = Date.now();
+            guiStatsEl.innerHTML +=
+                "<br><br>" +
+                [
+                    `----RESULT----`,
+                    `<i>Total<i>: ~` +
+                        Number(
+                            ((end - start) / 1000).toFixed(2)
+                        ).toLocaleString() +
+                        " sec",
+                    `<i>Performance<i>: ~` +
+                        (~~(
+                            (API.count / (end - start)) *
+                            1000
+                        )).toLocaleString() +
+                        ` items/sec`,
+                ].join("<br><br>");
         } catch (error) {
         } finally {
             updateRandomPositionController?.enable();
@@ -111,9 +155,17 @@ export const API = {
     removeAll: async () => {
         removeAllController?.disable();
         try {
-            console.time("delete");
-
+            let i = 0,
+                len = dataAccessorArray.length;
+            const start = Date.now();
             while (dataAccessorArray.length) {
+                guiStatsEl.innerHTML = [
+                    "<i>Remove calls</i>: " + (i + 1) + "/" + len,
+                    "<i>Percent</i>: " +
+                        (((i + 1) / len) * 100).toFixed(2) +
+                        "%",
+                ].join("<br><br>");
+                i++;
                 try {
                     await DataAccessorFactory.getCachedAccessor(
                         dataAccessorArray.pop()
@@ -122,7 +174,23 @@ export const API = {
                     console.error(error);
                 }
             }
-            console.timeEnd("delete");
+            const end = Date.now();
+            guiStatsEl.innerHTML +=
+                "<br><br>" +
+                [
+                    `----RESULT----`,
+                    `<i>Total<i>: ~` +
+                        Number(
+                            ((end - start) / 1000).toFixed(2)
+                        ).toLocaleString() +
+                        " sec",
+                    `<i>Performance<i>: ~` +
+                        (~~(
+                            (API.count / (end - start)) *
+                            1000
+                        )).toLocaleString() +
+                        ` items/sec`,
+                ].join("<br><br>");
         } catch (error) {
         } finally {
             removeAllController?.enable();
