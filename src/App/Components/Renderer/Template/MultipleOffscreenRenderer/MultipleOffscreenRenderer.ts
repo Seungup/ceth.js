@@ -1,99 +1,80 @@
-import type { Matrix4 } from "cesium";
-import type { DataAccessorBuildData } from "../../../../Data/DataAccessorFactory";
+import {
+    DataAccessorBuildData,
+    DataAccessorFactory,
+} from "../../../../Data/DataAccessorFactory";
 import * as THREE from "three";
 import { CoreThreadCommand } from "../OffscreenRenderer/CoreThreadCommand";
-import { CoreThreadCommands } from "../OffscreenRenderer/Core/CommandReciver";
 import { BaseRenderer, PerspectiveCameraInitParam } from "../../BaseRenderer";
-import { ApplicationContext } from "../../../../Contexts/ApplicationContext";
-import { HeadingPitchRoll, Position } from "../../../../Math";
-import { WorkerDataAccessor } from "../../../../Data/Accessor/Strategy/WorkerDataAccessor";
+import { HeadingPitchRoll, Position, WGS84_ACTION } from "../../../../Math";
 import { InstanceDataAccessor } from "../../../../Data/Accessor/Strategy/InstanceDataAccessor";
 import { THREEUtils } from "../../../../Utils/ThreeUtils";
-import { OffscreenRenderer } from "../OffscreenRenderer";
+import { OffscreenRendererProxy } from "../OffscreenRenderer/OffscreenRendererProxy";
+import { randInt } from "three/src/math/MathUtils";
 
 export class MultipleOffscreenRenderer extends BaseRenderer {
     /**
      * 워커의 배열입니다. 해당 배열에 존재하는 스레드를 바탕으로 장면이 그려집니다.
      */
-    private readonly workerArray = new Array<Worker>();
+    readonly rendererArray = new Array<OffscreenRendererProxy>();
 
     constructor() {
         super();
         this.name = "MultipleOffscreenRenderer";
-        this.increaseRenderer();
+        this.rendererArray.push(
+            new OffscreenRendererProxy(),
+            new OffscreenRendererProxy()
+        );
     }
 
     get length() {
-        return this.workerArray.length;
-    }
-
-    increaseRenderer() {
-        const worker = new OffscreenRenderer().worker;
-
-        worker.onmessage = (ev) => {};
-
-        this.workerArray.push(worker);
+        return this.rendererArray.length;
     }
 
     async setSize(width: number, height: number) {
-        for (let i = 0, len = this.workerArray.length; i < len; i++) {
-            await CoreThreadCommand.excuteAPI(
-                this.workerArray[i],
-                "RendererComponentAPI",
-                "setSize",
-                [width, height]
-            );
+        for (let i = 0, len = this.rendererArray.length; i < len; i++) {
+            await this.rendererArray[i].setSize(width, height);
         }
 
         return this;
     }
 
     async setMaxiumSkibbleFrameCount(count: number) {
-        for (let i = 0, len = this.workerArray.length; i < len; i++) {
+        for (let i = 0, len = this.rendererArray.length; i < len; i++) {
             await CoreThreadCommand.excuteAPI(
-                this.workerArray[i],
+                this.rendererArray[i].worker,
                 "WorkerRenderer",
                 "setMaxiumSkibbleFrameCount",
                 [count]
             );
         }
+        return this;
     }
 
     async setCamera(param: PerspectiveCameraInitParam) {
-        for (let i = 0, len = this.workerArray.length; i < len; i++) {
-            await CoreThreadCommand.excuteAPI(
-                this.workerArray[i],
-                "CameraComponentAPI",
-                "initCamera",
-                [param]
-            );
+        for (let i = 0, len = this.rendererArray.length; i < len; i++) {
+            await this.rendererArray[i].setCamera(param);
         }
-
         return this;
     }
 
     async add(object: THREE.Object3D) {
         return await this.addAt(
             object,
-            THREE.MathUtils.randInt(0, this.workerArray.length - 1)
+            THREE.MathUtils.randInt(0, this.rendererArray.length - 1)
         );
     }
 
     async dynamicAppend(
         object: THREE.Object3D,
-        workerIndex: number,
         option: {
             position: Position;
             visibility: boolean;
             headingPitchRoll: HeadingPitchRoll;
         }
     ): Promise<DataAccessorBuildData> {
-        if (this.workerArray.length <= workerIndex || workerIndex < 0) {
-            throw new Error(
-                `BufferFlowError : cannot access at ${workerIndex} `
-            );
-        }
-        const worker = this.workerArray[workerIndex];
+        const worker =
+            this.rendererArray[randInt(0, this.rendererArray.length - 1)]
+                .worker;
 
         const result = await CoreThreadCommand.excuteAPI(
             worker,
@@ -103,9 +84,7 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         );
 
         if (!result) {
-            throw new Error(
-                `can not append the object on the scene.\ncheck the thread number : ${workerIndex}`
-            );
+            throw new Error(`can not append the object on the scene.`);
         }
 
         THREEUtils.disposeObject3D(object);
@@ -128,71 +107,25 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         at: number,
         position?: Position
     ): Promise<DataAccessorBuildData> {
-        if (this.workerArray.length <= at || at < 0) {
+        if (this.rendererArray.length <= at || at < 0) {
             throw new Error(`BufferFlowError : cannot access at ${at} `);
         }
 
-        const worker = this.workerArray[at];
+        const buildData = await this.rendererArray[at].add(object);
 
-        const id = await CoreThreadCommand.excuteAPI(
-            worker,
-            "SceneComponentAPI",
-            "add",
-            [object.toJSON(), position]
-        );
+        if (position) {
+            DataAccessorFactory.getCachedAccessor(buildData).setWGS84(
+                position.wgs84,
+                position.action || WGS84_ACTION.NONE
+            );
+        }
 
-        THREEUtils.disposeObject3D(object);
-
-        return {
-            type: WorkerDataAccessor,
-            create: () => new WorkerDataAccessor(),
-            update: (accessor) => {
-                if (accessor instanceof WorkerDataAccessor) {
-                    accessor.setWorker(worker);
-                    accessor.setId(id);
-                }
-            },
-        } as const;
+        return buildData;
     }
 
     async render() {
-        const { viewer } = ApplicationContext;
-
-        if (!viewer) return;
-
-        const [viewMatrix, inverseViewMatrix] = [
-            viewer.camera.viewMatrix,
-            viewer.camera.inverseViewMatrix,
-        ];
-
-        for (let i = 0, len = this.workerArray.length; i < len; i++) {
-            this.sendRenderRequest(
-                this.workerArray[i],
-                viewMatrix,
-                inverseViewMatrix
-            );
+        for (let i = 0, len = this.rendererArray.length; i < len; i++) {
+            await this.rendererArray[i].render();
         }
-    }
-
-    private sendRenderRequest(
-        target: Worker,
-        viewMatrix: Matrix4,
-        inverseViewMatrix: Matrix4
-    ) {
-        {
-            const [cvm, civm] = [
-                new Float64Array(viewMatrix),
-                new Float64Array(inverseViewMatrix),
-            ];
-
-            CoreThreadCommand.excuteCommand(
-                target,
-                CoreThreadCommands.SYNC,
-                { cvm: cvm, civm: civm },
-                [cvm.buffer, civm.buffer]
-            );
-        }
-
-        CoreThreadCommand.excuteCommand(target, CoreThreadCommands.RENDER);
     }
 }

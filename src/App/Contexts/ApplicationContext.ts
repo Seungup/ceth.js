@@ -5,7 +5,6 @@ export namespace ApplicationContext {
     export let viewer: Viewer | undefined = undefined;
 
     {
-        container;
         container.style.position = "absolute";
         container.style.top = "0";
         container.style.left = "0";

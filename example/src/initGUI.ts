@@ -1,12 +1,12 @@
 import GUI from "lil-gui";
 import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
-import { MultipleOffscreenRenderer } from "../../src/App/Components/Renderer";
 import { RendererContext } from "../../src/App/Contexts/RendererContext";
 import {
     API,
     setAddController,
     setRemoveAllController,
     setUpdateRandomPositionController,
+    guiStatsEl,
 } from "./api";
 
 export function initGUI() {
@@ -46,6 +46,10 @@ export function initGUI() {
         actionFolder.add(API, "updateRandomPosition")
     );
     setRemoveAllController(actionFolder.add(API, "removeAll"));
+
+    const perfFolder = gui.addFolder("Performance");
+    perfFolder.$children.appendChild(guiStatsEl);
+    perfFolder.open();
 
     return {
         API,

@@ -27,9 +27,9 @@ const viewer = new Viewer("cesiumContainer", constructorOptions);
 
 Cesium3.init(viewer);
 
-initGUI();
-
 RendererContext.addRenderer(MultipleOffscreenRenderer);
+
+initGUI();
 
 (async function animation() {
     RendererContext.render();

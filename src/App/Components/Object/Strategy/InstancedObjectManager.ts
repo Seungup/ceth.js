@@ -160,22 +160,18 @@ export class InstancedObjectManager<
     }
 
     delete(id: number): boolean {
-        this.index = this.entityIdArray.findIndex((el) => el === id);
-
-        if (this.index === -1) {
-            console.error("cannot found element in current array.");
-            return false;
+        for (let i = 0, len = this.entityIdArray.length; i < len; i++) {
+            if (this.entityIdArray[i] === id) {
+                this.swapInstances(this.entityIdArray.length - 1, i);
+                this.entityIdArray.pop();
+                this.entityDataMap.delete(id);
+                if (i < this.instancedMesh.count) {
+                    this.instancedMesh.count--;
+                }
+                return true;
+            }
         }
-
-        this.swapInstances(this.entityIdArray.length - 1, this.index);
-
-        this.entityIdArray.pop();
-
-        if (this.index < this.instancedMesh.count) {
-            this.instancedMesh.count--;
-        }
-
-        return true;
+        return false;
     }
 
     setColor(id: number, color: THREE.Color): void {

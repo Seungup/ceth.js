@@ -1,17 +1,17 @@
 import { expose } from "comlink";
 import { Cesium3Synchronization } from "../../../../../Utils/Synchronization";
-import { WorkerRenderSyncer } from "./WorkerRenderSyncer";
+import { OffscreenRenderSyncer } from "./OffscreenRenderSyncer";
 import { ObjectData } from "../../../../../Data/ObjectData";
 import { CameraComponent } from "../../../../Camera/CameraComponent";
 import { SceneComponent } from "../../../../Scene/SceneComponent";
 import { WebGLRendererComponent } from "../../WebGLRenderer";
-import { WorkerRenderer } from "./WorkerRenderer";
+import { OffscreenRenderer } from "./OffscreenRenderer";
 
 export const API_MAP = {
     CameraComponentAPI: CameraComponent.API,
     RendererComponentAPI: WebGLRendererComponent.API,
     SceneComponentAPI: SceneComponent.API,
-    WorkerRenderer: WorkerRenderer.API,
+    WorkerRenderer: OffscreenRenderer.API,
     ObjectDataAPI: ObjectData.API,
 } as const;
 
@@ -68,7 +68,7 @@ export class CommandReciver {
         const param = data.param;
         switch (data.runCommand) {
             case CoreThreadCommands.RENDER:
-                await WorkerRenderSyncer.requestRender();
+                OffscreenRenderSyncer.requestRender();
                 break;
             case CoreThreadCommands.INIT:
                 WebGLRendererComponent.initRenderer(param);

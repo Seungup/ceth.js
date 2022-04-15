@@ -1,5 +1,5 @@
 import { Controller } from "lil-gui";
-import { randFloat, randInt } from "three/src/math/MathUtils";
+import { randFloat } from "three/src/math/MathUtils";
 import { RendererContext } from "../../src/App/Contexts/RendererContext";
 import {
     DataAccessorBuildData,
@@ -25,11 +25,10 @@ export function setRemoveAllController(ctrl: Controller) {
 export function setUpdateRandomPositionController(ctrl: Controller) {
     updateRandomPositionController = ctrl;
 }
-/**
- * !수정사항 목록
- * * InstancedMesh 의 경우, 한번 생성 시 matrix 의 scale 조정이 따로 없을 경우 , 적용되지 않음.
- * * InstancedMesh는 처음 Geometry와 Matrial 이 결정된 상태에서 Matrix만 추가되거나, 변경, 삭제되는데 이 경우에 Geomtry의 생성 옵션 값은 무시되므로,
- */
+
+export const guiStatsEl = document.createElement("div");
+guiStatsEl.classList.add("gui-stats");
+
 export const API = {
     width: 25000,
     hegith: 25000,
@@ -44,9 +43,12 @@ export const API = {
             const renderer = RendererContext.getRenderer(
                 "MultipleOffscreenRenderer"
             );
-            const [mlat, mlon] = [API.maxRandomLat, API.maxRandomLon];
 
             for (let i = 0, len = API.count; i < len; i++) {
+                guiStatsEl.innerHTML = [
+                    "<i>Add calls</i>: " + (i + 1) + "/" + len,
+                ].join("\n");
+
                 const buildData = await renderer.dynamicAppend(
                     new THREE.Mesh(
                         new THREE.BoxBufferGeometry(
@@ -59,13 +61,12 @@ export const API = {
                             color: 0xffffff * Math.random(),
                         })
                     ),
-                    randInt(0, renderer.length - 1),
                     {
                         position: {
                             wgs84: {
                                 height: 0,
-                                latitude: randFloat(0, mlat),
-                                longitude: randFloat(0, mlon),
+                                latitude: randFloat(0, API.maxRandomLat),
+                                longitude: randFloat(0, API.maxRandomLon),
                             },
                         },
                         headingPitchRoll: {
@@ -111,6 +112,7 @@ export const API = {
         removeAllController?.disable();
         try {
             console.time("delete");
+
             while (dataAccessorArray.length) {
                 try {
                     await DataAccessorFactory.getCachedAccessor(

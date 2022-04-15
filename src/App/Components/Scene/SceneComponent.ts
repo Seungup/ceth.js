@@ -213,14 +213,20 @@ export namespace SceneComponent {
             managerAccessKey: string,
             objectId: number
         ) => {
-            let manager =
+            const manager =
                 Manager.getClass<InstancedObjectManager>(managerAccessKey);
-            if (manager) {
-                manager.delete(objectId);
+            if (!manager) {
+                console.error(`can not found manager on map.`);
+                return false;
+            }
+            if (manager.delete(objectId)) {
                 if (manager.isEmpty()) {
                     manager.dispose();
                 }
+                return true;
             }
+            console.error(`can not delete object: ${objectId} on matrix.`);
+            return false;
         };
 
         export const dynamicVisible = (

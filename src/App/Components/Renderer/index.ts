@@ -1,19 +1,19 @@
 import { DOMRenderer } from "./Template/DOMRenderer";
 import { MultipleOffscreenRenderer } from "./Template/MultipleOffscreenRenderer/MultipleOffscreenRenderer";
-import { OffscreenRenderer } from "./Template/OffscreenRenderer";
+import { OffscreenRendererProxy } from "./Template/OffscreenRenderer/OffscreenRendererProxy";
 
 export * from "./Template/DOMRenderer";
-export * from "./Template/OffscreenRenderer";
+export * from "./Template/OffscreenRenderer/OffscreenRendererProxy";
 export * from "./Template/MultipleOffscreenRenderer/MultipleOffscreenRenderer";
 export interface RendererMap {
     DOMRenderer: DOMRenderer;
-    OffscreenRenderer: OffscreenRenderer;
+    OffscreenRenderer: OffscreenRendererProxy;
     MultipleOffscreenRenderer: MultipleOffscreenRenderer;
 }
 
 export const RendererMap = {
     DOMRenderer: DOMRenderer,
-    OffscreenRenderer: OffscreenRenderer,
+    OffscreenRenderer: OffscreenRendererProxy,
     MultipleOffscreenRenderer: MultipleOffscreenRenderer,
 };
 

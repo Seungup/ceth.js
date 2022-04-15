@@ -3,7 +3,7 @@ import { WebGLRendererComponent } from "../../WebGLRenderer";
 import { SceneComponent } from "../../../../Scene/SceneComponent";
 import { ObjectPositionChecker } from "../../../Strategy/ObjectPositionChecker";
 
-export namespace WorkerRenderer {
+export namespace OffscreenRenderer {
     // 지구 뒷편 오브젝트 렌더링 여부
     let renderBehindEarthOfObjects: boolean = false;
 

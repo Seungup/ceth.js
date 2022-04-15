@@ -8,7 +8,7 @@ import { WorkerDataAccessor } from "../../../../Data/Accessor/Strategy/WorkerDat
 import { CesiumUtils } from "../../../../Utils/CesiumUtils";
 import { DataAccessorBuildData } from "../../../../Data/DataAccessorFactory";
 
-export class OffscreenRenderer extends BaseRenderer {
+export class OffscreenRendererProxy extends BaseRenderer {
     readonly worker = WorkerFactory.createWorker("CommandReciver");
     constructor() {
         super();
@@ -76,7 +76,7 @@ export class OffscreenRenderer extends BaseRenderer {
 
         container.appendChild(canvas);
 
-        const root = viewer.container.parentElement;
+        const root = viewer.canvas.parentElement;
         if (!root) {
             throw new Error("cannot fond parent element");
         } else {
@@ -113,7 +113,7 @@ export class OffscreenRenderer extends BaseRenderer {
     }
 
     async render() {
-        const viewer = ApplicationContext.viewer;
+        const { viewer } = ApplicationContext;
         if (!viewer) return;
 
         // Update Object3D Visibles
