@@ -8,12 +8,15 @@ import {
 import { WGS84_ACTION } from "../../src/App/Math";
 import * as THREE from "three";
 import type { Accessor } from "../../src/App/Data/Accessor/DataAccessor";
+import { Symbol } from "milsymbol";
+import { FrontSide } from "three";
 
 const dataAccessorArray = new Array<DataAccessorBuildData<Accessor>>();
 
 let removeAllController: Controller | undefined;
 let updateRandomPositionController: Controller | undefined;
 let addController: Controller | undefined;
+
 export function setAddController(ctrl: Controller) {
     addController = ctrl;
 }
@@ -29,82 +32,68 @@ export function setUpdateRandomPositionController(ctrl: Controller) {
 export const guiStatsEl = document.createElement("div");
 guiStatsEl.classList.add("gui-stats");
 
+async function Add() {
+    addController?.disable();
+    try {
+        const renderer = RendererContext.getRenderer(
+            "MultipleOffscreenRenderer"
+        );
+        const start = Date.now();
+        const bitmap = await createImageBitmap(
+            new Symbol("sfgpewrh--mt").asCanvas()
+        );
+        for (let i = 0, len = API.count; i < len; i++) {
+            guiStatsEl.innerHTML = [
+                "<i>Add calls</i>: " + (i + 1) + "/" + len,
+                "<i>Percent</i>:   " + (((i + 1) / len) * 100).toFixed(2) + "%",
+            ].join("<br><br>");
+
+            const buildData = await renderer.add(
+                new THREE.Mesh(
+                    new THREE.PlaneBufferGeometry(
+                        bitmap.width + API.addScala,
+                        bitmap.height + API.addScala
+                    ),
+                    new THREE.MeshBasicMaterial({ side: FrontSide })
+                ),
+                {
+                    wgs84: {
+                        height: 0,
+                        latitude: randFloat(0, API.maxRandomLat),
+                        longitude: randFloat(0, API.maxRandomLon),
+                    },
+                },
+                bitmap
+            );
+
+            dataAccessorArray.push(buildData);
+        }
+        const end = Date.now();
+        guiStatsEl.innerHTML +=
+            "<br><br>" +
+            [
+                `----RESULT----`,
+                `<i>Total<i>: ~` +
+                    Number(((end - start) / 1000).toFixed(2)).toLocaleString() +
+                    " sec",
+                `<i>Performance<i>: ~` +
+                    (~~((API.count / (end - start)) * 1000)).toLocaleString() +
+                    ` items/sec`,
+            ].join("<br><br>");
+    } catch (error) {
+        console.error(error);
+    } finally {
+        addController?.enable();
+    }
+}
+
 export const API = {
-    width: 25000,
-    hegith: 25000,
-    depth: 1,
+    addScala: 100000,
     count: 1_000,
     skibbleFameCount: 0,
     maxRandomLat: THREE.MathUtils.randInt(0, 50),
     maxRandomLon: THREE.MathUtils.randInt(0, 50),
-    add: async () => {
-        addController?.disable();
-        try {
-            const renderer = RendererContext.getRenderer(
-                "MultipleOffscreenRenderer"
-            );
-            const start = Date.now();
-            for (let i = 0, len = API.count; i < len; i++) {
-                guiStatsEl.innerHTML = [
-                    "<i>Add calls</i>: " + (i + 1) + "/" + len,
-                    "<i>Percent</i>:   " +
-                        (((i + 1) / len) * 100).toFixed(2) +
-                        "%",
-                ].join("<br><br>");
-
-                const buildData = await renderer.dynamicAppend(
-                    new THREE.Mesh(
-                        new THREE.BoxBufferGeometry(
-                            API.width,
-                            API.hegith,
-                            API.depth
-                        ),
-                        new THREE.MeshBasicMaterial({
-                            side: THREE.DoubleSide,
-                            color: 0xffffff * Math.random(),
-                        })
-                    ),
-                    {
-                        position: {
-                            wgs84: {
-                                height: 0,
-                                latitude: randFloat(0, API.maxRandomLat),
-                                longitude: randFloat(0, API.maxRandomLon),
-                            },
-                        },
-                        headingPitchRoll: {
-                            heading: 0,
-                            pitch: 0,
-                            roll: 0,
-                        },
-                        visibility: true,
-                    }
-                );
-
-                dataAccessorArray.push(buildData);
-            }
-            const end = Date.now();
-            guiStatsEl.innerHTML +=
-                "<br><br>" +
-                [
-                    `----RESULT----`,
-                    `<i>Total<i>: ~` +
-                        Number(
-                            ((end - start) / 1000).toFixed(2)
-                        ).toLocaleString() +
-                        " sec",
-                    `<i>Performance<i>: ~` +
-                        (~~(
-                            (API.count / (end - start)) *
-                            1000
-                        )).toLocaleString() +
-                        ` items/sec`,
-                ].join("<br><br>");
-        } catch (error) {
-        } finally {
-            addController?.enable();
-        }
-    },
+    add: Add,
     updateRandomPosition: async () => {
         updateRandomPositionController?.disable();
         try {

@@ -7,6 +7,7 @@ import { WorkerFactory } from "../../../../WorkerFactory";
 import { WorkerDataAccessor } from "../../../../Data/Accessor/Strategy/WorkerDataAccessor";
 import { CesiumUtils } from "../../../../Utils/CesiumUtils";
 import { DataAccessorBuildData } from "../../../../Data/DataAccessorFactory";
+import { transfer } from "comlink";
 
 export class OffscreenRendererProxy extends BaseRenderer {
     readonly worker = WorkerFactory.createWorker("CommandReciver");
@@ -43,13 +44,26 @@ export class OffscreenRendererProxy extends BaseRenderer {
         }
     }
 
-    async add(object: Object3D): Promise<DataAccessorBuildData> {
-        const id = await CoreThreadCommand.excuteAPI(
-            this.worker,
-            "SceneComponentAPI",
-            "add",
-            [object.toJSON()]
-        );
+    async add(
+        object: Object3D,
+        texture?: ImageBitmap
+    ): Promise<DataAccessorBuildData> {
+        let id: number;
+        if (texture) {
+            id = await CoreThreadCommand.excuteAPI(
+                this.worker,
+                "SceneComponentAPI",
+                "add",
+                [object.toJSON(), transfer(texture, [texture])]
+            );
+        } else {
+            id = await CoreThreadCommand.excuteAPI(
+                this.worker,
+                "SceneComponentAPI",
+                "add",
+                [object.toJSON()]
+            );
+        }
         return {
             type: WorkerDataAccessor,
             create: () => new WorkerDataAccessor(),
@@ -73,7 +87,7 @@ export class OffscreenRendererProxy extends BaseRenderer {
         }
 
         const canvas = document.createElement("canvas");
-
+        canvas.style.position = "absolute";
         container.appendChild(canvas);
 
         const root = viewer.canvas.parentElement;

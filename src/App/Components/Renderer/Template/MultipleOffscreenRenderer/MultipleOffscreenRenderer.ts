@@ -56,10 +56,16 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
         return this;
     }
 
-    async add(object: THREE.Object3D) {
+    async add(
+        object: THREE.Object3D,
+        position?: Position,
+        texture?: ImageBitmap
+    ) {
         return await this.addAt(
             object,
-            THREE.MathUtils.randInt(0, this.rendererArray.length - 1)
+            THREE.MathUtils.randInt(0, this.rendererArray.length - 1),
+            position,
+            texture
         );
     }
 
@@ -104,13 +110,14 @@ export class MultipleOffscreenRenderer extends BaseRenderer {
     async addAt(
         object: THREE.Object3D,
         at: number,
-        position?: Position
+        position?: Position,
+        texture?: ImageBitmap
     ): Promise<DataAccessorBuildData> {
         if (this.rendererArray.length <= at || at < 0) {
             throw new Error(`BufferFlowError : cannot access at ${at} `);
         }
-
-        const buildData = await this.rendererArray[at].add(object);
+        console.log(this.rendererArray.length, at);
+        const buildData = await this.rendererArray[at].add(object, texture);
 
         if (position) {
             DataAccessorFactory.getCachedAccessor(buildData).setWGS84(

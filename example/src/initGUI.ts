@@ -15,9 +15,7 @@ export function initGUI() {
     const gui = new GUI({ autoPlace: false });
 
     const objectFolder = gui.addFolder("Object");
-    objectFolder.add(API, "width", 1, 50000, 1);
-    objectFolder.add(API, "hegith", 1, 50000, 1);
-    objectFolder.add(API, "depth", 1, 50000, 1);
+    objectFolder.add(API, "addScala", 10000, 15000, 100);
 
     gui.domElement.style.position = "absolute";
     gui.domElement.style.top = "2px";
@@ -28,7 +26,7 @@ export function initGUI() {
     gui.add(API, "maxRandomLat", 0, 100, 1);
     gui.add(API, "maxRandomLon", 0, 100, 1);
 
-    gui.add(API, "count", 1000, 1_000_000, 1000);
+    gui.add(API, "count", 10, 1_000_000, 1000);
 
     const renderFolder = gui.addFolder("Render");
     renderFolder

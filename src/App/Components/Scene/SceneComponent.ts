@@ -1,4 +1,12 @@
-import { Box3, Object3D, ObjectLoader, Scene, Vector3 } from "three";
+import {
+    Box3,
+    CanvasTexture,
+    MeshBasicMaterial,
+    Object3D,
+    ObjectLoader,
+    Scene,
+    Vector3,
+} from "three";
 import { CT_WGS84, HeadingPitchRoll, IWGS84, Position } from "../../Math";
 import { Cesium3Synchronization } from "../../Utils/Synchronization";
 import { ObjectData } from "../../data/ObjectData";
@@ -74,16 +82,19 @@ export namespace SceneComponent {
             }
         };
 
-        export const add = async (json: any, position?: Position) => {
+        export const add = async (json: any, bitmap?: ImageBitmap) => {
             const object = objectLoader.parse(json);
 
             ObjectData.setBox3ByObject3D(object);
             ObjectData.setPositionRotationScaleByObject3D(object);
 
-            if (position) {
-                const pos = new CT_WGS84(position);
-                ObjectData.setWGS84(object.id, pos.toIWGS84());
-                setObjectPosition(object, position);
+            const material = (object as any).material as
+                | MeshBasicMaterial
+                | undefined;
+            if (bitmap && material) {
+                const texture = new CanvasTexture(bitmap);
+                material.map = texture;
+                material.transparent = true;
             }
 
             scene.add(object);

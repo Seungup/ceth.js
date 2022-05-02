@@ -25,9 +25,10 @@ export namespace OffscreenRenderer {
         if (WebGLRendererComponent.renderer) {
             const scene = SceneComponent.scene;
             const camera = CameraComponent.perspectiveCamera;
-            if (!renderBehindEarthOfObjects) {
-                ObjectPositionChecker.check(scene);
-            }
+
+            // if (!renderBehindEarthOfObjects) {
+            // ObjectPositionChecker.check(scene);
+            // }
 
             if (
                 (typeof camera.userData.updated === "boolean" &&
